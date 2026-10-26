@@ -34,6 +34,10 @@ export default function HostedVerifyPage() {
   const { id } = useParams<{ id: string }>();
   const { data, error } = useSWR<HostedVerification>(`/v1/public/verifications/${id}`, fetcher, {
     refreshInterval: (latest) => (latest && FINAL.includes(latest.status) ? 0 : 2000),
+    // The person is in the Telegram app while we wait, so this window is often in the
+    // background: keep checking anyway, or the result would never reach the site.
+    refreshWhenHidden: true,
+    refreshWhenOffline: false,
   });
   const [handedBack, setHandedBack] = useState<'popup' | 'redirect' | null>(null);
   const delivered = useRef(false);
@@ -140,6 +144,9 @@ function Waiting({ data }: { data: HostedVerification }) {
         <>
           <a
             href={data.url}
+            // Open Telegram separately so this page stays and can hand the result back.
+            target="_blank"
+            rel="noopener noreferrer"
             className="mt-6 flex items-center justify-center gap-2 rounded-2xl bg-[#2aabee] px-5 py-3.5 text-[15px] font-semibold text-white shadow-soft transition-transform hover:-translate-y-0.5"
           >
             <Smartphone className="size-5" /> {opened ? 'Back to Telegram' : 'Open Telegram'} <ArrowRight className="size-4" />
