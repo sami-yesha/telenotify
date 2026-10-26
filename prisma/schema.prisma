@@ -276,6 +276,11 @@ enum MessageStatus {
   RECEIVED
 }
 
+enum MessageFormat {
+  PLAIN
+  MARKDOWN
+}
+
 enum FallbackStatus {
   QUEUED
   SENT
@@ -297,6 +302,8 @@ model Message {
   // not_linked | blocked | chat_gone | telegram_unavailable | telegram_rejected
   reason            String?
   text              String
+  // MARKDOWN: text uses Telenotify formatting (sent as Telegram HTML, plain for SMS).
+  format            MessageFormat @default(PLAIN)
   // [[{ text, url }]] rows of inline URL buttons.
   buttons           Json?
   idempotencyKey    String?
@@ -449,6 +456,7 @@ model MessageTemplate {
   // { "en": "...", "am": "..." }
   variants      Json
   defaultLocale String   @default("en")
+  format        MessageFormat @default(PLAIN)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

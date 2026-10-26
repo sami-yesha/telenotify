@@ -47,3 +47,13 @@ describe('TemplatesService', () => {
     await expect(service.create('org-1', user, { key: 'x1', name: 'X', variants: { am: 'ሰላም' }, defaultLocale: 'en' })).rejects.toThrow(/default language/);
   });
 });
+
+describe('TemplatesService.renderForSend with formatting', () => {
+  it('escapes values so they show literally in a formatted template', async () => {
+    const template = { key: 'paid', variants: { en: '**Paid** by {{payer}}' }, defaultLocale: 'en', format: 'MARKDOWN' };
+    const prisma = { messageTemplate: { findUnique: jest.fn().mockResolvedValue(template) } };
+    const service = new TemplatesService(prisma as any, {} as any);
+    const result = await service.renderForSend('org-1', 'paid', { payer: '*Abebe_K*' });
+    expect(result).toMatchObject({ format: 'MARKDOWN', text: '**Paid** by \\*Abebe\\_K\\*' });
+  });
+});

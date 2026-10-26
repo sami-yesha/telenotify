@@ -93,7 +93,7 @@ export default function MessagesPage() {
                 </td>
                 <td className="font-mono text-xs text-ink">{m.to}</td>
                 <td className="max-w-sm text-ink">
-                  <p className="line-clamp-2 break-words">{m.text}</p>
+                  <p className="line-clamp-2 break-words">{m.plainText ?? m.text}</p>
                   {m.error && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{m.error}</p>}
                 </td>
                 <td>

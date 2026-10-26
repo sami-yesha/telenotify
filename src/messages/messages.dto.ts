@@ -1,6 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsIn, IsNotEmpty, IsObject, IsOptional, IsString, Matches, MaxLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsBoolean, IsIn, IsNotEmpty, IsObject, IsOptional, IsString, Matches, MaxLength, ValidateNested } from 'class-validator';
 import { InlineButton } from '../telegram/telegram-api.client';
+import { LayoutDto } from './layout.dto';
 
 export class SendMessageDto {
   @ApiProperty({ description: 'Customer externalId', example: 'user_789' })
@@ -8,14 +10,29 @@ export class SendMessageDto {
   @IsNotEmpty()
   to!: string;
 
-  @ApiPropertyOptional({ description: 'The message. Send either text or a template.', example: 'Your order #55 is out for delivery 🚚' })
+  @ApiPropertyOptional({ description: 'The message. Send one of text, template or layout.', example: 'Your order #55 is out for delivery 🚚' })
   @IsOptional()
   @IsString()
   @IsNotEmpty()
   @MaxLength(4096)
   text?: string;
 
-  @ApiPropertyOptional({ description: 'Template key (create templates in the portal). Send either text or a template.', example: 'payment_received' })
+  @ApiPropertyOptional({
+    description: '"markdown" turns on formatting in text: **bold**, _italic_, ~~strike~~, ||spoiler||, `tap to copy`, [label](https://…), # heading, - list, > quote, >> collapsible quote. SMS fallback gets the plain version.',
+    enum: ['plain', 'markdown'],
+    default: 'plain',
+  })
+  @IsOptional()
+  @IsIn(['plain', 'markdown'])
+  format?: 'plain' | 'markdown';
+
+  @ApiPropertyOptional({ type: LayoutDto, description: 'A ready-made formatted message. Send one of text, template or layout.' })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => LayoutDto)
+  layout?: LayoutDto;
+
+  @ApiPropertyOptional({ description: 'Template key (create templates in the portal). Send one of text, template or layout.', example: 'payment_received' })
   @IsOptional()
   @Matches(/^[a-z0-9][a-z0-9_]{1,59}$/)
   template?: string;

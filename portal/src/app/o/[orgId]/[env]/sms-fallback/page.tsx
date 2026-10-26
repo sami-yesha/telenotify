@@ -34,7 +34,7 @@ app.post('/telenotify', express.raw({ type: 'application/json' }), async (req, r
         authorization: \`Bearer \${process.env.AFROMESSAGE_TOKEN}\`,
         'content-type': 'application/json',
       },
-      body: JSON.stringify({ to: user.phone, message: event.data.text }),
+      body: JSON.stringify({ to: user.phone, message: event.data.plainText }),
     });
   }
   res.sendStatus(200);

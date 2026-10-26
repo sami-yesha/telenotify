@@ -183,3 +183,9 @@ describe('SmsFallbackService.sendTest in the sandbox', () => {
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('smsText for formatted messages', () => {
+  it('sends the plain version by SMS', () => {
+    expect(smsText({ text: '✅ **Paid**\nRef: `TX-1`', format: 'MARKDOWN', buttons: [[{ text: 'Receipt', url: 'https://x.et/r' }]] } as any)).toBe('✅ Paid\nRef: TX-1\nReceipt: https://x.et/r');
+  });
+});

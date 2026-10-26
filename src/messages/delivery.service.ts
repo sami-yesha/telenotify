@@ -8,6 +8,7 @@ import { TelegramService } from '../telegram/telegram.service';
 import { SmsFallbackService } from '../sms-fallback/sms-fallback.service';
 import { WebhooksService } from '../webhooks/webhooks.service';
 import { toMessageView } from './message-view';
+import { toPlainText, toTelegramHtml } from './rich-text';
 
 type LoadedMessage = Message & { customer: Customer; environment: Environment & { org: Organization } };
 
@@ -41,11 +42,20 @@ export class DeliveryService {
     if (!customer.telegramChatId) return this.markUndeliverable(message, 'not_linked');
     if (customer.blockedAt) return this.markUndeliverable(message, 'blocked');
 
-    const text = environment.type === 'SANDBOX' ? `[SANDBOX · ${environment.org.name}]\n${message.text}` : message.text;
+    const sandboxTag = environment.type === 'SANDBOX' ? `[SANDBOX · ${environment.org.name}]\n` : '';
+    const html = message.format === 'MARKDOWN';
+    const client = this.telegram.clientForEnvironment(environment);
+    const buttons = (message.buttons as InlineButton[][] | null) ?? undefined;
     try {
-      const sent = await this.telegram.clientForEnvironment(environment).sendMessage(customer.telegramChatId, text, {
-        buttons: (message.buttons as InlineButton[][] | null) ?? undefined,
-      });
+      let sent: { message_id: number };
+      try {
+        sent = await client.sendMessage(customer.telegramChatId, html ? escapeHtml(sandboxTag) + toTelegramHtml(message.text) : sandboxTag + message.text, { buttons, html });
+      } catch (error) {
+        // Formatting Telegram won't accept should never cost the customer the message.
+        if (!html || !(error instanceof TelegramApiError) || !/can't parse entities/i.test(error.description)) throw error;
+        this.logger.warn(`Telegram rejected the formatting of message ${message.id}; sending it as plain text`);
+        sent = await client.sendMessage(customer.telegramChatId, sandboxTag + toPlainText(message.text), { buttons });
+      }
       await this.markSent(message, String(sent.message_id));
     } catch (error) {
       await this.handleTelegramError(message, error, isFinalAttempt);
@@ -119,3 +129,5 @@ export class DeliveryService {
     await this.webhooks.emit(message.environment, 'message.failed', toMessageView(withFallback));
   }
 }
+
+const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

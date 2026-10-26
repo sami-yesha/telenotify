@@ -1,4 +1,6 @@
-import { ArrayMaxSize, IsArray, IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, Matches, Max, MaxLength, Min, ValidateIf } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsBoolean, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Matches, Max, MaxLength, Min, ValidateIf, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { LayoutDto } from '../messages/layout.dto';
 import { InlineButton } from '../telegram/telegram-api.client';
 
 export class CreateOrgDto {
@@ -77,10 +79,20 @@ export class PlaygroundSendDto {
   @IsNotEmpty()
   to!: string;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @MaxLength(4096)
-  text!: string;
+  text?: string;
+
+  @IsOptional()
+  @IsIn(['plain', 'markdown'])
+  format?: 'plain' | 'markdown';
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => LayoutDto)
+  layout?: LayoutDto;
 
   @IsOptional()
   @IsArray()

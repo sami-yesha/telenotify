@@ -12,6 +12,7 @@ import { TelegramService } from '../telegram/telegram.service';
 import { WebhooksService } from '../webhooks/webhooks.service';
 import { validateButtons } from './buttons';
 import { toMessageView } from './message-view';
+import { renderLayout } from './rich-text';
 import { DeliverJob, JOB_PRIORITY, MESSAGES_QUEUE } from './messages.constants';
 import { SendMessageDto } from './messages.dto';
 
@@ -45,13 +46,17 @@ export class MessagesService {
     await this.enforceSandboxLimit(environment);
     await this.billing.assertWithinQuota(environment);
 
-    if (Boolean(dto.text) === Boolean(dto.template)) {
-      throw new BadRequestException('Send either "text" or "template" (with "params"), not both');
+    if ([dto.text, dto.template, dto.layout].filter(Boolean).length !== 1) {
+      throw new BadRequestException('Send one of "text", "template" (with "params") or "layout"');
     }
+    if (dto.format && !dto.text) throw new BadRequestException('"format" applies to "text" only: templates have their own format and layouts are always formatted');
     const customer = await this.customers.upsert(environment, dto.to);
     const content = dto.template
       ? await this.templates.renderForSend(environment.orgId, dto.template, dto.params, dto.locale, customer.locale)
-      : { text: dto.text!, locale: null, templateKey: null };
+      : dto.layout
+        ? { text: renderLayout(dto.layout), format: 'MARKDOWN' as const, locale: null, templateKey: null }
+        : { text: dto.text!, format: dto.format === 'markdown' ? ('MARKDOWN' as const) : ('PLAIN' as const), locale: null, templateKey: null };
+    if (content.text.length > 4096) throw new BadRequestException('The message is longer than 4096 characters');
     const reason = !customer.telegramChatId ? 'not_linked' : customer.blockedAt ? 'blocked' : null;
     const status: MessageStatus = reason ? 'UNDELIVERABLE' : 'QUEUED';
 
@@ -65,6 +70,7 @@ export class MessagesService {
           status,
           reason,
           text: content.text,
+          format: content.format,
           templateKey: content.templateKey,
           locale: content.locale,
           buttons: buttons ? (buttons as unknown as Prisma.InputJsonValue) : Prisma.JsonNull,

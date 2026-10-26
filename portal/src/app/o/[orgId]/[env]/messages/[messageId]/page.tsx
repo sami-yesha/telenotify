@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import useSWR from 'swr';
 import { StatusBadge } from '@/components/status-badge';
+import { TelegramPreview } from '@/components/telegram-preview';
 import { Badge, Card, CodeBlock, Empty, formatDate, PageHeader, Skeleton, Table, timeAgo } from '@/components/ui';
 import { DeliveryDialog, DeliveryStatusBadge, lastResponse } from '@/components/webhook-delivery';
 import { API_BASE_URL, ApiError, fetcher } from '@/lib/api';
@@ -65,8 +66,12 @@ export default function MessageDetailPage() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <div className="space-y-6">
           <Card title="Content">
-            <p className="whitespace-pre-wrap rounded-xl bg-subtle p-4 text-sm text-ink">{m.text}</p>
-            {m.buttons && (
+            {m.format === 'markdown' ? (
+              <TelegramPreview text={m.text} format="markdown" botName="As the customer sees it" buttons={m.buttons ?? []} />
+            ) : (
+              <p className="whitespace-pre-wrap rounded-xl bg-subtle p-4 text-sm text-ink">{m.text}</p>
+            )}
+            {m.buttons && m.format !== 'markdown' && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {m.buttons.flat().map((b) => (
                   <a key={b.url + b.text} href={b.url} target="_blank" rel="noreferrer" className="rounded-lg border border-line px-3 py-1.5 text-sm text-brand hover:bg-subtle">

@@ -1,4 +1,5 @@
 import { Customer, Message } from '@prisma/client';
+import { plainTextOf } from './rich-text';
 
 // The public shape of a message (API responses and webhook events). Kept apart from
 // MessagesService so services it depends on can use it without a circular import.
@@ -13,6 +14,9 @@ export function toMessageView(message: Message & { customer: Customer }) {
     locale: message.locale,
     reason: message.reason,
     text: message.text,
+    format: message.format.toLowerCase(),
+    // The text without formatting, e.g. to send it by SMS yourself.
+    plainText: plainTextOf(message.text, message.format),
     buttons: message.buttons,
     idempotencyKey: message.idempotencyKey,
     error: message.error,

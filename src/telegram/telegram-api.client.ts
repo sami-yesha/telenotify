@@ -53,7 +53,7 @@ export class TelegramApiClient {
   sendMessage(
     chatId: string,
     text: string,
-    options: { buttons?: InlineButton[][]; requestContact?: boolean } = {},
+    options: { buttons?: InlineButton[][]; requestContact?: boolean; html?: boolean } = {},
   ): Promise<{ message_id: number }> {
     let replyMarkup: unknown;
     if (options.buttons?.length) {
@@ -65,7 +65,7 @@ export class TelegramApiClient {
         one_time_keyboard: true,
       };
     }
-    return this.call('sendMessage', { chat_id: chatId, text, reply_markup: replyMarkup });
+    return this.call('sendMessage', { chat_id: chatId, text, reply_markup: replyMarkup, ...(options.html ? { parse_mode: 'HTML' } : {}) });
   }
 
   removeKeyboardMessage(chatId: string, text: string): Promise<{ message_id: number }> {

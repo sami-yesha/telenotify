@@ -3,6 +3,7 @@ import { MessageTemplate, Prisma, User } from '@prisma/client';
 import { AuditService } from '../audit/audit.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTemplateDto, UpdateTemplateDto } from './templates.dto';
+import { escapeMarkdown } from '../messages/rich-text';
 import { chooseLocale, isLocale, MissingParamsError, placeholders, render } from './templates.render';
 
 @Injectable()
@@ -21,7 +22,7 @@ export class TemplatesService {
     const variants = this.cleanVariants(dto.variants, dto.defaultLocale);
     try {
       const template = await this.prisma.messageTemplate.create({
-        data: { orgId, key: dto.key, name: dto.name.trim(), description: dto.description?.trim() || null, variants, defaultLocale: dto.defaultLocale },
+        data: { orgId, key: dto.key, name: dto.name.trim(), description: dto.description?.trim() || null, variants, defaultLocale: dto.defaultLocale, format: toFormat(dto.format) },
       });
       await this.audit.record(orgId, actor, 'template.created', template.key);
       return this.toView(template);
@@ -42,6 +43,7 @@ export class TemplatesService {
         ...(dto.description !== undefined ? { description: dto.description.trim() || null } : {}),
         variants,
         defaultLocale,
+        ...(dto.format !== undefined ? { format: toFormat(dto.format) } : {}),
       },
     });
     await this.audit.record(orgId, actor, 'template.updated', template.key);
@@ -67,8 +69,11 @@ export class TemplatesService {
     if (!template) throw new NotFoundException(`Template "${key}" not found. Create it in the portal under Templates.`);
     const variants = template.variants as Record<string, string>;
     const locale = chooseLocale(variants, template.defaultLocale, ...preferredLocales);
+    // Values fill in literally: a "*" in a customer name must not start bold text.
+    const markdown = template.format === 'MARKDOWN';
+    const values = markdown && params ? Object.fromEntries(Object.entries(params).map(([k, v]) => [k, v === null || v === undefined ? v : escapeMarkdown(String(v))])) : params;
     try {
-      return { text: render(variants[locale], params), locale, templateKey: template.key };
+      return { text: render(variants[locale], values), format: template.format, locale, templateKey: template.key };
     } catch (error) {
       if (error instanceof MissingParamsError) throw new BadRequestException(`${error.message} (template "${key}", ${locale})`);
       throw error;
@@ -103,9 +108,14 @@ export class TemplatesService {
       description: t.description,
       variants,
       defaultLocale: t.defaultLocale,
+      format: t.format.toLowerCase() as 'plain' | 'markdown',
       placeholders: [...new Set(Object.values(variants).flatMap(placeholders))],
       updatedAt: t.updatedAt,
       createdAt: t.createdAt,
     };
   }
+}
+
+function toFormat(format: string | undefined): 'PLAIN' | 'MARKDOWN' {
+  return format === 'markdown' ? 'MARKDOWN' : 'PLAIN';
 }

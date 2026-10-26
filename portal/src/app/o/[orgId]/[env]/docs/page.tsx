@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import { CodeTabs } from '@/components/code-tabs';
+import { TelegramPreview } from '@/components/telegram-preview';
 import { Card, CodeBlock, PageHeader } from '@/components/ui';
 import { API_BASE_URL } from '@/lib/api';
 import { useOrgParams } from '@/lib/hooks';
+import { renderLayout } from '@/lib/rich-text';
 import { SITE_URL } from '@/lib/site';
 import { snippets, toJs } from '@/lib/snippets';
 
@@ -20,7 +22,7 @@ const testCustomers = [
 const statuses = [
   ['QUEUED', 'Accepted and being sent. The final result arrives as a webhook event.'],
   ['SENT', 'Telegram accepted the message.'],
-  ['UNDELIVERABLE', 'This customer cannot be reached on Telegram. Use your own fallback (SMS, email…).'],
+  ['UNDELIVERABLE', 'This customer cannot be reached on Telegram. With SMS fallback on we text them; otherwise use your own fallback.'],
   ['FAILED', 'Telegram kept failing or rejected the message. Retry later or fall back.'],
 ];
 
@@ -30,6 +32,40 @@ const sendBody = {
   buttons: [[{ text: 'Track order', url: 'https://shop.example.com/o/1042' }]],
   idempotencyKey: 'order-1042-shipped',
 };
+
+const layoutBody = {
+  to: 'customer_123',
+  layout: {
+    type: 'receipt',
+    title: 'Payment received',
+    rows: [
+      { label: 'Amount', value: '1,250 ETB' },
+      { label: 'From', value: 'Abebe Kebede' },
+      { label: 'Reference', value: 'TX-88-4471', copy: true },
+    ],
+    footer: 'Abebe Pharmacy',
+  },
+};
+
+const formatted = {
+  to: 'customer_123',
+  format: 'markdown',
+  text: '🚚 **Your order is on the way**\nOrder: `#1042`\n>> Paid with Telebirr. Keep this as your receipt.',
+};
+
+const syntax = [
+  ['**bold**', 'Bold'],
+  ['_italic_', 'Italic'],
+  ['~~old~~', 'Strikethrough'],
+  ['||secret||', 'Spoiler, hidden until tapped'],
+  ['`TX-88`', 'Tap to copy (reference numbers, codes)'],
+  ['[Track](https://…)', 'Link'],
+  ['# Heading', 'A bold line'],
+  ['- item', 'List item (•)'],
+  ['> quote', 'Quote'],
+  ['>> details', 'Collapsible quote: shows a few lines, tap to expand'],
+  ['\\*', 'Show a character literally'],
+];
 
 const templateBody = {
   to: 'customer_123',
@@ -132,6 +168,27 @@ export default function DocsPage() {
             )}
           />
           <p>Reusing an idempotency key returns the original message instead of sending twice.</p>
+          <h3 className="pt-2 font-semibold text-ink">Make it look good</h3>
+          <p>
+            Send a <code className="font-mono text-ink">layout</code> instead of <code className="font-mono text-ink">text</code> and we lay it out for you. Types:{' '}
+            <code className="font-mono text-ink">receipt</code> ✅, <code className="font-mono text-ink">alert</code> ⚠️, <code className="font-mono text-ink">reminder</code> ⏰,{' '}
+            <code className="font-mono text-ink">status</code> 📦 and <code className="font-mono text-ink">info</code> ℹ️ (change it with <code className="font-mono text-ink">emoji</code>).
+          </p>
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+            <CodeTabs
+              title="POST /v1/messages"
+              samples={snippets({ method: 'POST', path: '/v1/messages', body: layoutBody, sdk: `await telenotify.messages.send(${toJs(layoutBody)});` }, ctx)}
+            />
+            <TelegramPreview text={renderLayout(layoutBody.layout as Parameters<typeof renderLayout>[0])} format="markdown" botName="Abebe Pharmacy" />
+          </div>
+          <p>
+            Or format your own text with <code className="font-mono text-ink">&quot;format&quot;: &quot;markdown&quot;</code>. Templates can be formatted too (switch on the Templates page). SMS fallback and{' '}
+            <code className="font-mono text-ink">plainText</code> in webhooks always get the version without formatting.
+          </p>
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+            <Table rows={syntax} mono />
+            <TelegramPreview text={formatted.text} format="markdown" botName="Abebe Pharmacy" />
+          </div>
           <p>
             For one-time codes and payment or transaction alerts, add <code className="font-mono text-ink">&quot;priority&quot;: &quot;high&quot;</code>. High-priority messages are sent ahead of
             normal ones. Each bot sends up to 25 messages per second; bursts above that are queued, never dropped.
@@ -154,7 +211,7 @@ export default function DocsPage() {
         </Section>
 
         <Section n={4} title="Fall back when Telegram can't reach the customer">
-          <p>Telenotify only sends on Telegram. When a customer can&apos;t be reached, we tell you, and your existing SMS or email provider takes over.</p>
+          <p>When a customer can&apos;t be reached on Telegram, we tell you right away. Turn on SMS fallback and we text them for you, or let your own SMS or email provider take over.</p>
           <Table rows={statuses} />
           <CodeTabs title="Handle the result" samples={fallbackSamples} />
           <p>

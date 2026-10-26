@@ -15,10 +15,10 @@ function setup(customer: object, environment: object = { id: 'env-1', type: 'LIV
   const config = { get: (_key: string, fallback: unknown) => fallback };
   const queue = { add: jest.fn() };
   const billing = { assertWithinQuota: jest.fn() };
-  const templates = { renderForSend: jest.fn().mockResolvedValue({ text: 'Payment of 1,250 ETB received.', locale: 'en', templateKey: 'payment_received' }) };
+  const templates = { renderForSend: jest.fn().mockResolvedValue({ text: 'Payment of 1,250 ETB received.', format: 'PLAIN', locale: 'en', templateKey: 'payment_received' }) };
   const smsFallback = { trigger: jest.fn().mockImplementation((_env, m) => Promise.resolve({ ...m, fallbackStatus: 'QUEUED' })) };
   const service = new MessagesService(prisma as any, customers as any, telegram as any, webhooks as any, config as any, billing as any, templates as any, smsFallback as any, queue as any);
-  return { service, queue, webhooks, templates, smsFallback, environment: environment as any };
+  return { service, queue, webhooks, templates, smsFallback, prisma, environment: environment as any };
 }
 
 const linked = { id: 'c1', externalId: 'u1', telegramChatId: '111', blockedAt: null };
@@ -90,5 +90,24 @@ describe('MessagesService.send', () => {
     const { service, smsFallback, environment } = setup({ ...linked, telegramChatId: null });
     await service.send(environment, { to: 'u1', text: 'hi', fallback: false });
     expect(smsFallback.trigger.mock.calls[0][1]).toMatchObject({ smsFallback: false });
+  });
+
+  it('sends formatted text and reports the plain version too', async () => {
+    const { service, prisma, environment } = setup(linked);
+    const result = await service.send(environment, { to: 'u1', text: '**Paid** `TX-1`', format: 'markdown' });
+    expect(prisma.message.create.mock.calls[0][0].data).toMatchObject({ format: 'MARKDOWN' });
+    expect(result).toMatchObject({ format: 'markdown', text: '**Paid** `TX-1`', plainText: 'Paid TX-1' });
+  });
+
+  it('writes a layout out as a formatted message', async () => {
+    const { service, environment } = setup(linked);
+    const result = await service.send(environment, { to: 'u1', layout: { type: 'receipt', title: 'Payment received', rows: [{ label: 'Amount', value: '1,250 ETB' }] } });
+    expect(result).toMatchObject({ format: 'markdown', text: '✅ **Payment received**\n\nAmount: **1,250 ETB**', plainText: '✅ Payment received\n\nAmount: 1,250 ETB' });
+  });
+
+  it('takes exactly one of text, template or layout, and format only with text', async () => {
+    const { service, environment } = setup(linked);
+    await expect(service.send(environment, { to: 'u1', text: 'x', layout: { type: 'info', title: 't' } })).rejects.toThrow(/one of/);
+    await expect(service.send(environment, { to: 'u1', template: 'k', format: 'markdown' })).rejects.toThrow(/"format" applies to "text" only/);
   });
 });

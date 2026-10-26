@@ -249,3 +249,36 @@ html {
     scroll-behavior: auto !important;
   }
 }
+
+/* Formatted Telegram text in <TelegramPreview> (output of lib/rich-text). */
+.tg-rich b { font-weight: 600; }
+.tg-rich a { text-decoration: underline; text-underline-offset: 2px; }
+.tg-dark a { color: #6ab3f3; }
+.tg-light a { color: #168acd; }
+.tg-rich code,
+.tg-rich pre {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.9em;
+  border-radius: 6px;
+}
+.tg-rich code { padding: 0.05em 0.3em; cursor: copy; }
+.tg-dark code { background: rgb(255 255 255 / 0.08); color: #8fd3ff; }
+.tg-light code { background: rgb(15 23 42 / 0.06); color: #0b6aa2; }
+.tg-rich pre { display: block; margin: 0.25em 0; padding: 0.5em 0.65em; white-space: pre-wrap; }
+.tg-dark pre { background: rgb(255 255 255 / 0.06); }
+.tg-light pre { background: rgb(15 23 42 / 0.05); }
+.tg-rich blockquote {
+  margin: 0.25em 0;
+  padding: 0.2em 0.6em;
+  border-left: 3px solid currentColor;
+  border-radius: 4px;
+}
+.tg-dark blockquote { border-left-color: #6ab3f3; background: rgb(106 179 243 / 0.1); }
+.tg-light blockquote { border-left-color: #168acd; background: rgb(22 138 205 / 0.08); }
+/* Collapsible quotes show ~3 lines until hovered, like the expand arrow in Telegram. */
+.tg-rich blockquote[expandable] { position: relative; max-height: 4.4em; overflow: hidden; transition: max-height 0.25s ease; }
+.tg-rich blockquote[expandable]::after { content: '⌄'; position: absolute; right: 0.4em; bottom: 0; opacity: 0.7; }
+.tg-rich blockquote[expandable]:hover { max-height: 40em; }
+.tg-rich blockquote[expandable]:hover::after { content: ''; }
+.tg-rich tg-spoiler { filter: blur(5px); cursor: pointer; transition: filter 0.2s ease; }
+.tg-rich tg-spoiler:hover { filter: none; }

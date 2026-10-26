@@ -1,12 +1,15 @@
 'use client';
 
 import { FileText, Languages, Pencil, Plus, Trash2 } from 'lucide-react';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
+import { FormatToolbar } from '@/components/format-toolbar';
+import { TelegramPreview } from '@/components/telegram-preview';
 import { Alert, Badge, Button, Card, CodeBlock, Dialog, Empty, Input, PageHeader, Select, Skeleton, timeAgo } from '@/components/ui';
 import { api, API_BASE_URL, ApiError, fetcher } from '@/lib/api';
 import { cn } from '@/lib/cn';
-import { useOrgParams } from '@/lib/hooks';
+import { useEnvironment, useOrgParams } from '@/lib/hooks';
+import { escapeMarkdown, toPlainText } from '@/lib/rich-text';
 import type { Locale, MessageTemplate } from '@/lib/types';
 
 const LOCALES: { id: Locale; label: string }[] = [
@@ -69,9 +72,12 @@ export default function TemplatesPage() {
                   </button>
                 </div>
               </div>
-              <p className="mt-3 line-clamp-3 rounded-xl bg-subtle px-3 py-2 text-sm text-ink">{t.variants[t.defaultLocale]}</p>
+              <p className="mt-3 line-clamp-3 whitespace-pre-line rounded-xl bg-subtle px-3 py-2 text-sm text-ink">
+                {t.format === 'markdown' ? toPlainText(t.variants[t.defaultLocale] ?? '') : t.variants[t.defaultLocale]}
+              </p>
               <div className="mt-3 flex flex-wrap items-center gap-1.5">
                 <Languages className="size-3.5 text-muted" />
+                {t.format === 'markdown' && <Badge tone="green">formatted</Badge>}
                 {Object.keys(t.variants).map((l) => (
                   <Badge key={l} tone={l === t.defaultLocale ? 'blue' : 'gray'}>
                     {l}
@@ -105,7 +111,10 @@ function TemplateEditor({ template, path, onClose, onSaved }: { template: Messag
   const [name, setName] = useState('');
   const [variants, setVariants] = useState<Partial<Record<Locale, string>>>({});
   const [defaultLocale, setDefaultLocale] = useState<Locale>('en');
+  const [format, setFormat] = useState<'plain' | 'markdown'>('markdown');
   const [active, setActive] = useState<Locale>('en');
+  const textarea = useRef<HTMLTextAreaElement>(null);
+  const { data: environment } = useEnvironment();
   const [sample, setSample] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -116,13 +125,15 @@ function TemplateEditor({ template, path, onClose, onSaved }: { template: Messag
     setName(existing?.name ?? '');
     setVariants(existing?.variants ?? { en: '', am: '' });
     setDefaultLocale(existing?.defaultLocale ?? 'en');
+    setFormat(existing?.format ?? 'markdown');
     setActive(existing?.defaultLocale ?? 'en');
     setSample({});
     setError(null);
   }, [template]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const names = useMemo(() => [...new Set(Object.values(variants).flatMap((t) => findPlaceholders(t ?? '')))], [variants]);
-  const preview = (variants[active] ?? '').replace(PLACEHOLDER, (m, n: string) => sample[n] || m);
+  // Sample values fill in literally, the same way the API escapes real ones.
+  const preview = (variants[active] ?? '').replace(PLACEHOLDER, (m, n: string) => (sample[n] ? (format === 'markdown' ? escapeMarkdown(sample[n]) : sample[n]) : m));
 
   async function save(e: FormEvent) {
     e.preventDefault();
@@ -130,7 +141,7 @@ function TemplateEditor({ template, path, onClose, onSaved }: { template: Messag
     setError(null);
     try {
       const filled = Object.fromEntries(Object.entries(variants).filter(([, text]) => text?.trim()));
-      const body = { name, variants: filled, defaultLocale };
+      const body = { name, variants: filled, defaultLocale, format };
       if (isNew) await api(path, { method: 'POST', body: { key, ...body } });
       else await api(`${path}/${existing!.id}`, { method: 'PATCH', body });
       onSaved();
@@ -172,14 +183,49 @@ function TemplateEditor({ template, path, onClose, onSaved }: { template: Messag
               </button>
             ))}
           </div>
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <span className="text-sm font-medium text-ink">Message</span>
+            <div className="flex rounded-lg border border-line bg-subtle p-0.5 text-xs">
+              {(['markdown', 'plain'] as const).map((f) => (
+                <button
+                  type="button"
+                  key={f}
+                  onClick={() => setFormat(f)}
+                  className={cn('rounded-md px-2.5 py-1 font-medium', format === f ? 'bg-surface text-ink shadow-soft ring-1 ring-line' : 'text-muted hover:text-ink')}
+                >
+                  {f === 'markdown' ? 'Formatted' : 'Plain text'}
+                </button>
+              ))}
+            </div>
+          </div>
+          {format === 'markdown' && (
+            <FormatToolbar target={textarea} value={variants[active] ?? ''} onChange={(text) => setVariants({ ...variants, [active]: text })} />
+          )}
           <textarea
+            ref={textarea}
             value={variants[active] ?? ''}
             onChange={(e) => setVariants({ ...variants, [active]: e.target.value })}
-            rows={4}
+            rows={6}
             maxLength={4096}
-            placeholder={active === 'am' ? 'ከ{{payer}} {{amount}} ብር ተቀብለዋል።' : 'Payment of {{amount}} ETB received from {{payer}}.'}
-            className="w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink shadow-soft focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
+            placeholder={
+              format === 'markdown'
+                ? active === 'am'
+                  ? '✅ **ክፍያ ተቀብለናል**\n\nመጠን: **{{amount}} ብር**\nከ: {{payer}}'
+                  : '✅ **Payment received**\n\nAmount: **{{amount}} ETB**\nFrom: {{payer}}\nReference: `{{reference}}`'
+                : active === 'am'
+                  ? 'ከ{{payer}} {{amount}} ብር ተቀብለዋል።'
+                  : 'Payment of {{amount}} ETB received from {{payer}}.'
+            }
+            className={cn(
+              'w-full border border-line bg-surface px-3.5 py-2.5 font-mono text-[13px] text-ink shadow-soft focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15',
+              format === 'markdown' ? 'rounded-b-xl' : 'rounded-xl',
+            )}
           />
+          {format === 'markdown' && (
+            <p className="mt-1.5 text-xs text-muted">
+              **bold** · _italic_ · `tap to copy` · [link](https://…) · # heading · - list · &gt; quote · &gt;&gt; collapsible. SMS fallback gets plain text.
+            </p>
+          )}
           <label className="mt-2 flex items-center gap-2 text-sm text-muted">
             Default language
             <Select value={defaultLocale} onChange={(e) => setDefaultLocale(e.target.value as Locale)} className="py-1.5">
@@ -203,9 +249,9 @@ function TemplateEditor({ template, path, onClose, onSaved }: { template: Messag
           </div>
         )}
 
-        <div className="rounded-xl bg-[#0e1621] p-3">
-          <p className="mb-2 text-[11px] uppercase tracking-wide text-slate-400">Preview · {label(active)}</p>
-          <div className="w-fit max-w-full whitespace-pre-wrap rounded-xl rounded-bl-md bg-[#182533] px-3 py-2 text-sm text-white">{preview || <span className="text-slate-500">Nothing written in this language yet</span>}</div>
+        <div>
+          <p className="mb-2 text-sm font-medium text-ink">Preview in Telegram · {label(active)}</p>
+          <TelegramPreview text={preview} format={format} botName={environment?.botUsername ? `@${environment.botUsername}` : 'Your bot'} />
         </div>
 
         <CodeBlock language="send it" code={sendExample} />

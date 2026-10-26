@@ -23,7 +23,11 @@ export interface Message {
   template: string | null;
   locale: Locale | null;
   reason: UndeliverableReason | FailureReason | null;
+  /** As sent: with formatting markers when format is "markdown". */
   text: string;
+  format: MessageFormat;
+  /** The text without formatting, e.g. to send it by SMS yourself. */
+  plainText: string;
   buttons: InlineButton[][] | null;
   idempotencyKey: string | null;
   error: string | null;
@@ -42,11 +46,36 @@ export interface MessageFallback {
   at: string | null;
 }
 
+export type MessageFormat = 'plain' | 'markdown';
+
+export type LayoutType = 'receipt' | 'alert' | 'reminder' | 'status' | 'info';
+
+/** A ready-made formatted message. */
+export interface Layout {
+  /** Sets the emoji: receipt ✅, alert ⚠️, reminder ⏰, status 📦, info ℹ️. */
+  type: LayoutType;
+  title: string;
+  /** Replaces the type's emoji; "" for none. */
+  emoji?: string;
+  /** A paragraph under the title. Formatting allowed. */
+  body?: string;
+  /** Up to 15 "Label: value" lines. `copy: true` makes the value tap-to-copy. */
+  rows?: { label: string; value: string; copy?: boolean }[];
+  footer?: string;
+}
+
 export interface SendMessageParams {
   /** Your id for the customer (externalId). */
   to: string;
-  /** The message text. Send either this or `template`. */
+  /** The message text. Send one of `text`, `template` or `layout`. */
   text?: string;
+  /**
+   * "markdown" turns on formatting in `text`: **bold**, _italic_, ~~strike~~, ||spoiler||,
+   * `tap to copy`, [label](https://…), # heading, - list, > quote, >> collapsible quote.
+   */
+  format?: MessageFormat;
+  /** A ready-made formatted message, e.g. a receipt. Send one of `text`, `template` or `layout`. */
+  layout?: Layout;
   /** Key of a template created in the portal, e.g. "payment_received". */
   template?: string;
   /** Values for the template's {{placeholders}}. */

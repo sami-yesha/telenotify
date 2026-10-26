@@ -8,6 +8,7 @@ function setup(overrides: { customer?: object; environment?: object; message?: o
     status: 'QUEUED',
     priority: 'NORMAL',
     text: 'Order shipped',
+    format: 'PLAIN',
     buttons: [[{ text: 'Track', url: 'https://x.test/55' }]],
     customer,
     environment: { id: 'env-1', type: 'LIVE', org: { name: 'Abebe Pharmacy' }, ...overrides.environment },
@@ -34,9 +35,25 @@ describe('DeliveryService', () => {
   it('sends on Telegram when the customer is linked', async () => {
     const { service, bot, finalUpdate, events } = setup();
     await service.deliver('msg-1', false);
-    expect(bot.sendMessage).toHaveBeenCalledWith('111', 'Order shipped', { buttons: [[{ text: 'Track', url: 'https://x.test/55' }]] });
+    expect(bot.sendMessage).toHaveBeenCalledWith('111', 'Order shipped', { buttons: [[{ text: 'Track', url: 'https://x.test/55' }]], html: false });
     expect(finalUpdate()).toMatchObject({ status: 'SENT', telegramMessageId: '42' });
     expect(events()).toEqual(['message.sent']);
+  });
+
+  it('sends formatted messages as Telegram HTML, escaping the sandbox label', async () => {
+    const { service, bot } = setup({ environment: { type: 'SANDBOX', org: { name: 'A&B <Shop>' } }, message: { format: 'MARKDOWN', text: '**Paid** `TX-1`' } });
+    await service.deliver('msg-1', false);
+    expect(bot.sendMessage.mock.calls[0][1]).toBe('[SANDBOX · A&amp;B &lt;Shop&gt;]\n<b>Paid</b> <code>TX-1</code>');
+    expect(bot.sendMessage.mock.calls[0][2]).toMatchObject({ html: true });
+  });
+
+  it('falls back to plain text if Telegram rejects the formatting', async () => {
+    const { service, bot, finalUpdate } = setup({ message: { format: 'MARKDOWN', text: '**Paid** today' } });
+    bot.sendMessage.mockRejectedValueOnce(new TelegramApiError(400, "Bad Request: can't parse entities: unsupported start tag")).mockResolvedValueOnce({ message_id: 7 });
+    await service.deliver('msg-1', false);
+    expect(bot.sendMessage.mock.calls[1][1]).toBe('Paid today');
+    expect(bot.sendMessage.mock.calls[1][2]).not.toHaveProperty('html');
+    expect(finalUpdate()).toMatchObject({ status: 'SENT', telegramMessageId: '7' });
   });
 
   it('labels real sandbox messages with the organization name', async () => {

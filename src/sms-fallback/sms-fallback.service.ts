@@ -7,6 +7,7 @@ import { AuditService } from '../audit/audit.service';
 import { decrypt, encrypt } from '../common/crypto';
 import { normalizePhone } from '../common/phone';
 import { toMessageView } from '../messages/message-view';
+import { plainTextOf } from '../messages/rich-text';
 import { PrismaService } from '../prisma/prisma.service';
 import { WebhooksService } from '../webhooks/webhooks.service';
 import { AfroMessageCredentials, AfroMessageError, checkAfroMessageToken, sendAfroMessage, toAfroMessageNumber } from './afromessage.client';
@@ -240,7 +241,7 @@ export function isSimulated(environment: Pick<Environment, 'type' | 'afroTokenEn
 }
 
 /** The message text, with URL buttons written out since SMS has none. */
-export function smsText(message: Pick<Message, 'text' | 'buttons'>): string {
+export function smsText(message: Pick<Message, 'text' | 'buttons'> & Partial<Pick<Message, 'format'>>): string {
   const buttons = ((message.buttons as { text: string; url: string }[][] | null) ?? []).flat();
-  return [message.text, ...buttons.map((b) => `${b.text}: ${b.url}`)].join('\n');
+  return [plainTextOf(message.text, message.format), ...buttons.map((b) => `${b.text}: ${b.url}`)].join('\n');
 }

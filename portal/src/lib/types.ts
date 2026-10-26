@@ -84,6 +84,9 @@ export interface Message {
   status: MessageStatus;
   reason: string | null;
   text: string;
+  /** "markdown" when text uses formatting; plainText is the unformatted version. */
+  format?: 'plain' | 'markdown';
+  plainText?: string;
   error: string | null;
   attempts: number;
   fallback?: MessageFallback | null;
@@ -204,6 +207,7 @@ export interface MessageTemplate {
   description: string | null;
   variants: Partial<Record<Locale, string>>;
   defaultLocale: Locale;
+  format: 'plain' | 'markdown';
   placeholders: string[];
   updatedAt: string;
   createdAt: string;

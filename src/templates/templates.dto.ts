@@ -21,6 +21,10 @@ export class CreateTemplateDto {
 
   @IsIn(LOCALES as unknown as string[])
   defaultLocale!: string;
+
+  @IsOptional()
+  @IsIn(['plain', 'markdown'])
+  format?: 'plain' | 'markdown';
 }
 
 export class UpdateTemplateDto {
@@ -42,6 +46,10 @@ export class UpdateTemplateDto {
   @IsOptional()
   @IsIn(LOCALES as unknown as string[])
   defaultLocale?: string;
+
+  @IsOptional()
+  @IsIn(['plain', 'markdown'])
+  format?: 'plain' | 'markdown';
 }
 
 export class PreviewTemplateDto {
