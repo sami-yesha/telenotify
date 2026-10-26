@@ -7,7 +7,7 @@ import useSWR from 'swr';
 import { Logo } from '@/components/logo';
 import { Alert, Button, Spinner } from '@/components/ui';
 import { api, ApiError, fetcher } from '@/lib/api';
-import { PENDING_INVITE_KEY } from '@/lib/invite';
+import { forgetInvite, rememberInvite } from '@/lib/invite';
 import type { InvitationPreview, Me } from '@/lib/types';
 
 function Invite() {
@@ -19,24 +19,31 @@ function Invite() {
   const [loading, setLoading] = useState(false);
   const signedOut = meError instanceof ApiError && meError.status === 401;
 
-  // Remember the invitation so it survives sign-up and email verification.
+  const wrongAccount = Boolean(me && invite && me.email !== invite.email);
+
+  // Remember the invitation so it survives sign-in, sign-up and email verification,
+  // but only while signed out: otherwise it would keep coming back after every login.
   useEffect(() => {
-    if (!token) return;
-    try {
-      localStorage.setItem(PENDING_INVITE_KEY, token);
-    } catch {
-      // Private mode: the person can reopen the link from the email.
-    }
-  }, [token]);
+    if (token && signedOut) rememberInvite(token);
+  }, [token, signedOut]);
+
+  // A dead link, or one for another account, shouldn't come back on its own.
+  useEffect(() => {
+    if (inviteError || wrongAccount) forgetInvite();
+  }, [inviteError, wrongAccount]);
+
+  async function switchAccount() {
+    await api('/auth/logout', { method: 'POST' }).catch(() => {});
+    rememberInvite(token);
+    router.replace('/login');
+  }
 
   async function accept() {
     setLoading(true);
     setError(null);
     try {
       const { orgId } = await api<{ orgId: string }>('/portal/invitations/accept', { method: 'POST', body: { token } });
-      try {
-        localStorage.removeItem(PENDING_INVITE_KEY);
-      } catch {}
+      forgetInvite();
       router.replace(`/o/${orgId}/sandbox`);
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'Something went wrong');
@@ -70,10 +77,18 @@ function Invite() {
             </>
           ) : me && !me.emailVerified ? (
             <Alert tone="amber">Verify your email first, then reopen this link.</Alert>
-          ) : me && me.email !== invite.email ? (
-            <Alert tone="amber">
-              You&apos;re signed in as {me.email}. Sign out and sign in with {invite.email} to accept.
-            </Alert>
+          ) : me && wrongAccount ? (
+            <>
+              <Alert tone="amber">
+                This invitation is for {invite.email}, but you&apos;re signed in as {me.email}.
+              </Alert>
+              <Button onClick={switchAccount} className="w-full">
+                Sign in as {invite.email}
+              </Button>
+              <Link href="/dashboard" className="flex w-full items-center justify-center rounded-xl border border-line px-4 py-2.5 text-sm font-medium text-ink">
+                Continue as {me.email}
+              </Link>
+            </>
           ) : (
             <Button onClick={accept} loading={loading} className="w-full">
               Accept invitation
