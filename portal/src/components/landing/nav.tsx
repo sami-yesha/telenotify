@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 import useSWR from 'swr';
 import { Logo } from '@/components/logo';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/components/ui';
 import { fetcher } from '@/lib/api';
 import type { Me } from '@/lib/types';
@@ -24,34 +23,34 @@ export function LandingNav() {
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  useMotionValueEvent(scrollY, 'change', (y) => setScrolled(y > 12));
+  // The hero has its own masthead; this bar only slides in once you scroll past it.
+  useMotionValueEvent(scrollY, 'change', (y) => setScrolled(y > window.innerHeight * 0.85));
   const { data: me } = useSWR<Me>('/auth/me', fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
 
   return (
     <header
       className={cn(
-        'fixed inset-x-0 top-0 z-50 transition-all duration-300',
-        scrolled ? 'border-b border-line/70 bg-page/75 backdrop-blur-xl' : 'border-b border-transparent',
+        'fixed inset-x-0 top-0 z-50 border-b border-line bg-page/80 backdrop-blur-xl transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+        scrolled || open ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-full opacity-0',
       )}
     >
-      <nav className="mx-auto flex h-16 max-w-6xl items-center gap-8 px-5">
+      <nav className="mx-auto flex h-14 max-w-6xl items-center gap-8 px-5">
         <Link href="/" aria-label="Telenotify home">
           <Logo product="Telenotify" />
         </Link>
         <div className="hidden items-center gap-1 md:flex">
           {links.map((link) => (
-            <a key={link.href} href={link.href} className="rounded-full px-3 py-1.5 text-sm text-muted transition-colors hover:bg-subtle hover:text-ink">
+            <a key={link.href} href={link.href} className="px-3 py-1.5 text-sm tracking-[-0.02em] text-muted transition-colors hover:text-ink">
               {link.label}
             </a>
           ))}
         </div>
         <div className="ml-auto hidden items-center gap-2 md:flex">
-          <ThemeToggle className="mr-1" />
           {me ? (
             <PrimaryLink href="/dashboard">Open dashboard</PrimaryLink>
           ) : (
             <>
-              <Link href="/login" className="rounded-full px-4 py-2 text-sm font-medium text-ink hover:bg-subtle">
+              <Link href="/login" className="px-3 py-2 text-sm text-muted transition-colors hover:text-ink">
                 Sign in
               </Link>
               <PrimaryLink href="/signup">Start free</PrimaryLink>
@@ -76,11 +75,8 @@ export function LandingNav() {
                   {link.label}
                 </a>
               ))}
-              <div className="flex items-center justify-between px-3 py-2 text-sm text-muted">
-                Theme <ThemeToggle withLabels />
-              </div>
               <div className="mt-2 grid grid-cols-2 gap-2">
-                <Link href={me ? '/dashboard' : '/login'} className="rounded-full border border-line px-4 py-2 text-center text-sm font-medium text-ink">
+                <Link href={me ? '/dashboard' : '/login'} className="rounded-[4px] border border-line px-4 py-2 text-center text-sm font-medium text-ink">
                   {me ? 'Dashboard' : 'Sign in'}
                 </Link>
                 <PrimaryLink href="/signup">Start free</PrimaryLink>
@@ -93,17 +89,17 @@ export function LandingNav() {
   );
 }
 
+// The landing's one button: flat white, square-ish corners, a soft blue ring on hover.
 export function PrimaryLink({ href, children, size = 'md' }: { href: string; children: React.ReactNode; size?: 'md' | 'lg' }) {
   return (
     <Link
       href={href}
       className={cn(
-        'group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-ink font-medium text-page shadow-lift transition-transform hover:-translate-y-0.5',
-        size === 'lg' ? 'px-6 py-3 text-[15px]' : 'px-4 py-2 text-sm',
+        'group inline-flex items-center justify-center gap-2 rounded-[4.5px] bg-white font-medium tracking-[-0.02em] text-[#0a0a0a] transition-[background-color,box-shadow] duration-200 hover:bg-[#e8eef7] hover:shadow-[0_0_0_4px_rgba(120,200,255,0.12)]',
+        size === 'lg' ? 'h-11 px-6 text-[15px]' : 'h-9 px-4 text-sm',
       )}
     >
-      <span className="absolute inset-0 bg-gradient-to-r from-brand via-accent to-brand bg-[length:200%_100%] opacity-0 transition-opacity duration-300 group-hover:animate-shimmer group-hover:opacity-100" />
-      <span className="relative flex items-center gap-2">{children}</span>
+      {children}
     </Link>
   );
 }

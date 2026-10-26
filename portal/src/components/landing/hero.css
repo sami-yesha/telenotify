@@ -1,0 +1,598 @@
+/*
+ * Landing hero. One screen, laid out on a 1280×800 reference frame: every layout
+ * number is multiplied by --u (1px at 1280×800).
+ */
+.vx-hero {
+  --u: min(calc(100vh / 800), max(calc(100vw / 1280), min(calc(100vw / 640), 0.75px)));
+  --nav: rgba(238, 242, 255, 0.9);
+  --sub: rgba(226, 233, 255, 0.74);
+  --link: rgba(212, 236, 255, 0.77);
+  --hair: rgba(255, 255, 255, 0.19);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+  isolation: isolate;
+  color: #fff;
+  text-align: center;
+}
+@supports (height: 100dvh) {
+  .vx-hero {
+    --u: min(calc(100dvh / 800), max(calc(100vw / 1280), min(calc(100vw / 640), 0.75px)));
+    height: 100dvh;
+  }
+}
+
+.vx-hero a {
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- Masthead ---------- */
+.vx-mast {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: none;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 40.5 * var(--u));
+}
+.vx-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36em;
+  height: max(calc(23.5 * var(--u)), 17px);
+  font-size: max(calc(23.5 * var(--u)), 17px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  transform: translateX(calc(-0.5 * var(--u)));
+}
+.vx-mark svg {
+  height: 1.12em;
+  width: 1.12em;
+}
+.vx-rule {
+  width: max(calc(284 * var(--u)), 252px);
+  height: 1px;
+  margin-top: calc(24 * var(--u));
+  background: var(--hair);
+  transform-origin: 50% 50%;
+}
+.vx-nav {
+  display: flex;
+  justify-content: space-between;
+  width: max(calc(284 * var(--u)), 252px);
+  margin-top: calc(17.4 * var(--u));
+  padding: 0 calc(8.9 * var(--u));
+  box-sizing: border-box;
+  font-size: max(calc(15 * var(--u)), 13px);
+  letter-spacing: -0.033em;
+  line-height: 1.2;
+}
+.vx-nav a {
+  color: var(--nav);
+  transition: color 0.2s ease;
+}
+.vx-nav a:hover {
+  color: #fff;
+}
+
+/* ---------- Copy ---------- */
+.vx-gap {
+  flex: 82.98 1 0;
+  min-height: calc(24 * var(--u));
+}
+.vx-copy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: none;
+}
+.vx-h1 {
+  margin: 0;
+  font-weight: 400;
+  font-size: max(calc(68 * var(--u)), 34px);
+  line-height: 0.9559;
+  letter-spacing: -0.0279em;
+  white-space: nowrap;
+}
+.vx-h1 .l {
+  display: block;
+}
+.vx-h1 .li {
+  display: inline-block;
+}
+.vx-h1 .l2 {
+  letter-spacing: -0.0294em;
+  transform: translateX(calc(2.6 * var(--u)));
+}
+.vx-sub {
+  margin: calc(18.98 * var(--u)) 0 0;
+  font-size: max(calc(21 * var(--u)), 15px);
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  color: var(--sub);
+  text-wrap: balance;
+}
+.vx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: max(calc(216 * var(--u)), 196px);
+  height: max(calc(46 * var(--u)), 44px);
+  margin-top: calc(25.64 * var(--u));
+  border-radius: max(calc(4.5 * var(--u)), 4px);
+  background: #fff;
+  color: #0a0a0a !important;
+  font-weight: 500;
+  font-size: max(calc(17 * var(--u)), 15px);
+  letter-spacing: -0.0265em;
+  box-shadow: 0 0 0 0 rgba(120, 200, 255, 0);
+  transition: background-color 0.2s ease, box-shadow 0.25s ease;
+}
+.vx-btn:hover {
+  background: #e8eef7;
+  box-shadow: 0 0 0 calc(4 * var(--u)) rgba(120, 200, 255, 0.12);
+}
+.vx-disc {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-top: calc(20.55 * var(--u));
+  font-size: max(calc(14.8 * var(--u)), 13px);
+  letter-spacing: -0.051em;
+  color: var(--link) !important;
+  transition: color 0.2s ease;
+}
+.vx-disc:hover {
+  color: #fff !important;
+}
+.vx-disc svg {
+  width: 0.68em;
+  height: 0.85em;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.vx-disc:hover svg {
+  transform: translateY(0.12em);
+}
+
+.vx-mark:focus-visible,
+.vx-nav a:focus-visible,
+.vx-disc:focus-visible {
+  outline: 2px solid #7fd4ff;
+  outline-offset: 4px;
+}
+.vx-btn:focus-visible {
+  outline: 2px solid #7fd4ff;
+  outline-offset: 3px;
+}
+
+/* ---------- Telegram field (where the video would be) ---------- */
+.vx-field {
+  position: relative;
+  z-index: 1;
+  flex: 318.68 1 0;
+  min-height: calc(160 * var(--u));
+  align-self: stretch;
+  container-type: size;
+}
+/*
+ * The scene has the artwork's 1619:971 ratio. Its horizon (50.463% down) sits
+ * 36.4u above the bottom of the copy, and its bottom edge reaches the screen's.
+ */
+.vx-scene {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  height: max(60vw, 105vh);
+  aspect-ratio: 1619 / 971;
+  transform: translateX(-50%);
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 4%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 4%);
+}
+@supports (height: 1cqh) {
+  .vx-scene {
+    height: max(calc(100cqw * 971 / 1619), calc((100cqh + 36.4 * var(--u)) / 0.49537 + 1px));
+  }
+}
+/* Telegram-blue air above the horizon. */
+.vx-air {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(38% 22% at 50% 50.463%, rgba(42, 171, 238, 0.42), transparent 70%),
+    radial-gradient(70% 30% at 50% 50.463%, rgba(34, 158, 217, 0.18), transparent 75%);
+}
+/* The planet: its top edge is the horizon. */
+.vx-planet {
+  position: absolute;
+  left: -30%;
+  right: -30%;
+  top: 50.463%;
+  height: 230%;
+  border-radius: 50%;
+  background: radial-gradient(60% 12% at 50% 0%, #10345a 0%, #071733 55%, #030b20 100%);
+  box-shadow:
+    0 calc(-1 * var(--u)) 0 0 rgba(200, 238, 255, 0.85),
+    0 calc(-3 * var(--u)) calc(14 * var(--u)) 0 rgba(42, 171, 238, 0.85),
+    0 calc(-20 * var(--u)) calc(90 * var(--u)) 0 rgba(42, 171, 238, 0.38);
+  overflow: hidden;
+}
+.vx-planet .tg-doodles {
+  position: absolute;
+  inset: 0;
+  opacity: 0.07;
+  background-size: calc(240 * var(--u)) calc(240 * var(--u));
+  -webkit-mask-image: radial-gradient(30% 9% at 50% 0%, #000, transparent);
+  mask-image: radial-gradient(30% 9% at 50% 0%, #000, transparent);
+}
+
+/* Paper plane gliding along the horizon. */
+.vx-plane {
+  position: absolute;
+  top: calc(50.463% - 34 * var(--u));
+  left: 0;
+  width: calc(22 * var(--u));
+  color: #bfe9ff;
+  opacity: 0;
+  animation: vx-glide 16s linear 2.4s infinite;
+}
+@keyframes vx-glide {
+  0% { transform: translate(18%, 30%) rotate(-6deg); opacity: 0; }
+  8% { opacity: 0.8; }
+  50% { transform: translate(50cqw, -40%) rotate(4deg); }
+  92% { opacity: 0.8; }
+  100% { transform: translate(82cqw, 20%) rotate(12deg); opacity: 0; }
+}
+
+/* ---------- Phone ---------- */
+.vx-phone {
+  position: absolute;
+  left: 50%;
+  top: max(calc(22 * var(--u)), 6%);
+  width: calc(318 * var(--u));
+  min-width: 250px;
+  transform: translateX(-50%);
+  padding: calc(9 * var(--u));
+  padding-bottom: 0;
+  border-radius: calc(46 * var(--u)) calc(46 * var(--u)) 0 0;
+  background: linear-gradient(180deg, #2a3446, #121925 60%);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 calc(-12 * var(--u)) calc(40 * var(--u)) calc(-10 * var(--u)) rgba(42, 171, 238, 0.45);
+  text-align: left;
+  font-size: max(calc(13 * var(--u)), 11px);
+}
+.vx-screen {
+  /* Always runs past the bottom of the screen, so the phone reads as rising. */
+  height: max(calc(560 * var(--u)), 110cqh);
+  border-radius: calc(38 * var(--u)) calc(38 * var(--u)) 0 0;
+  overflow: hidden;
+  background: #0e1621;
+}
+.vx-chat-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  padding: 2.1em 1.1em 0.85em;
+  background: #17212b;
+}
+.vx-ava {
+  display: grid;
+  place-items: center;
+  width: 2.7em;
+  height: 2.7em;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #34d399, #0d9488);
+  font-weight: 600;
+  font-size: 0.95em;
+}
+.vx-chat-name {
+  font-weight: 500;
+  font-size: 1.05em;
+  letter-spacing: -0.01em;
+}
+.vx-chat-meta {
+  color: #6ab3f3;
+  font-size: 0.85em;
+}
+.vx-chat-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 0.9em 0.85em;
+  height: 100%;
+  background-color: #0e1621;
+}
+.vx-chat-body > .tg-doodles {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-size: calc(200 * var(--u)) calc(200 * var(--u));
+}
+.vx-chat-body > :not(.tg-doodles) {
+  position: relative;
+}
+.vx-day {
+  align-self: center;
+  padding: 0.2em 0.75em;
+  border-radius: 1em;
+  background: rgba(0, 0, 0, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.82em;
+}
+.vx-bubble {
+  position: relative;
+  max-width: 82%;
+  padding: 0.55em 0.8em 0.5em;
+  border-radius: 1.1em;
+  line-height: 1.32;
+  color: #fff;
+}
+.vx-bubble time {
+  float: right;
+  margin: 0.45em 0 -0.2em 0.7em;
+  font-size: 0.75em;
+  color: rgba(255, 255, 255, 0.45);
+}
+.vx-in {
+  align-self: flex-start;
+  border-bottom-left-radius: 0.35em;
+  background: #182533;
+}
+.vx-out {
+  align-self: flex-end;
+  border-bottom-right-radius: 0.35em;
+  background: #2b5278;
+}
+.vx-out time {
+  color: #7fc4ff;
+}
+.vx-key {
+  align-self: stretch;
+  padding: 0.7em;
+  border-radius: 0.8em;
+  background: rgba(42, 171, 238, 0.16);
+  color: #9fd8ff;
+  font-weight: 500;
+  text-align: center;
+  transition: background-color 0.25s ease, transform 0.25s ease, opacity 0.3s ease;
+}
+.vx-key[data-press='true'] {
+  background: rgba(42, 171, 238, 0.36);
+  transform: scale(0.97);
+}
+.vx-key[data-done='true'] {
+  opacity: 0.35;
+}
+.vx-contact {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+}
+.vx-contact b {
+  display: grid;
+  place-items: center;
+  width: 2.3em;
+  height: 2.3em;
+  border-radius: 50%;
+  background: rgba(127, 196, 255, 0.3);
+  font-weight: 500;
+}
+.vx-pop {
+  animation: vx-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes vx-pop {
+  from { opacity: 0; transform: translateY(0.9em) scale(0.96); }
+}
+
+/* ---------- Price chips either side of the phone ---------- */
+.vx-chip {
+  position: absolute;
+  top: max(calc(70 * var(--u)), 18%);
+  display: flex;
+  flex-direction: column;
+  gap: calc(4 * var(--u));
+  padding: calc(13 * var(--u)) calc(16 * var(--u));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: calc(14 * var(--u));
+  background: rgba(7, 16, 41, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  text-align: left;
+  font-size: calc(13 * var(--u));
+  letter-spacing: -0.01em;
+  color: rgba(226, 233, 255, 0.7);
+  white-space: nowrap;
+}
+.vx-chip strong {
+  font-weight: 500;
+  font-size: calc(22 * var(--u));
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+.vx-chip-sms {
+  right: calc(50% + 205 * var(--u));
+}
+.vx-chip-sms strong {
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: line-through;
+  text-decoration-color: #ff6b6b;
+  text-decoration-thickness: 2px;
+}
+.vx-chip-tg {
+  left: calc(50% + 205 * var(--u));
+  top: max(calc(120 * var(--u)), 30%);
+  border-color: rgba(42, 171, 238, 0.4);
+}
+.vx-chip-tg strong {
+  color: #7fd4ff;
+}
+@media (max-width: 899.98px) {
+  .vx-chip {
+    display: none;
+  }
+}
+
+/* ---------- Tablet ---------- */
+@media (min-width: 600px) and (max-width: 1099.98px) and (min-height: 541px) {
+  .vx-hero {
+    --u: min(calc(100vh / 800), 1px, max(calc(100vw / 1280), calc(100vh / 1190), 0.86px));
+  }
+  @supports (height: 100dvh) {
+    .vx-hero {
+      --u: min(calc(100dvh / 800), 1px, max(calc(100vw / 1280), calc(100dvh / 1190), 0.86px));
+    }
+  }
+  .vx-field {
+    max-height: 48%;
+  }
+  .vx-nav a {
+    padding: 14px 8px;
+    margin: -14px -8px;
+  }
+  .vx-disc {
+    padding: 12px 10px;
+    margin-bottom: -12px;
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+}
+
+/* ---------- Portrait phones ---------- */
+@media (max-width: 599.98px) and (orientation: portrait) {
+  .vx-hero {
+    --u: min(calc(100vh / 800), max(calc(100vw / 1280), min(calc(100vw / 640), 0.75px)));
+    padding: 0 24px;
+    box-sizing: border-box;
+  }
+  @supports (height: 100svh) {
+    .vx-hero {
+      --u: min(calc(100svh / 800), max(calc(100vw / 1280), min(calc(100vw / 640), 0.75px)));
+    }
+  }
+  .vx-h1 {
+    font-size: max(26px, min(calc(68 * var(--u)), calc((100vw - 48px) / 8.3)));
+  }
+  .vx-sub {
+    font-size: max(16px, min(calc(21 * var(--u)), 3.345vw));
+    line-height: 1.25;
+    overflow-wrap: break-word;
+  }
+  .vx-rule,
+  .vx-nav {
+    width: min(max(calc(284 * var(--u)), 252px), calc(100vw - 32px));
+  }
+  .vx-field {
+    max-height: 48%;
+    margin: 0 -24px;
+  }
+  .vx-nav a {
+    padding: 14px 8px;
+    margin: -14px -8px;
+  }
+  .vx-disc {
+    padding: 12px 10px;
+    margin-bottom: -12px;
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+}
+
+/* ---------- Short landscape (phones on their side) ---------- */
+@media (orientation: landscape) and (max-height: 540px) {
+  .vx-mark {
+    height: max(calc(23.5 * var(--u)), 13px);
+    font-size: max(calc(23.5 * var(--u)), 13px);
+  }
+  .vx-rule,
+  .vx-nav {
+    width: max(calc(284 * var(--u)), 210px);
+  }
+  .vx-nav {
+    font-size: max(calc(15 * var(--u)), 11px);
+  }
+  .vx-h1 {
+    font-size: max(calc(68 * var(--u)), 28px);
+  }
+  .vx-sub {
+    font-size: max(calc(21 * var(--u)), 12px);
+  }
+  .vx-btn {
+    width: max(calc(216 * var(--u)), 150px);
+    height: max(calc(46 * var(--u)), 34px);
+    font-size: max(calc(17 * var(--u)), 12.5px);
+  }
+  .vx-disc {
+    font-size: max(calc(14.8 * var(--u)), 11px);
+  }
+  .vx-gap {
+    min-height: calc(14 * var(--u));
+  }
+  .vx-field {
+    min-height: calc(120 * var(--u));
+  }
+}
+@media (orientation: landscape) and (max-height: 540px) and (pointer: coarse) {
+  .vx-nav a {
+    padding: 14px 8px;
+    margin: -14px -8px;
+  }
+  .vx-disc {
+    padding: 12px 10px;
+    margin-bottom: -12px;
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+}
+
+/* Very narrow screens outside the portrait block: let the headline wrap. */
+@media (max-width: 359px) and (orientation: landscape) {
+  .vx-h1 {
+    white-space: normal;
+    font-size: 30px;
+  }
+}
+
+/* ---------- Entrance (html.intro is set before paint, see page.tsx) ---------- */
+.intro .vx-mark,
+.intro .vx-nav a,
+.intro .vx-sub,
+.intro .vx-btn,
+.intro .vx-disc,
+.intro .vx-phone,
+.intro .vx-chip {
+  opacity: 0;
+}
+.intro .vx-rule {
+  transform: scaleX(0);
+}
+.intro .vx-h1 .l {
+  overflow: hidden;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.intro .vx-h1 .li {
+  transform: translateY(104%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vx-hero *,
+  .vx-hero *::before,
+  .vx-hero *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+  .vx-plane {
+    display: none;
+  }
+}

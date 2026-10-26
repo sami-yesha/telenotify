@@ -51,7 +51,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </Link>
       </div>
       <nav className="mt-3 flex-1 space-y-0.5 px-3">
-        <p className="px-3 pb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted/70">Operate</p>
+        <p className="px-3 pb-1.5 text-xs font-medium tracking-[-0.005em] text-muted/70">Operate</p>
         {NAV.map((item) => {
           const active = item === current;
           return (
@@ -72,7 +72,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <ArrowLeft className="size-4" /> Developer dashboard
         </Link>
         <div className="flex items-center gap-3 rounded-xl px-2 py-2">
-          <span className="grid size-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand to-accent text-sm font-semibold text-white">{user.name.charAt(0).toUpperCase()}</span>
+          <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand text-sm font-semibold text-white">{user.name.charAt(0).toUpperCase()}</span>
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-medium text-ink">{user.name}</span>
             <span className="block truncate text-xs text-muted">{user.email}</span>
@@ -100,7 +100,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <AnimatePresence>
         {drawer && (
           <div className="fixed inset-0 z-50 lg:hidden">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm" onClick={() => setDrawer(false)} />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[#01061a]/60 backdrop-blur-sm" onClick={() => setDrawer(false)} />
             <motion.aside
               initial={{ x: -260 }}
               animate={{ x: 0 }}
@@ -118,8 +118,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       </AnimatePresence>
 
       <div className="lg:h-full lg:py-2 lg:pr-2">
-        <div className="relative lg:h-full lg:overflow-y-auto lg:rounded-2xl lg:border lg:border-line lg:bg-page lg:shadow-soft">
-          <div className="sticky top-0 z-30 h-0.5 bg-gradient-to-r from-brand via-accent to-pink-400" />
+        <div className="relative lg:h-full lg:overflow-y-auto lg:rounded-xl lg:border lg:border-line lg:bg-page lg:shadow-soft">
+          <div className="sticky top-0 z-30 h-0.5 bg-brand" />
           <header className="sticky top-0 z-20 border-b border-line/70 bg-page/75 backdrop-blur-xl">
             <div className="flex h-14 items-center gap-3 px-4 sm:px-8">
               <button onClick={() => setDrawer(true)} className="-ml-1 rounded-lg p-1.5 text-ink hover:bg-subtle lg:hidden" aria-label="Open menu">
@@ -128,7 +128,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <span className="text-sm text-muted">Admin</span>
               <span className="text-sm text-muted/60">/</span>
               <span className="text-sm font-medium text-ink">{current?.label}</span>
-              <span className="ml-auto hidden rounded-full bg-gradient-to-r from-brand/15 to-accent/15 px-2.5 py-0.5 text-xs font-medium text-brand ring-1 ring-inset ring-brand/20 sm:inline">Operator</span>
+              <span className="ml-auto hidden rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-medium text-brand ring-1 ring-inset ring-brand/20 sm:inline">Operator</span>
               <div className="hidden sm:block">
                 <ThemeToggle />
               </div>

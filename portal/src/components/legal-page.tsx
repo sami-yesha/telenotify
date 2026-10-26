@@ -27,10 +27,10 @@ export function LegalPage({ title, intro, children }: { title: string; intro: st
         </div>
       </header>
       <main className="mx-auto max-w-3xl px-5 py-12">
-        <h1 className="font-display text-4xl font-extrabold tracking-tight text-ink">{title}</h1>
+        <h1 className="font-display text-4xl font-normal tracking-tight text-ink">{title}</h1>
         <p className="mt-2 text-sm text-muted">Last updated {LEGAL.updated}</p>
         <p className="mt-6 text-lg leading-relaxed text-muted">{intro}</p>
-        <div className="mt-10 space-y-10 [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-ink [&_li]:mt-1.5 [&_p]:mt-3 [&_p]:leading-relaxed [&_p]:text-muted [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:text-muted">
+        <div className="mt-10 space-y-10 [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-medium [&_h2]:text-ink [&_li]:mt-1.5 [&_p]:mt-3 [&_p]:leading-relaxed [&_p]:text-muted [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:text-muted">
           {children}
         </div>
         <p className="mt-14 border-t border-line pt-6 text-sm text-muted">

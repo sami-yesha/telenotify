@@ -199,7 +199,7 @@ export default function ApiReferencePage() {
           <nav className="max-h-[calc(100vh-14rem)] space-y-4 overflow-y-auto pr-1">
             {tags.map((tag) => (
               <div key={tag}>
-                <p className="flex items-center justify-between px-2 pb-1 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted/80">
+                <p className="flex items-center justify-between px-2 pb-1 text-xs font-medium tracking-[-0.005em] text-muted/80">
                   {tag}
                   <span className="font-medium tracking-normal">{filtered.filter((e) => e.tag === tag).length}</span>
                 </p>
@@ -232,8 +232,7 @@ export default function ApiReferencePage() {
           <AnimatePresence mode="wait">
             <motion.div key={selected.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }} className="min-w-0 space-y-6">
               {/* Endpoint header */}
-              <section className="relative overflow-hidden rounded-2xl border border-line bg-surface p-5 shadow-soft sm:p-6">
-                <div className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-gradient-to-br from-brand/20 to-accent/10 blur-3xl" />
+              <section className="relative overflow-hidden rounded-xl border border-line bg-surface p-5 shadow-soft sm:p-6">
                 <div className="relative">
                   <div className="flex flex-wrap items-center gap-2.5">
                     <MethodPill method={selected.method} />
@@ -251,14 +250,14 @@ export default function ApiReferencePage() {
                     <CopyButton value={`${API_BASE_URL}${selected.path}`} label="" />
                     <Badge tone="gray">{selected.tag}</Badge>
                   </div>
-                  <h2 className="mt-3 font-display text-xl font-bold tracking-tight text-ink">{withCode(selected.op.summary ?? `${selected.method} ${selected.path}`)}</h2>
+                  <h2 className="mt-3 font-display text-xl font-medium tracking-tight text-ink">{withCode(selected.op.summary ?? `${selected.method} ${selected.path}`)}</h2>
                   {selected.op.description && <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted">{withCode(selected.op.description)}</p>}
                 </div>
               </section>
 
               {/* Parameters and body */}
               {(parameters.length > 0 || fields.length > 0) && (
-                <section className="overflow-hidden rounded-2xl border border-line bg-surface shadow-soft">
+                <section className="overflow-hidden rounded-xl border border-line bg-surface shadow-soft">
                   {parameters.length > 0 && (
                     <FieldTable
                       title="Parameters"
@@ -282,7 +281,7 @@ export default function ApiReferencePage() {
               )}
 
               {/* Try it */}
-              <section className="overflow-hidden rounded-2xl border border-line bg-surface shadow-soft">
+              <section className="overflow-hidden rounded-xl border border-line bg-surface shadow-soft">
                 <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line/70 px-5 py-3.5 sm:px-6">
                   <h3 className="flex items-center gap-2 text-[15px] font-semibold tracking-tight text-ink">
                     <Zap className="size-4 text-brand" /> Try it
@@ -353,7 +352,7 @@ export default function ApiReferencePage() {
                         rows={Math.min(16, Math.max(5, body.split('\n').length + 1))}
                         spellCheck={false}
                         className={cn(
-                          'w-full rounded-xl border bg-[#0b1020] p-3.5 font-mono text-[13px] leading-relaxed text-slate-100 focus:outline-none focus:ring-4',
+                          'w-full rounded-xl border bg-[#030a1c] p-3.5 font-mono text-[13px] leading-relaxed text-slate-100 focus:outline-none focus:ring-4',
                           parsedBody && !parsedBody.ok ? 'border-red-500/60 focus:ring-red-500/15' : 'border-line focus:border-brand focus:ring-brand/15',
                         )}
                       />
@@ -371,7 +370,7 @@ export default function ApiReferencePage() {
 
                   <AnimatePresence>
                     {result && (
-                      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="overflow-hidden rounded-xl border border-white/5 bg-[#0b1020]">
+                      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="overflow-hidden rounded-xl border border-white/5 bg-[#030a1c]">
                         <div className="flex items-center gap-3 border-b border-white/10 px-3.5 py-2 text-xs">
                           <span
                             className={cn(
@@ -439,8 +438,8 @@ function MethodPill({ method, small }: { method: string; small?: boolean }) {
 
 function InfoTile({ icon: Icon, label, children }: { icon: React.ComponentType<{ className?: string }>; label: string; children: ReactNode }) {
   return (
-    <div className="flex items-start gap-3 rounded-2xl border border-line bg-surface p-4 shadow-soft">
-      <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand/15 to-accent/15 text-brand ring-1 ring-inset ring-brand/15">
+    <div className="flex items-start gap-3 rounded-xl border border-line bg-surface p-4 shadow-soft">
+      <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand">
         <Icon className="size-4" />
       </span>
       <div className="min-w-0">

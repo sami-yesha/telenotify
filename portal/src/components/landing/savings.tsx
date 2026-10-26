@@ -93,7 +93,7 @@ export function Savings() {
           body="Move the sliders to match your business. Customers on Telegram get verified and notified there; everyone else still gets your SMS."
         />
 
-        <Reveal className="mt-14 grid overflow-hidden rounded-[2rem] border border-line bg-surface shadow-lift lg:grid-cols-[1.15fr_1fr]">
+        <Reveal className="mt-14 grid overflow-hidden rounded-[1.25rem] border border-line bg-surface shadow-lift lg:grid-cols-[1.15fr_1fr]">
           <div className="space-y-7 p-6 sm:p-9">
             <Slider label="Phone verifications (OTP) per month" value={verifications} onChange={setVerifications} min={0} max={100_000} step={500} display={verifications.toLocaleString('en-US')} />
             <Slider
@@ -110,12 +110,11 @@ export function Savings() {
             <Slider label="Customers reachable on Telegram (your estimate)" value={telegramShare} onChange={setTelegramShare} min={10} max={95} step={5} display={`${telegramShare}%`} />
           </div>
 
-          <div className="relative flex flex-col justify-between gap-8 overflow-hidden bg-[#0b1020] p-6 text-white sm:p-9">
-            <div className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-sky-500/25 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-24 -left-10 size-72 rounded-full bg-indigo-500/25 blur-3xl" />
+          <div className="relative flex flex-col justify-between gap-8 overflow-hidden tg-sky p-6 text-white sm:p-9">
+            <div className="tg-doodles pointer-events-none absolute inset-0 opacity-[0.07]" />
             <div className="relative">
-              <p className="text-sm text-slate-400">You save each month (Telenotify is free)</p>
-              <p className="mt-2 font-display text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+              <p className="text-sm text-sky-100/70">You save each month (Telenotify is free)</p>
+              <p className="mt-2 font-display text-4xl font-normal tracking-tight text-white sm:text-5xl">
                 <AnimatedNumber value={Math.max(0, net)} format={etb} />
               </p>
               <p className="mt-2 text-sm text-slate-300">
@@ -125,7 +124,7 @@ export function Savings() {
 
             <div className="relative space-y-4">
               <Bar label="Today, all SMS" value={costToday} max={costToday} tone="bg-slate-500" />
-              <Bar label="With Telenotify: only the fallback SMS" value={costAfter} max={costToday} tone="bg-gradient-to-r from-sky-400 to-indigo-400" />
+              <Bar label="With Telenotify: only the fallback SMS" value={costAfter} max={costToday} tone="bg-brand" />
               <p className="text-xs leading-relaxed text-slate-400">
                 {Math.round(smsPerMonth).toLocaleString('en-US')} SMS/month today → {Math.round(smsPerMonth * (1 - telegramShare / 100)).toLocaleString('en-US')} with Telenotify, plus{' '}
                 {Math.round(telenotifyVolume).toLocaleString('en-US')} Telegram messages & verifications, free. Estimate only.
@@ -146,7 +145,7 @@ function Bar({ label, value, max, tone }: { label: string; value: number; max: n
         <span className="text-slate-300">{label}</span>
         <span className="font-mono font-semibold text-white">{etb(value)}</span>
       </div>
-      <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-white/10">
+      <div className="mt-2 h-2.5 overflow-hidden rounded-[4.5px] bg-white/10">
         <motion.div className={`h-full rounded-full ${tone}`} animate={{ width: `${pct}%` }} transition={{ type: 'spring', stiffness: 120, damping: 20 }} />
       </div>
     </div>

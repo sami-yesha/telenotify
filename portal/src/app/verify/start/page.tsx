@@ -39,10 +39,10 @@ function Start() {
       <Card>
         {error ? (
           <div className="text-center">
-            <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-red-500/10 text-red-500">
+            <span className="mx-auto grid size-12 place-items-center rounded-xl bg-red-500/10 text-red-500">
               <AlertTriangle className="size-6" />
             </span>
-            <h1 className="mt-4 font-display text-xl font-bold text-ink">Can&apos;t start verification</h1>
+            <h1 className="mt-4 font-display text-xl font-medium text-ink">Can&apos;t start verification</h1>
             <p className="mt-2 text-sm text-muted">{error}</p>
           </div>
         ) : (

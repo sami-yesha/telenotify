@@ -79,17 +79,15 @@ export default function AccountPage() {
         <motion.section
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-3xl border border-line bg-surface shadow-soft"
+          className="relative overflow-hidden rounded-xl border border-line bg-surface"
         >
-          <div className="h-28 bg-gradient-to-r from-brand via-accent to-pink-400 sm:h-32">
-            <div className="h-full w-full bg-grid opacity-20" />
-          </div>
+          <div className="tg-panel h-28 sm:h-32" />
           <div className="flex flex-col gap-4 px-6 pb-6 sm:flex-row sm:items-end sm:gap-5 sm:px-8">
-            <span className="-mt-12 grid size-24 shrink-0 place-items-center rounded-3xl border-4 border-surface bg-gradient-to-br from-slate-800 to-slate-950 font-display text-3xl font-bold text-white shadow-lift dark:from-slate-700 dark:to-slate-900">
+            <span className="-mt-12 grid size-24 shrink-0 place-items-center rounded-full border-4 border-surface bg-[#2b5278] font-display text-3xl font-normal text-white">
               {initials || '?'}
             </span>
             <div className="min-w-0 flex-1 pb-1">
-              <h1 className="truncate font-display text-2xl font-bold tracking-tight text-ink">{user.name}</h1>
+              <h1 className="truncate font-display text-[2rem] font-normal leading-[1.05] text-ink">{user.name}</h1>
               <p className="truncate text-sm text-muted">{user.email}</p>
             </div>
             <div className="flex flex-wrap gap-2 pb-1">
@@ -275,7 +273,7 @@ function Section({ id, title, description, danger, children }: { id: string; tit
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={cn('scroll-mt-24 rounded-2xl border bg-surface shadow-soft', danger ? 'border-red-200 dark:border-red-900/50' : 'border-line')}
+      className={cn('scroll-mt-24 rounded-xl border bg-surface shadow-soft', danger ? 'border-red-200 dark:border-red-900/50' : 'border-line')}
     >
       <header className={cn('border-b px-5 py-4 sm:px-6', danger ? 'border-red-200/70 dark:border-red-900/40' : 'border-line/70')}>
         <h2 className={cn('text-[15px] font-semibold tracking-tight', danger ? 'text-red-600 dark:text-red-400' : 'text-ink')}>{title}</h2>
@@ -327,7 +325,7 @@ function ThemePicker() {
             aria-checked={selected}
             onClick={() => setTheme(option.value)}
             className={cn(
-              'group overflow-hidden rounded-2xl border text-left transition-all',
+              'group overflow-hidden rounded-xl border text-left transition-all',
               selected ? 'border-brand ring-4 ring-brand/15' : 'border-line hover:border-muted/40',
             )}
           >
@@ -350,7 +348,7 @@ function ThemePreview({ kind }: { kind: Theme }) {
   const pane = (dark: boolean) => (
     <div className={cn('flex h-full gap-1.5 p-2.5', dark ? 'bg-[#070b14]' : 'bg-[#f1f4f9]')}>
       <div className={cn('w-1/4 space-y-1 rounded-md p-1.5', dark ? 'bg-[#0d1320]' : 'bg-white')}>
-        <div className="h-1.5 w-3/4 rounded-full bg-gradient-to-r from-brand to-accent" />
+        <div className="h-1.5 w-3/4 rounded-full bg-brand" />
         <div className={cn('h-1 rounded-full', dark ? 'bg-white/15' : 'bg-slate-200')} />
         <div className={cn('h-1 rounded-full', dark ? 'bg-white/15' : 'bg-slate-200')} />
       </div>

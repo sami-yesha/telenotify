@@ -7,7 +7,6 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="grid min-h-screen lg:grid-cols-[1fr_1.05fr]">
       <div className="relative flex flex-col px-5 py-8 sm:px-10">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-brand/10 to-transparent lg:hidden" />
         <div className="relative flex items-center justify-between">
           <Link href="/" className="w-fit">
             <Logo />

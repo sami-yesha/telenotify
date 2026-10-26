@@ -28,7 +28,7 @@ export function Logo({ compact, product = 'Telenotify', suffix, className }: { c
     <div className={cn('flex items-center gap-2.5', className)}>
       <LogoMark className="drop-shadow-[0_4px_10px_rgb(14_165_233_/_0.25)]" />
       {!compact && (
-        <span className="font-display text-[17px] font-bold tracking-tight text-ink">
+        <span className="font-display text-[17px] font-medium tracking-tight text-ink">
           {product}
           {suffix && <span className="ml-1.5 rounded-md bg-subtle px-1.5 py-0.5 align-middle font-sans text-[11px] font-medium text-muted">{suffix}</span>}
         </span>

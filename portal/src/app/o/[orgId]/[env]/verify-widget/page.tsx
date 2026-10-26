@@ -238,7 +238,7 @@ function Preview({ publishableKey, portalOrigin, live }: { publishableKey: strin
 
   return (
     <Card icon={MousePointerClick} title="Try it" description={live ? 'Live mode: works here only if this portal’s address is in your allowed websites.' : 'Uses the sandbox bot. Verify your own number to see the event your page receives.'}>
-      <div className="grid place-items-center rounded-2xl border border-dashed border-line bg-subtle/40 px-4 py-8">
+      <div className="grid place-items-center rounded-xl border border-dashed border-line bg-subtle/40 px-4 py-8">
         <div ref={holder}>{!loaded && <Skeleton className="h-11 w-60" />}</div>
       </div>
       {result && (

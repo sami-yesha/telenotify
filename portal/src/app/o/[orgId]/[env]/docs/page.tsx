@@ -265,7 +265,7 @@ function Section({ n, title, children }: { n: number; title: string; children: R
     <Card
       title={
         <span className="flex items-center gap-3">
-          <span className="grid size-7 place-items-center rounded-lg bg-gradient-to-br from-brand to-accent text-xs font-bold text-white">{n}</span>
+          <span className="grid size-7 place-items-center rounded-lg bg-brand text-xs font-bold text-white">{n}</span>
           {title}
         </span>
       }

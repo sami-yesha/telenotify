@@ -22,13 +22,12 @@ function useVerifyScript() {
 export function VerifySection() {
   const step = useVerifyScript();
   return (
-    <section id="verify" className="relative scroll-mt-20 overflow-hidden bg-surface/60 py-24 sm:py-32">
-      <div className="pointer-events-none absolute -right-40 top-20 size-[500px] rounded-full bg-gradient-to-br from-emerald-400/15 to-brand/15 blur-3xl" />
+    <section id="verify" className="relative scroll-mt-20 overflow-hidden border-y border-line bg-[#020920] py-24 sm:py-32">
       <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-5 lg:grid-cols-2">
         <div>
           <Reveal>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand">Phone verification</p>
-            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-ink sm:text-[2.6rem] sm:leading-[1.1]">
+            <p className="text-[13px] font-medium tracking-[-0.005em] text-brand">Phone verification</p>
+            <h2 className="mt-3 font-display text-[2.1rem] text-ink sm:text-[3.25rem]">
               Verify phone numbers <span className="text-gradient">without sending a single SMS.</span>
             </h2>
             <p className="mt-4 text-lg leading-relaxed text-muted">

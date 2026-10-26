@@ -40,10 +40,10 @@ export function Ethiopia() {
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {points.map((point, i) => (
             <Reveal key={point.title} delay={0.08 * i} className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
-              <span className="grid size-11 place-items-center rounded-2xl bg-gradient-to-br from-emerald-500/15 via-amber-400/15 to-red-500/15 text-ink">
+              <span className="grid size-11 place-items-center rounded-2xl bg-brand-soft text-brand">
                 <point.icon className="size-5" />
               </span>
-              <h3 className="mt-4 font-display text-lg font-bold tracking-tight text-ink">{point.title}</h3>
+              <h3 className="mt-4 font-display text-lg font-medium tracking-tight text-ink">{point.title}</h3>
               <p className="mt-1.5 text-[15px] leading-relaxed text-muted">{point.body}</p>
             </Reveal>
           ))}

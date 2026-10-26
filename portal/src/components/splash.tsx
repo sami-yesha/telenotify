@@ -18,15 +18,9 @@ export function SplashScreen({ messages = DEFAULT_MESSAGES }: { messages?: strin
   }, [messages.length]);
 
   return (
-    <div className="fixed inset-0 z-[100] grid place-items-center overflow-hidden bg-page" role="status" aria-live="polite">
-      {/* Slowly drifting glow behind the mark. */}
-      <motion.div
-        className="pointer-events-none absolute size-[34rem] rounded-full bg-gradient-to-br from-brand/30 via-accent/20 to-pink-400/10 blur-3xl"
-        animate={{ x: [-40, 40, -40], y: [-20, 30, -20], scale: [1, 1.08, 1] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-30 [mask-image:radial-gradient(circle_at_center,black,transparent_60%)]" />
-
+    <div className="fixed inset-0 z-[100] grid place-items-center overflow-hidden bg-[#01061a] text-white [--ink:#fff] [--muted:rgb(214_232_255/0.7)] [--subtle:rgb(255_255_255/0.08)]" role="status" aria-live="polite">
+      {/* Telegram-blue horizon rising under the mark. */}
+      <div className="pointer-events-none absolute inset-x-[-30%] top-[62%] h-[200%] rounded-[50%] bg-[#030b20] shadow-[0_-1px_0_rgba(200,238,255,0.8),0_-3px_14px_rgba(42,171,238,0.8),0_-24px_100px_rgba(42,171,238,0.35)]" />
       <div className="relative flex flex-col items-center">
         <AnimatedMark />
 
@@ -34,7 +28,7 @@ export function SplashScreen({ messages = DEFAULT_MESSAGES }: { messages?: strin
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55, duration: 0.5 }}
-          className="mt-7 font-display text-2xl font-bold tracking-tight text-ink"
+          className="mt-7 font-display text-[1.75rem] font-normal tracking-[-0.03em] text-ink"
         >
           Telenotify
         </motion.p>
@@ -57,7 +51,7 @@ export function SplashScreen({ messages = DEFAULT_MESSAGES }: { messages?: strin
         {/* Indeterminate progress line. */}
         <div className="mt-6 h-1 w-48 overflow-hidden rounded-full bg-subtle ring-1 ring-inset ring-line/60">
           <motion.div
-            className="h-full w-1/3 rounded-full bg-gradient-to-r from-brand via-accent to-pink-400"
+            className="h-full w-1/3 rounded-full bg-brand"
             animate={{ x: ['-110%', '320%'] }}
             transition={{ duration: 1.3, repeat: Infinity, ease: [0.65, 0, 0.35, 1] }}
           />

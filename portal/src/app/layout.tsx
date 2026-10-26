@@ -7,9 +7,9 @@ import { RouteProgress } from '@/components/route-progress';
 
 // Fonts ship with the code (src/fonts, SIL Open Font License) so builds never
 // depend on downloading them from Google Fonts.
-const geistSans = localFont({ src: '../fonts/Geist-Variable.woff2', variable: '--font-geist-sans', weight: '100 900', display: 'swap' });
 const geistMono = localFont({ src: '../fonts/GeistMono-Variable.woff2', variable: '--font-geist-mono', weight: '100 900', display: 'swap' });
-const display = localFont({ src: '../fonts/BricolageGrotesque-Variable.woff2', variable: '--font-display', weight: '200 800', display: 'swap' });
+// Google Sans Flex (Latin subset) for all text; Geist Mono for code.
+const googleSans = localFont({ src: '../fonts/GoogleSansFlex-Latin.woff2', variable: '--font-google-sans', weight: '400 700', display: 'block' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -25,11 +25,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     // data-theme is set by the script before React loads, so React must not warn about it.
-    <html lang="en" data-theme="system" suppressHydrationWarning>
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${display.variable} font-sans antialiased`}>
+      <body className={`${geistMono.variable} ${googleSans.variable} font-sans antialiased`}>
         <RouteProgress />
         {children}
       </body>

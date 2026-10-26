@@ -15,12 +15,12 @@ const cases = [
 export function UseCases() {
   const row = [...cases, ...cases];
   return (
-    <section className="border-y border-line bg-surface/60 py-8">
-      <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted">One API for every message your customers wait for</p>
+    <section className="border-y border-line py-8">
+      <p className="text-center text-[13px] tracking-[-0.005em] text-muted">One API for every message your customers wait for</p>
       <div className="mask-fade-x mt-6 overflow-hidden">
         <div className="flex w-max animate-marquee gap-3 hover:[animation-play-state:paused]">
           {row.map(({ icon: Icon, label }, i) => (
-            <span key={i} className="flex items-center gap-2 whitespace-nowrap rounded-full border border-line bg-page px-4 py-2 text-sm font-medium text-ink">
+            <span key={i} className="flex items-center gap-2 whitespace-nowrap rounded-full border border-line bg-surface px-4 py-2 text-sm text-ink">
               <Icon className="size-4 text-brand" /> {label}
             </span>
           ))}

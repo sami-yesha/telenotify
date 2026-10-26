@@ -144,7 +144,7 @@ export default function OrgLayout({ children }: { children: ReactNode }) {
       <AnimatePresence>
         {drawer && (
           <div className="fixed inset-0 z-50 lg:hidden">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm" onClick={() => setDrawer(false)} />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[#01061a]/60 backdrop-blur-sm" onClick={() => setDrawer(false)} />
             <motion.aside
               initial={{ x: -280 }}
               animate={{ x: 0 }}
@@ -164,7 +164,7 @@ export default function OrgLayout({ children }: { children: ReactNode }) {
       <div className="lg:h-full lg:py-2 lg:pr-2">
         <div
           ref={scroller}
-          className="relative lg:h-full lg:overflow-y-auto lg:rounded-2xl lg:border lg:border-line lg:bg-page lg:shadow-soft"
+          className="relative lg:h-full lg:overflow-y-auto lg:rounded-xl lg:border lg:border-line lg:bg-page lg:shadow-soft"
         >
           {/* Sandbox gets a thin amber edge instead of a full-width banner. */}
           {env === 'sandbox' && <div className="sticky top-0 z-30 h-0.5 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500" />}
@@ -257,7 +257,7 @@ function Sidebar({ base, env, subpath, orgSwitcher, footer }: { base: string; en
           const items = group.items.filter((i) => !(i.sandboxOnly && env === 'live'));
           return (
             <div key={group.label}>
-              <p className="px-3 pb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted/70">{group.label}</p>
+              <p className="px-3 pb-1.5 text-xs font-medium tracking-[-0.005em] text-muted/70">{group.label}</p>
               <ul className="space-y-0.5">
                 {items.map((item) => {
                   const active = item.href === '' ? subpath === '' : subpath.startsWith(item.href);
@@ -337,7 +337,7 @@ function OrgSwitcher({ currentId, currentName }: { currentId: string; currentNam
         onClick={() => setOpen(!open)}
         className="flex w-full items-center gap-2.5 rounded-xl border border-line bg-surface px-2.5 py-2 text-left shadow-soft transition-colors hover:border-muted/30"
       >
-        <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-900 text-xs font-bold text-white dark:from-slate-600 dark:to-slate-800">
+        <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-[#2b5278] text-xs font-medium text-white">
           {currentName.charAt(0).toUpperCase()}
         </span>
         <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{currentName}</span>
@@ -415,7 +415,7 @@ function UserMenu({ name, email, isOperator }: { name: string; email: string; is
         )}
       </AnimatePresence>
       <button onClick={() => setOpen(!open)} className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition-colors hover:bg-surface/70" aria-label="Account menu">
-        <span className="grid size-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand to-accent text-sm font-semibold text-white">{name.charAt(0).toUpperCase()}</span>
+        <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand text-sm font-semibold text-white">{name.charAt(0).toUpperCase()}</span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm font-medium text-ink">{name}</span>
           <span className="block truncate text-xs text-muted">{email}</span>
@@ -430,7 +430,7 @@ function UserMenu({ name, email, isOperator }: { name: string; email: string; is
 function OrgStatusBanner({ org, env, botHref, onBotPage }: { org: Org; env: EnvName; botHref: string; onBotPage: boolean }) {
   if (org.status === 'suspended') {
     return (
-      <div className="mb-6 flex gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3.5 text-sm text-red-800 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-200">
+      <div className="mb-6 flex gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3.5 text-sm text-red-800 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-200">
         <ShieldAlert className="mt-0.5 size-5 shrink-0" />
         <div>
           <p className="font-semibold">This organization is suspended</p>
@@ -443,7 +443,7 @@ function OrgStatusBanner({ org, env, botHref, onBotPage }: { org: Org; env: EnvN
   }
   if (env === 'live' && !org.liveApproved && !onBotPage) {
     return (
-      <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-amber-300/50 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
+      <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-amber-300/50 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
         <ShieldCheck className="size-5 shrink-0" />
         <p className="min-w-0 flex-1">
           {org.liveReviewRequestedAt

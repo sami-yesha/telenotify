@@ -36,7 +36,7 @@ export default function BillingPage() {
 
       <Card icon={Gauge} title="This month" description={`Live usage resets on ${resets}.`}>
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <p className="font-display text-3xl font-bold tabular-nums text-ink">
+          <p className="font-display text-3xl font-medium tabular-nums text-ink">
             {n(usage.used)}
             <span className="text-lg font-medium text-muted"> / {usage.quota === null ? 'unlimited' : n(usage.quota)}</span>
           </p>
@@ -50,7 +50,7 @@ export default function BillingPage() {
               initial={{ width: 0 }}
               animate={{ width: `${pct}%` }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
-              className={cn('h-full rounded-full', pct >= 90 ? 'bg-red-500' : pct >= 70 ? 'bg-amber-500' : 'bg-gradient-to-r from-brand to-accent')}
+              className={cn('h-full rounded-full', pct >= 90 ? 'bg-red-500' : pct >= 70 ? 'bg-amber-500' : 'bg-brand')}
             />
           </div>
         )}
@@ -87,8 +87,8 @@ export default function BillingPage() {
 
 function InfoCard({ icon: Icon, title, tone, children }: { icon: React.ComponentType<{ className?: string }>; title: string; tone?: 'brand'; children: React.ReactNode }) {
   return (
-    <div className={cn('rounded-2xl border bg-surface p-5 shadow-soft', tone === 'brand' ? 'border-brand/40 ring-2 ring-brand/10' : 'border-line')}>
-      <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-brand/15 to-accent/15 text-brand ring-1 ring-inset ring-brand/15">
+    <div className={cn('rounded-xl border bg-surface p-5 shadow-soft', tone === 'brand' ? 'border-brand/40 ring-2 ring-brand/10' : 'border-line')}>
+      <span className="grid size-9 place-items-center rounded-xl bg-brand-soft text-brand">
         <Icon className="size-4" />
       </span>
       <p className="mt-3 font-semibold text-ink">{title}</p>

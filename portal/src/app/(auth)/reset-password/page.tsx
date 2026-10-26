@@ -32,7 +32,7 @@ function ResetForm() {
 
   return (
     <>
-      <h1 className="mb-5 font-display text-2xl font-bold tracking-tight text-ink">Choose a new password</h1>
+      <h1 className="mb-5 font-display text-[2rem] font-normal leading-[1.05] text-ink">Choose a new password</h1>
       <form onSubmit={onSubmit} className="space-y-4">
         {error && <Alert>{error}</Alert>}
         <PasswordInput label="New password" name="password" autoComplete="new-password" minLength={8} required showStrength onChange={(e) => setPassword(e.target.value)} />

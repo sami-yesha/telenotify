@@ -32,15 +32,13 @@ export default function OnboardingPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-12">
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-50 mask-fade-b" />
-      <div className="pointer-events-none absolute -top-40 left-1/2 h-96 w-[700px] -translate-x-1/2 rounded-full bg-gradient-to-tr from-brand/25 via-accent/20 to-pink-500/10 blur-3xl" />
       <div className="relative mb-8">
         <Logo />
       </div>
-      <div className="relative w-full max-w-md rounded-3xl border border-line bg-surface p-7 shadow-lift">
+      <div className="relative w-full max-w-md rounded-xl border border-line bg-surface p-7 shadow-lift">
         {!created ? (
           <>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-ink">Create your organization</h1>
+            <h1 className="font-display text-[2rem] font-normal leading-[1.05] text-ink">Create your organization</h1>
             <p className="mb-5 mt-1 text-sm text-muted">
               Hi {user.name.split(' ')[0]}. You&apos;ll get a sandbox right away to try everything before going live.
             </p>
@@ -54,7 +52,7 @@ export default function OnboardingPage() {
           </>
         ) : (
           <>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-ink">Your sandbox is ready 🎉</h1>
+            <h1 className="font-display text-[2rem] font-normal leading-[1.05] text-ink">Your sandbox is ready 🎉</h1>
             <p className="mb-4 mt-1 text-sm text-muted">This is your sandbox API key. Copy it now; we only show it once.</p>
             <Secret value={created.sandboxKey.key!} />
             <div className="mt-4">
@@ -62,7 +60,7 @@ export default function OnboardingPage() {
             </div>
             <Link
               href={`/o/${created.org.id}/sandbox`}
-              className="mt-6 flex w-full items-center justify-center rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-page shadow-soft transition-transform hover:-translate-y-px"
+              className="mt-6 flex w-full items-center justify-center rounded-md bg-ink px-4 py-2.5 text-sm font-semibold text-page shadow-soft transition-shadow hover:shadow-[0_0_0_4px_rgb(42_171_238_/_0.14)]"
             >
               Continue to dashboard
             </Link>

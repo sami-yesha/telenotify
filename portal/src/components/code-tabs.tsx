@@ -63,7 +63,7 @@ export function CodeTabs({ samples, title, className }: { samples: Samples; titl
   const code = samples[active.id]!;
 
   return (
-    <div className={cn('overflow-hidden rounded-xl border border-white/5 bg-[#0b1020] shadow-soft', className)}>
+    <div className={cn('overflow-hidden rounded-xl border border-white/5 bg-[#030a1c] shadow-soft', className)}>
       <div className="flex items-center gap-2 border-b border-white/10 pl-1.5 pr-2">
         <div className="flex min-w-0 flex-1 overflow-x-auto [scrollbar-width:none]" role="tablist" aria-label={title ?? 'Code language'}>
           {available.map((lang) => (
@@ -80,7 +80,7 @@ export function CodeTabs({ samples, title, className }: { samples: Samples; titl
             >
               <span className={cn('size-1.5 rounded-full', DOTS[lang.id], lang.id !== active.id && 'opacity-50')} />
               {lang.label}
-              {lang.id === active.id && <motion.span layoutId={`${id}-tab`} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-gradient-to-r from-brand to-accent" />}
+              {lang.id === active.id && <motion.span layoutId={`${id}-tab`} className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-brand" />}
             </button>
           ))}
         </div>

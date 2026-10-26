@@ -29,7 +29,7 @@ function Verify() {
   }
   return (
     <>
-      <h1 className="mb-4 font-display text-2xl font-bold tracking-tight text-ink">Couldn&apos;t verify email</h1>
+      <h1 className="mb-4 font-display text-[2rem] font-normal leading-[1.05] text-ink">Couldn&apos;t verify email</h1>
       <Alert>{error}</Alert>
       <p className="mt-4 text-sm text-muted">
         <TextLink href="/check-email">Send a new link</TextLink>

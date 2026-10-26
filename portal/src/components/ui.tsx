@@ -13,8 +13,8 @@ import { cn } from '@/lib/cn';
 type Variant = 'primary' | 'secondary' | 'danger' | 'ghost';
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-ink text-page shadow-soft hover:-translate-y-px hover:shadow-lift disabled:opacity-50 disabled:hover:translate-y-0',
-  secondary: 'border border-line bg-surface text-ink shadow-soft hover:bg-subtle disabled:opacity-50',
+  primary: 'bg-ink text-page hover:bg-ink/88 hover:shadow-[0_0_0_4px_rgb(42_171_238_/_0.14)] disabled:opacity-50 disabled:hover:shadow-none',
+  secondary: 'border border-line bg-surface text-ink hover:border-muted/40 hover:bg-subtle disabled:opacity-50',
   danger: 'border border-red-200 bg-surface text-red-600 hover:bg-red-50 dark:border-red-900/60 dark:text-red-400 dark:hover:bg-red-950/40',
   ghost: 'text-muted hover:bg-subtle hover:text-ink',
 };
@@ -31,7 +31,7 @@ export function Button({
       {...props}
       disabled={props.disabled || loading}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 disabled:cursor-not-allowed',
+        'inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium tracking-[-0.01em] transition-[background-color,border-color,box-shadow,color] duration-200 disabled:cursor-not-allowed',
         variants[variant],
         className,
       )}
@@ -49,7 +49,7 @@ export function Input({ label, hint, className, ...props }: InputHTMLAttributes<
       <input
         {...props}
         className={cn(
-          'w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink shadow-[inset_0_1px_2px_rgb(var(--shadow)/0.04)] transition-shadow placeholder:text-muted/60 focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15',
+          'w-full rounded-lg border border-line bg-surface px-3.5 py-2.5 text-sm text-ink transition-[border-color,box-shadow] placeholder:text-muted/60 hover:border-muted/40 focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15',
           className,
         )}
       />
@@ -189,7 +189,7 @@ export function Select({
           }
         }}
         className={cn(
-          'inline-flex min-w-0 items-center justify-between gap-3 rounded-xl border border-line bg-surface px-3.5 py-2.5 text-left text-sm text-ink shadow-soft transition-[border-color,box-shadow] hover:border-muted/40 focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:cursor-not-allowed disabled:opacity-60',
+          'inline-flex min-w-0 items-center justify-between gap-3 rounded-lg border border-line bg-surface px-3.5 py-2.5 text-left text-sm text-ink transition-[border-color,box-shadow] hover:border-muted/40 focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:cursor-not-allowed disabled:opacity-60',
           open && 'border-brand ring-4 ring-brand/15',
           className,
         )}
@@ -266,17 +266,17 @@ export function Card({
   className?: string;
 }) {
   return (
-    <section className={cn('rounded-2xl border border-line bg-surface shadow-soft', className)}>
+    <section className={cn('rounded-xl border border-line bg-surface', className)}>
       {(title || actions) && (
         <header className="flex flex-wrap items-start justify-between gap-3 border-b border-line/70 px-5 py-4 sm:px-6">
           <div className="flex min-w-0 items-start gap-3">
             {Icon && (
-              <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand/15 to-accent/15 text-brand ring-1 ring-inset ring-brand/15">
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-brand-soft text-brand">
                 <Icon className="size-[18px]" />
               </span>
             )}
             <div className="min-w-0">
-              {title && <h2 className="text-[15px] font-semibold tracking-tight text-ink">{title}</h2>}
+              {title && <h2 className="text-[15px] font-medium tracking-[-0.015em] text-ink">{title}</h2>}
               {description && <p className="mt-0.5 text-sm text-muted">{description}</p>}
             </div>
           </div>
@@ -315,7 +315,7 @@ export function Alert({ tone = 'red', children }: { tone?: 'red' | 'amber' | 'gr
     blue: 'border-sky-200 bg-sky-50 text-sky-900 dark:border-sky-900/60 dark:bg-sky-950/40 dark:text-sky-200',
   };
   return (
-    <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className={cn('rounded-xl border px-3.5 py-2.5 text-sm', tones[tone])}>
+    <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className={cn('rounded-lg border px-3.5 py-2.5 text-sm', tones[tone])}>
       {children}
     </motion.div>
   );
@@ -344,7 +344,7 @@ export function CopyButton({ value, label = 'Copy', dark }: { value: string; lab
 
 export function Secret({ value }: { value: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-xl border border-line bg-subtle px-3.5 py-2.5">
+    <div className="flex items-center gap-2 rounded-lg border border-line bg-subtle px-3.5 py-2.5">
       <code className="min-w-0 flex-1 truncate font-mono text-sm text-ink">{value}</code>
       <CopyButton value={value} />
     </div>
@@ -353,7 +353,7 @@ export function Secret({ value }: { value: string }) {
 
 export function CodeBlock({ code, language }: { code: string; language?: string }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-white/5 bg-[#0b1020] shadow-soft">
+    <div className="overflow-hidden rounded-lg border border-white/[0.08] bg-[#030a1c]">
       <div className="flex items-center justify-between border-b border-white/10 px-3.5 py-2">
         <span className="flex items-center gap-2 text-xs text-slate-400">
           <span className="flex gap-1">
@@ -386,8 +386,8 @@ export function PageHeader({ title, description, actions }: { title: string; des
   return (
     <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight text-ink sm:text-[1.75rem] sm:leading-tight">{title}</h1>
-        {description && <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted">{description}</p>}
+        <h1 className="font-display text-[1.75rem] font-normal leading-[1.05] text-ink sm:text-[2.25rem]">{title}</h1>
+        {description && <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-muted">{description}</p>}
       </div>
       {actions}
     </div>
@@ -396,16 +396,16 @@ export function PageHeader({ title, description, actions }: { title: string; des
 
 export function Empty({ title, icon: Icon, children, action }: { title: string; icon?: React.ComponentType<{ className?: string }>; children?: ReactNode; action?: { label: string; href: string } }) {
   return (
-    <div className="flex flex-col items-center rounded-2xl border border-dashed border-line bg-subtle/30 px-6 py-12 text-center">
+    <div className="flex flex-col items-center rounded-xl border border-dashed border-line bg-subtle/30 px-6 py-12 text-center">
       {Icon && (
-        <span className="mb-3 grid size-11 place-items-center rounded-2xl bg-surface text-muted shadow-soft ring-1 ring-line">
+        <span className="mb-3 grid size-11 place-items-center rounded-xl bg-brand-soft text-brand">
           <Icon className="size-5" />
         </span>
       )}
       <p className="text-sm font-medium text-ink">{title}</p>
       {children && <div className="mt-1 max-w-sm text-sm text-muted">{children}</div>}
       {action && (
-        <Link href={action.href} className="mt-4 inline-flex items-center rounded-xl bg-ink px-4 py-2 text-sm font-medium text-page shadow-soft transition-transform hover:-translate-y-px">
+        <Link href={action.href} className="mt-4 inline-flex items-center rounded-md bg-ink px-4 py-2 text-sm font-medium text-page transition-[background-color,box-shadow] hover:bg-ink/88 hover:shadow-[0_0_0_4px_rgb(42_171_238_/_0.14)]">
           {action.label}
         </Link>
       )}
@@ -418,7 +418,7 @@ export function Spinner() {
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn('animate-pulse rounded-xl bg-subtle', className)} />;
+  return <div className={cn('animate-pulse rounded-lg bg-subtle', className)} />;
 }
 
 export function TextLink({ href, children }: { href: string; children: ReactNode }) {
@@ -440,7 +440,7 @@ export function Dialog({ open, onClose, title, description, children, wide }: { 
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 grid place-items-center p-4">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm" onClick={onClose} />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[#01061a]/60 backdrop-blur-sm" onClick={onClose} />
           <motion.div
             role="dialog"
             aria-modal="true"
@@ -448,12 +448,12 @@ export function Dialog({ open, onClose, title, description, children, wide }: { 
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-            className={cn('relative w-full rounded-2xl border border-line bg-surface p-6 shadow-lift', wide ? 'max-w-2xl' : 'max-w-md')}
+            className={cn('relative w-full rounded-xl border border-line bg-surface p-6 shadow-lift', wide ? 'max-w-2xl' : 'max-w-md')}
           >
             <button onClick={onClose} className="absolute right-4 top-4 rounded-lg p-1 text-muted hover:bg-subtle hover:text-ink" aria-label="Close">
               <X className="size-4" />
             </button>
-            <h2 className="pr-8 font-display text-lg font-bold text-ink">{title}</h2>
+            <h2 className="pr-8 font-display text-xl font-normal text-ink">{title}</h2>
             {description && <p className="mt-1 text-sm text-muted">{description}</p>}
             <div className="mt-5">{children}</div>
           </motion.div>
@@ -468,7 +468,7 @@ export function Table({ head, children }: { head: ReactNode[]; children: ReactNo
     <div className="-mx-5 overflow-x-auto sm:-mx-6">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-y border-line/70 bg-subtle/50 text-left text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
+          <tr className="border-y border-line/70 bg-subtle/50 text-left text-xs font-medium text-muted">
             {head.map((h, i) => (
               <th key={i} className="whitespace-nowrap px-5 py-2 font-medium sm:px-6">
                 {h}

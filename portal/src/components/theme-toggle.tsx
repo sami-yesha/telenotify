@@ -13,7 +13,7 @@ const options: { value: Theme; label: string; icon: React.ComponentType<{ classN
 ];
 
 export function useTheme(): [Theme, (theme: Theme) => void] {
-  const [theme, setTheme] = useState<Theme>('system');
+  const [theme, setTheme] = useState<Theme>('dark');
   useEffect(() => {
     setTheme(readTheme());
     const onChange = (e: Event) => setTheme((e as CustomEvent<Theme>).detail);

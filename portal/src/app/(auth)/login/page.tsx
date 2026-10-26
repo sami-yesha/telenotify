@@ -41,7 +41,7 @@ function LoginForm() {
 
   return (
     <>
-      <h1 className="font-display text-2xl font-bold tracking-tight text-ink">{forAdmin ? 'Admin sign-in' : 'Sign in'}</h1>
+      <h1 className="font-display text-[2rem] font-normal leading-[1.05] text-ink">{forAdmin ? 'Admin sign-in' : 'Sign in'}</h1>
       <p className="mb-6 mt-1.5 text-sm text-muted">{forAdmin ? 'Operators only. Use the email listed in OPERATOR_EMAILS.' : 'Welcome back.'}</p>
       <GoogleButton label="Continue with Google" />
       <form onSubmit={onSubmit} className="space-y-4">

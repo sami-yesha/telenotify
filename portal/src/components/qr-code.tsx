@@ -15,7 +15,7 @@ export function ConnectQr({ url, filename, caption }: { url: string; filename: s
 
   return (
     <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-      <div className="shrink-0 rounded-2xl border border-line bg-white p-2 shadow-soft">
+      <div className="shrink-0 rounded-xl border border-line bg-white p-2 shadow-soft">
         {dataUrl ? <img src={dataUrl} alt="QR code for the Telegram connect link" className="size-40" /> : <div className="size-40 animate-pulse rounded-xl bg-slate-100" />}
       </div>
       <div className="min-w-0 flex-1 space-y-3">

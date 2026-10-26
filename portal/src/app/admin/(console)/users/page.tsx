@@ -43,7 +43,7 @@ export default function AdminUsers() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-ink sm:text-[1.75rem]">Users</h1>
+          <h1 className="font-display text-[2rem] font-normal leading-[1.05] text-ink sm:text-[1.75rem]">Users</h1>
           <p className="mt-1.5 text-sm text-muted">Everyone with a portal account. Newest first; showing up to 200.</p>
         </div>
         <label className="relative w-full sm:w-80">
@@ -63,7 +63,7 @@ export default function AdminUsers() {
         </div>
       )}
 
-      <div className="mt-5 overflow-hidden rounded-2xl border border-line bg-surface shadow-soft">
+      <div className="mt-5 overflow-hidden rounded-xl border border-line bg-surface shadow-soft">
         {!users ? (
           <div className="space-y-2 p-4">
             <Skeleton className="h-12" />
@@ -78,7 +78,7 @@ export default function AdminUsers() {
           <ul className="divide-y divide-line/70">
             {users.map((u) => (
               <li key={u.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
-                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand to-accent text-sm font-semibold text-white">{u.name.charAt(0).toUpperCase()}</span>
+                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand text-sm font-semibold text-white">{u.name.charAt(0).toUpperCase()}</span>
                 <div className="min-w-0 flex-1">
                   <p className="flex flex-wrap items-center gap-2 text-sm font-medium text-ink">
                     {u.name}

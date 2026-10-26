@@ -27,8 +27,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="relative scroll-mt-20 overflow-hidden bg-surface/60 py-24 sm:py-32">
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-40 mask-fade-b" />
+    <section id="how-it-works" className="relative scroll-mt-20 overflow-hidden border-y border-line bg-[#020920] py-24 sm:py-32">
       <div className="relative mx-auto max-w-6xl px-5">
         <SectionHeading eyebrow="How it works" title="Live in an afternoon, not a quarter." body="Three steps, the same in the sandbox and in production. Switch your key and you're live." />
         <div className="relative mt-16 grid gap-6 lg:grid-cols-3">
@@ -37,17 +36,17 @@ export function HowItWorks() {
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 1.2, ease: 'easeInOut' }}
-            className="absolute left-[16%] right-[16%] top-11 hidden h-px origin-left bg-gradient-to-r from-brand via-accent to-pink-500 lg:block"
+            className="absolute left-[16%] right-[16%] top-11 hidden h-px origin-left bg-brand/40 lg:block"
           />
           {steps.map((step, i) => (
             <Reveal key={step.title} delay={0.15 * i} className="relative rounded-3xl border border-line bg-surface p-7 shadow-soft">
               <div className="flex items-center gap-3">
-                <span className="relative grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-brand to-accent text-white shadow-lift">
+                <span className="relative grid size-12 place-items-center rounded-2xl bg-brand text-white shadow-lift">
                   <step.icon className="size-5" />
                 </span>
                 <span className="font-mono text-sm text-muted">0{i + 1}</span>
               </div>
-              <h3 className="mt-5 font-display text-xl font-bold tracking-tight text-ink">{step.title}</h3>
+              <h3 className="mt-5 font-display text-xl font-medium tracking-tight text-ink">{step.title}</h3>
               <p className="mt-2 text-[15px] leading-relaxed text-muted">{step.body}</p>
               <code className="mt-5 inline-block rounded-lg bg-subtle px-2.5 py-1 font-mono text-xs text-ink">{step.code}</code>
             </Reveal>

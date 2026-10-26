@@ -39,16 +39,16 @@ export function WelcomeTour({ storageKey }: { storageKey: string }) {
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 grid place-items-center p-4">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm" onClick={close} />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[#01061a]/60 backdrop-blur-sm" onClick={close} />
           <motion.div
             role="dialog"
             aria-label="Welcome tour"
             initial={{ opacity: 0, y: 16, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8 }}
-            className="relative w-full max-w-md overflow-hidden rounded-3xl border border-line bg-surface shadow-lift"
+            className="relative w-full max-w-md overflow-hidden rounded-xl border border-line bg-surface shadow-lift"
           >
-            <div className="relative h-32 overflow-hidden bg-gradient-to-br from-brand to-accent">
+            <div className="relative h-32 overflow-hidden bg-brand">
               <div className="absolute inset-0 opacity-20 [background-image:radial-gradient(white_1px,transparent_1px)] [background-size:18px_18px]" />
               <AnimatePresence mode="wait">
                 <motion.span
@@ -56,7 +56,7 @@ export function WelcomeTour({ storageKey }: { storageKey: string }) {
                   initial={{ opacity: 0, scale: 0.8, rotate: -8 }}
                   animate={{ opacity: 1, scale: 1, rotate: 0 }}
                   exit={{ opacity: 0, scale: 0.8 }}
-                  className="absolute left-1/2 top-1/2 grid size-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-2xl bg-white/20 text-white backdrop-blur"
+                  className="absolute left-1/2 top-1/2 grid size-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-xl bg-white/20 text-white backdrop-blur"
                 >
                   <current.icon className="size-8" />
                 </motion.span>
@@ -66,7 +66,7 @@ export function WelcomeTour({ storageKey }: { storageKey: string }) {
               <p className="text-xs font-semibold uppercase tracking-wide text-brand">
                 Quick tour · {step + 1} of {steps.length}
               </p>
-              <h2 className="mt-1 font-display text-xl font-bold text-ink">{current.title}</h2>
+              <h2 className="mt-1 font-display text-xl font-medium text-ink">{current.title}</h2>
               <p className="mt-2 text-sm leading-relaxed text-muted">{current.body}</p>
               <div className="mt-6 flex items-center justify-between">
                 <div className="flex gap-1.5">

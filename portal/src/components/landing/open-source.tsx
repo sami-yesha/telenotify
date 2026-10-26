@@ -17,7 +17,7 @@ const selfHosted = ['No limits at all', 'Your own server and database', 'One Doc
 
 export function OpenSource() {
   return (
-    <section id="open-source" className="scroll-mt-20 bg-surface/60 py-24 sm:py-32">
+    <section id="open-source" className="scroll-mt-20 border-y border-line bg-[#020920] py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-5">
         <SectionHeading
           eyebrow="Free & open source"
@@ -31,13 +31,13 @@ export function OpenSource() {
 
         <div className="mt-14 grid gap-5 lg:grid-cols-2">
           <Reveal className="relative flex flex-col overflow-hidden rounded-3xl border border-brand bg-surface p-7 shadow-lift ring-4 ring-brand/10">
-            <span className="absolute right-6 top-6 rounded-full bg-gradient-to-r from-brand to-accent px-3 py-1 text-xs font-semibold text-white">Start here</span>
-            <span className="grid size-11 place-items-center rounded-2xl bg-gradient-to-br from-brand/15 to-accent/15 text-brand ring-1 ring-inset ring-brand/20">
+            <span className="absolute right-6 top-6 rounded-full bg-brand px-3 py-1 text-xs font-semibold text-white">Start here</span>
+            <span className="grid size-11 place-items-center rounded-2xl bg-brand-soft text-brand ring-1 ring-inset ring-brand/20">
               <Cloud className="size-5" />
             </span>
-            <p className="mt-4 font-display text-2xl font-bold text-ink">Hosted</p>
+            <p className="mt-4 font-display text-2xl font-medium text-ink">Hosted</p>
             <p className="mt-1 text-sm text-muted">We run it for you. Sign up and send in minutes.</p>
-            <p className="mt-6 font-display text-5xl font-extrabold tracking-tight text-ink">
+            <p className="mt-6 font-display text-5xl font-normal tracking-tight text-ink">
               0 <span className="text-lg font-semibold text-muted">ETB, forever</span>
             </p>
             <ul className="mt-6 space-y-2.5 text-sm text-muted">
@@ -49,18 +49,17 @@ export function OpenSource() {
             </ul>
             <p className="mt-5 text-xs text-muted">Fair use: need more each month? Ask us and we&apos;ll raise your limit.</p>
             <div className="mt-auto pt-7">
-              <Link href="/signup" className="block rounded-full bg-ink px-5 py-3 text-center text-sm font-semibold text-page transition-transform hover:-translate-y-0.5">
+              <Link href="/signup" className="block rounded-[4.5px] bg-ink px-5 py-3 text-center text-sm font-semibold text-page transition-colors hover:bg-[#e8eef7]">
                 Create a free account
               </Link>
             </div>
           </Reveal>
 
-          <Reveal delay={0.08} className="relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0b1020] p-7 text-white shadow-lift">
-            <div className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-indigo-500/25 blur-3xl" />
+          <Reveal delay={0.08} className="relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#030a1c] p-7 text-white shadow-lift">
             <span className="relative grid size-11 place-items-center rounded-2xl bg-white/10 ring-1 ring-inset ring-white/15">
               <Server className="size-5" />
             </span>
-            <p className="relative mt-4 font-display text-2xl font-bold">Self-hosted</p>
+            <p className="relative mt-4 font-display text-2xl font-medium">Self-hosted</p>
             <p className="relative mt-1 text-sm text-slate-400">Run Telenotify on your own server, for full control over data.</p>
             <pre className="relative mt-6 overflow-x-auto rounded-xl border border-white/10 bg-black/30 p-4 font-mono text-[13px] leading-relaxed text-slate-200">
               <span className="text-emerald-400">$</span> git clone {GITHUB_URL}.git{'\n'}
@@ -80,7 +79,7 @@ export function OpenSource() {
                 href={GITHUB_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition-transform hover:-translate-y-0.5"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-[4.5px] bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-[#e8eef7]"
               >
                 <GithubIcon className="size-4" /> View on GitHub
               </a>
@@ -88,7 +87,7 @@ export function OpenSource() {
                 href={GITHUB_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+                className="inline-flex items-center justify-center gap-2 rounded-[4.5px] border border-white/15 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
               >
                 <Star className="size-4" /> Star
               </a>

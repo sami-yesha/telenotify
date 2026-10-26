@@ -35,7 +35,7 @@ export default function AdminSystem() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-ink sm:text-[1.75rem]">System</h1>
+          <h1 className="font-display text-[2rem] font-normal leading-[1.05] text-ink sm:text-[1.75rem]">System</h1>
           <p className="mt-1.5 text-sm text-muted">Health of the server, queues and integrations. Refreshes every 15 seconds.</p>
         </div>
         <Button variant="secondary" onClick={() => mutate()} loading={isValidating}>
@@ -109,7 +109,7 @@ export default function AdminSystem() {
 
 function Status({ icon: Icon, label, ok, detail }: { icon: React.ComponentType<{ className?: string }>; label: string; ok: boolean; detail: string }) {
   return (
-    <div className={cn('rounded-2xl border bg-surface p-4 shadow-soft', ok ? 'border-line' : 'border-amber-300/60 dark:border-amber-500/30')}>
+    <div className={cn('rounded-xl border bg-surface p-4 shadow-soft', ok ? 'border-line' : 'border-amber-300/60 dark:border-amber-500/30')}>
       <div className="flex items-center justify-between">
         <p className="flex items-center gap-2 text-sm text-muted">
           <Icon className="size-4" /> {label}

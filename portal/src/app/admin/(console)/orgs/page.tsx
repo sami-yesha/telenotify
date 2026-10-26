@@ -49,7 +49,7 @@ export default function AdminPage() {
   return (
     <>
 
-        <h1 className="font-display text-2xl font-bold tracking-tight text-ink sm:text-[1.75rem]">Organizations</h1>
+        <h1 className="font-display text-[2rem] font-normal leading-[1.05] text-ink sm:text-[1.75rem]">Organizations</h1>
         <p className="mt-1.5 text-sm text-muted">Approve live sending, suspend abuse and raise limits. Every action is written to the organization&apos;s audit log.</p>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-4">
@@ -155,10 +155,10 @@ function OrgRow({
       layout
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className={cn('rounded-2xl border bg-surface p-5 shadow-soft', suspended ? 'border-red-200 dark:border-red-900/50' : 'border-line')}
+      className={cn('rounded-xl border bg-surface p-5 shadow-soft', suspended ? 'border-red-200 dark:border-red-900/50' : 'border-line')}
     >
       <div className="flex flex-wrap items-start gap-4">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 text-sm font-bold text-white">{org.name.charAt(0).toUpperCase()}</span>
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#2b5278] text-sm font-medium text-white">{org.name.charAt(0).toUpperCase()}</span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-semibold text-ink">{org.name}</p>
@@ -250,12 +250,12 @@ function Metric({ label, value, warn }: { label: string; value: string; warn?: b
 
 function Tile({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ className?: string }>; label: string; value: number; tone?: 'amber' | 'red' }) {
   return (
-    <div className="rounded-2xl border border-line bg-surface p-4 shadow-soft">
+    <div className="rounded-xl border border-line bg-surface p-4 shadow-soft">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted">{label}</p>
         <Icon className={cn('size-4', tone === 'amber' ? 'text-amber-500' : tone === 'red' ? 'text-red-500' : 'text-muted')} />
       </div>
-      <p className={cn('mt-1 font-display text-2xl font-bold tabular-nums', tone === 'amber' ? 'text-amber-600 dark:text-amber-400' : tone === 'red' ? 'text-red-600 dark:text-red-400' : 'text-ink')}>{value}</p>
+      <p className={cn('mt-1 font-display text-2xl font-medium tabular-nums', tone === 'amber' ? 'text-amber-600 dark:text-amber-400' : tone === 'red' ? 'text-red-600 dark:text-red-400' : 'text-ink')}>{value}</p>
     </div>
   );
 }

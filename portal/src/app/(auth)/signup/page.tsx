@@ -35,7 +35,7 @@ export default function SignupPage() {
 
   return (
     <>
-      <h1 className="font-display text-2xl font-bold tracking-tight text-ink">Create your account</h1>
+      <h1 className="font-display text-[2rem] font-normal leading-[1.05] text-ink">Create your account</h1>
       <p className="mb-6 mt-1.5 text-sm text-muted">Start in the sandbox. No bot or credit card needed.</p>
       <GoogleButton label="Sign up with Google" />
       <form onSubmit={onSubmit} className="space-y-4">

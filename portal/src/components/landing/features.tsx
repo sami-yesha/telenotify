@@ -138,7 +138,7 @@ function Tile({
       <span className="grid size-10 place-items-center rounded-xl bg-brand-soft text-brand">
         <Icon className="size-5" />
       </span>
-      <h3 className="mt-4 font-display text-lg font-bold tracking-tight text-ink">{title}</h3>
+      <h3 className="mt-4 font-display text-lg font-medium tracking-tight text-ink">{title}</h3>
       <p className="mt-1.5 text-[15px] leading-relaxed text-muted">{body}</p>
       {children}
     </Reveal>

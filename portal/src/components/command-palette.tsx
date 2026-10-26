@@ -122,7 +122,7 @@ export function CommandPalette({ orgId, env, open, onOpenChange }: { orgId: stri
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-[12vh]">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm" onClick={() => onOpenChange(false)} />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[#01061a]/60 backdrop-blur-sm" onClick={() => onOpenChange(false)} />
           <motion.div
             role="dialog"
             aria-label="Search"
@@ -130,7 +130,7 @@ export function CommandPalette({ orgId, env, open, onOpenChange }: { orgId: stri
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.98 }}
             transition={{ duration: 0.15 }}
-            className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-line bg-surface shadow-lift"
+            className="relative w-full max-w-lg overflow-hidden rounded-xl border border-line bg-surface shadow-lift"
           >
             <div className="flex items-center gap-3 border-b border-line px-4">
               <Search className="size-4 text-muted" />

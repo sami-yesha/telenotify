@@ -52,7 +52,7 @@ function Invite() {
   } else {
     body = (
       <>
-        <h1 className="font-display text-2xl font-bold tracking-tight text-ink">Join {invite.orgName}</h1>
+        <h1 className="font-display text-[2rem] font-normal leading-[1.05] text-ink">Join {invite.orgName}</h1>
         <p className="mt-2 text-sm text-muted">
           {invite.invitedBy ?? 'A teammate'} invited <span className="font-medium text-ink">{invite.email}</span> to join as {invite.role === 'OWNER' ? 'an owner' : 'a member'}.
         </p>
@@ -60,7 +60,7 @@ function Invite() {
           {error && <Alert>{error}</Alert>}
           {signedOut ? (
             <>
-              <Link href="/signup" className="flex w-full items-center justify-center rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-page">
+              <Link href="/signup" className="flex w-full items-center justify-center rounded-md bg-ink px-4 py-2.5 text-sm font-semibold text-page">
                 Create an account with {invite.email}
               </Link>
               <Link href="/login" className="flex w-full items-center justify-center rounded-xl border border-line px-4 py-2.5 text-sm font-medium text-ink">
@@ -89,7 +89,7 @@ function Invite() {
       <Link href="/" className="mb-8">
         <Logo />
       </Link>
-      <div className="w-full max-w-md rounded-3xl border border-line bg-surface p-7 shadow-lift">{body}</div>
+      <div className="w-full max-w-md rounded-xl border border-line bg-surface p-7 shadow-lift">{body}</div>
     </div>
   );
 }

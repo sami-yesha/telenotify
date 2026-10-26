@@ -60,16 +60,13 @@ export default function GetStartedPage() {
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-3xl border border-line bg-surface shadow-soft">
-        <div className="pointer-events-none absolute -right-24 -top-32 size-96 rounded-full bg-gradient-to-br from-brand/25 via-accent/15 to-transparent blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-40 left-1/3 size-80 rounded-full bg-gradient-to-tr from-pink-400/10 to-transparent blur-3xl" />
-        <div className="pointer-events-none absolute inset-0 bg-grid opacity-40 [mask-image:radial-gradient(ellipse_at_top_right,black,transparent_65%)]" />
+      <section className="tg-panel overflow-hidden rounded-xl">
         <div className="relative grid gap-6 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)] lg:items-center">
           <div>
             <Badge tone={env === 'sandbox' ? 'amber' : 'green'} dot>
               {env === 'sandbox' ? 'Sandbox' : 'Live'}
             </Badge>
-            <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-ink sm:text-[2rem] sm:leading-tight">
+            <h1 className="mt-3 font-display text-[1.9rem] font-normal leading-[1.05] text-ink sm:text-[2.6rem]">
               {env === 'sandbox' ? `Welcome to ${org.name}` : `${org.name} is ${environment.botConnected ? 'ready for' : 'almost ready for'} production`}
             </h1>
             <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-muted">
@@ -84,7 +81,7 @@ export default function GetStartedPage() {
                     initial={{ width: 0 }}
                     animate={{ width: `${(doneCount / steps.length) * 100}%` }}
                     transition={{ duration: 0.8, ease: 'easeOut' }}
-                    className="h-full rounded-full bg-gradient-to-r from-brand to-accent"
+                    className="h-full rounded-full bg-brand"
                   />
                 </div>
                 <span className="text-muted">
@@ -192,10 +189,10 @@ function formatEtb(value: number) {
 }
 
 const statTones = {
-  emerald: 'from-emerald-500/20 to-emerald-500/5 text-emerald-600 ring-emerald-500/20 dark:text-emerald-300',
-  sky: 'from-sky-500/20 to-sky-500/5 text-sky-600 ring-sky-500/20 dark:text-sky-300',
-  indigo: 'from-indigo-500/20 to-indigo-500/5 text-indigo-600 ring-indigo-500/20 dark:text-indigo-300',
-  amber: 'from-amber-500/20 to-amber-500/5 text-amber-600 ring-amber-500/20 dark:text-amber-300',
+  emerald: 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-300',
+  sky: 'bg-brand-soft text-brand',
+  indigo: 'bg-brand-soft text-brand',
+  amber: 'bg-amber-500/12 text-amber-600 dark:text-amber-300',
 };
 
 function Stat({
@@ -215,21 +212,21 @@ function Stat({
 }) {
   const pct = typeof value === 'number' && limit ? Math.min(100, (value / limit) * 100) : null;
   return (
-    <div className="group rounded-2xl border border-line bg-surface p-5 shadow-soft transition-shadow hover:shadow-lift">
+    <div className="group rounded-xl border border-line bg-surface p-5 transition-colors hover:border-muted/40">
       <div className="flex items-start justify-between gap-3">
         <p className="text-sm text-muted">{label}</p>
-        <span className={cn('grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br ring-1 ring-inset', statTones[tone])}>
+        <span className={cn('grid size-9 shrink-0 place-items-center rounded-lg', statTones[tone])}>
           <Icon className="size-[18px]" />
         </span>
       </div>
-      <p className="mt-1 truncate font-display text-[1.75rem] font-bold leading-tight tracking-tight tabular-nums text-ink">
+      <p className="mt-1 truncate font-display text-[2rem] font-normal leading-tight tracking-[-0.03em] tabular-nums text-ink">
         {value}
         {limit !== undefined && <span className="text-base font-medium text-muted"> / {limit}</span>}
       </p>
       {hint && <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted">{hint}</p>}
       {pct !== null && (
         <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-subtle">
-          <div className={cn('h-full rounded-full', pct > 80 ? 'bg-amber-500' : 'bg-gradient-to-r from-brand to-accent')} style={{ width: `${pct}%` }} />
+          <div className={cn('h-full rounded-full', pct > 80 ? 'bg-amber-500' : 'bg-brand')} style={{ width: `${pct}%` }} />
         </div>
       )}
     </div>
@@ -241,7 +238,7 @@ type Step = { done: boolean; title: string; body: string; href: string; cta: str
 function NextStep({ step }: { step?: Step }) {
   if (!step) {
     return (
-      <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-5 backdrop-blur">
+      <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/5 p-5 backdrop-blur">
         <span className="grid size-9 place-items-center rounded-full bg-emerald-500 text-white shadow-soft">
           <Check className="size-5" />
         </span>
@@ -251,13 +248,13 @@ function NextStep({ step }: { step?: Step }) {
     );
   }
   return (
-    <div className="rounded-2xl border border-line bg-page/70 p-5 shadow-soft backdrop-blur">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand">Next step</p>
+    <div className="rounded-xl border border-line bg-page/70 p-5 shadow-soft backdrop-blur">
+      <p className="text-[13px] font-medium text-brand">Next step</p>
       <p className="mt-2 font-semibold text-ink">{step.title}</p>
       <p className="mt-1 text-sm leading-relaxed text-muted">{step.body}</p>
       <Link
         href={step.href}
-        className="group mt-4 inline-flex items-center gap-1.5 rounded-xl bg-ink px-3.5 py-2 text-sm font-medium text-page shadow-soft transition-transform hover:-translate-y-px"
+        className="group mt-4 inline-flex items-center gap-1.5 rounded-md bg-ink px-3.5 py-2 text-sm font-medium text-page shadow-soft transition-shadow hover:shadow-[0_0_0_4px_rgb(42_171_238_/_0.14)]"
       >
         {step.cta} <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
       </Link>

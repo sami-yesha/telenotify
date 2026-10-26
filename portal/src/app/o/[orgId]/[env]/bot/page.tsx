@@ -134,7 +134,7 @@ function BrandingChecklist({ username }: { username: string | null }) {
       <ol className="divide-y divide-line">
         {brandingSteps.map((step, i) => (
           <li key={step.command} className="flex gap-4 py-3 first:pt-0 last:pb-0">
-            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand to-accent text-xs font-bold text-white">{i + 1}</span>
+            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-brand text-xs font-bold text-white">{i + 1}</span>
             <div className="min-w-0">
               <p className="text-sm font-medium text-ink">
                 {step.title} <code className="ml-1 rounded bg-subtle px-1.5 py-0.5 font-mono text-xs text-ink">{step.command}</code>

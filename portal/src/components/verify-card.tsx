@@ -59,7 +59,7 @@ export function VerifyCard({ basePath }: { basePath: string }) {
           </Button>
         </form>
 
-        <div className="rounded-2xl border border-dashed border-line p-5">
+        <div className="rounded-xl border border-dashed border-line p-5">
           {!verification ? (
             <p className="text-sm text-muted">Create a link, open it on your phone and tap “Share my phone number”. The result appears here live.</p>
           ) : (
@@ -80,7 +80,7 @@ export function VerifyCard({ basePath }: { basePath: string }) {
                   href={verification.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-brand to-accent px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition-transform hover:-translate-y-px"
+                  className="flex w-full items-center justify-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition-shadow hover:shadow-[0_0_0_4px_rgb(42_171_238_/_0.14)]"
                 >
                   Verify with Telegram
                 </a>

@@ -1,54 +1,55 @@
 @import 'tailwindcss';
 
 :root {
-  --page: #f8fafc;
-  --shell: #eef1f6;
+  --tg-doodles: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' fill='none' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 44l40-16-10 38-10-12-8 10v-14z'/%3E%3Cpath d='M42 54l20-26'/%3E%3Crect x='150' y='22' width='46' height='30' rx='12'/%3E%3Cpath d='M160 52l-4 10 12-10'/%3E%3Cpath d='M98 112c0-8 12-10 14 0 2-10 14-8 14 0 0 10-14 18-14 18s-14-8-14-18z'/%3E%3Cpath d='M190 120l4 9 10 1-8 6 3 10-9-6-9 6 3-10-8-6 10-1z'/%3E%3Cpath d='M30 150a14 14 0 0 1 28 0v10l4 6H26l4-6z'/%3E%3Cpath d='M40 172a4 4 0 0 0 8 0'/%3E%3Crect x='136' y='186' width='26' height='22' rx='4'/%3E%3Cpath d='M141 186v-6a8 8 0 0 1 16 0v6'/%3E%3Cpath d='M80 200l8 8 16-18'/%3E%3Ccircle cx='214' cy='204' r='3'/%3E%3Ccircle cx='110' cy='40' r='2.5'/%3E%3Cpath d='M200 70c8 4 14 12 14 22'/%3E%3C/svg%3E");
+  --page: #f6f8fb;
+  --shell: #ecf0f6;
   --surface: #ffffff;
-  --subtle: #f1f5f9;
-  --line: #e2e8f0;
-  --ink: #0f172a;
-  --muted: #64748b;
-  --brand: #0ea5e9;
-  --brand-dark: #0284c7;
-  --brand-soft: #e0f2fe;
-  --accent: #6366f1;
+  --subtle: #eff3f8;
+  --line: #e1e7ef;
+  --ink: #0a1324;
+  --muted: #64728a;
+  --brand: #1a8ad4;
+  --brand-dark: #1474b4;
+  --brand-soft: #e2f1fb;
+  --accent: #2aabee;
   --shadow: 15 23 42;
   color-scheme: light;
 }
 
 /*
  * Theme: <html data-theme="light|dark|system"> (set before paint by the script in
- * layout.tsx). "system" (or no attribute, e.g. without JavaScript) follows the OS.
+ * layout.tsx). Dark ("Telegram night") is the default; "system" follows the OS.
  */
 :root[data-theme='dark'] {
-  --page: #070b14;
-  --shell: #04070d;
-  --surface: #0d1320;
-  --subtle: #141b2b;
-  --line: #1f2937;
-  --ink: #e5e9f0;
-  --muted: #8b95a7;
-  --brand: #38bdf8;
-  --brand-dark: #0ea5e9;
-  --brand-soft: #0c2a3d;
-  --accent: #818cf8;
+  --page: #020920;
+  --shell: #01061a;
+  --surface: #071029;
+  --subtle: #0e1834;
+  --line: #1a2644;
+  --ink: #ffffff;
+  --muted: #95a2bf;
+  --brand: #2aabee;
+  --brand-dark: #229ed9;
+  --brand-soft: #0b2c4a;
+  --accent: #5fc4f5;
   --shadow: 0 0 0;
   color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']):not([data-theme='dark']) {
-    --page: #070b14;
-  --shell: #04070d;
-    --surface: #0d1320;
-    --subtle: #141b2b;
-    --line: #1f2937;
-    --ink: #e5e9f0;
-    --muted: #8b95a7;
-    --brand: #38bdf8;
-    --brand-dark: #0ea5e9;
-    --brand-soft: #0c2a3d;
-    --accent: #818cf8;
+    --page: #020920;
+    --shell: #01061a;
+    --surface: #071029;
+    --subtle: #0e1834;
+    --line: #1a2644;
+    --ink: #ffffff;
+    --muted: #95a2bf;
+    --brand: #2aabee;
+    --brand-dark: #229ed9;
+    --brand-soft: #0b2c4a;
+    --accent: #5fc4f5;
     --shadow: 0 0 0;
     color-scheme: dark;
   }
@@ -56,7 +57,7 @@
 
 /* Tailwind's dark: variant follows the same rule as the tokens above. */
 @custom-variant dark {
-  &:where([data-theme='dark'], [data-theme='dark'] *) {
+  &:where([data-theme='dark'], [data-theme='dark'] *, .landing, .landing *, .tg-panel, .tg-panel *) {
     @slot;
   }
   @media (prefers-color-scheme: dark) {
@@ -78,9 +79,9 @@
   --color-brand-dark: var(--brand-dark);
   --color-brand-soft: var(--brand-soft);
   --color-accent: var(--accent);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-google-sans), 'Google Sans', 'Product Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-display);
+  --font-display: var(--font-google-sans), 'Google Sans', 'Product Sans', ui-sans-serif, system-ui, sans-serif;
 
   --animate-marquee: marquee 40s linear infinite;
   --animate-float: float 6s ease-in-out infinite;
@@ -108,24 +109,112 @@
 body {
   background: var(--page);
   color: var(--ink);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-kerning: normal;
+}
+
+/* Google Sans headings: light weight, tight tracking, the same voice as the landing page. */
+h1.font-display,
+h2.font-display {
+  letter-spacing: -0.026em;
+}
+:focus-visible {
+  outline: 2px solid #7fd4ff;
+  outline-offset: 3px;
+}
+::selection {
+  background: rgb(42 171 238 / 0.3);
 }
 
 html {
   scroll-behavior: smooth;
 }
 
+/*
+ * A Telegram-night island inside either theme (welcome banners, auth showcase):
+ * dark tokens, so text-ink / text-muted / bg-surface inside it just work.
+ */
+.tg-panel {
+  --page: #020920;
+  --surface: rgb(7 16 41 / 0.72);
+  --subtle: rgb(255 255 255 / 0.08);
+  --line: rgb(255 255 255 / 0.12);
+  --ink: #ffffff;
+  --muted: rgb(214 232 255 / 0.72);
+  --brand: #5fc4f5;
+  --brand-soft: rgb(42 171 238 / 0.18);
+  --shadow: 0 0 0;
+  color-scheme: dark;
+  position: relative;
+  isolation: isolate;
+  color: var(--ink);
+  background:
+    radial-gradient(120% 90% at 12% 0%, rgba(42, 171, 238, 0.34), transparent 55%),
+    radial-gradient(90% 90% at 100% 100%, rgba(84, 108, 230, 0.3), transparent 60%),
+    linear-gradient(160deg, #0b2a4a 0%, #0a1a38 45%, #0b1430 100%);
+}
+.tg-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: var(--tg-doodles);
+  background-size: 240px 240px;
+}
+
+/*
+ * The landing page is always "Telegram night": deep navy, hairlines, Telegram blue,
+ * Google Sans. Every section reads these tokens, so it stays one system.
+ */
+.landing {
+  --page: #01061a;
+  --shell: #000412;
+  --surface: #071029;
+  --subtle: #0e1834;
+  --line: rgba(255, 255, 255, 0.11);
+  --ink: #ffffff;
+  --muted: rgba(226, 233, 255, 0.64);
+  --brand: #2aabee;
+  --brand-dark: #229ed9;
+  --brand-soft: rgba(42, 171, 238, 0.14);
+  --accent: #5fc4f5;
+  --shadow: 0 0 0;
+  color-scheme: dark;
+  background: #01061a linear-gradient(90deg, #00061a 0%, #01071b 22%, #01071a 45%, #010718 62%, #010614 80%, #020511 100%);
+  color: #fff;
+  text-rendering: geometricPrecision;
+}
+.landing ::selection {
+  background: rgba(42, 171, 238, 0.35);
+}
+.landing h2.font-display {
+  font-weight: 400;
+  letter-spacing: -0.028em;
+  line-height: 1.04;
+}
+.landing :focus-visible {
+  outline-offset: 4px;
+}
+.landing h3.font-display {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+
 @layer utilities {
   .shadow-soft {
-    box-shadow: 0 1px 2px rgb(var(--shadow) / 0.04), 0 4px 16px -4px rgb(var(--shadow) / 0.08);
+    box-shadow: 0 1px 2px rgb(var(--shadow) / 0.03), 0 2px 8px -4px rgb(var(--shadow) / 0.06);
   }
   .shadow-lift {
     box-shadow: 0 2px 4px rgb(var(--shadow) / 0.04), 0 24px 48px -12px rgb(var(--shadow) / 0.18);
   }
+  /* Two-tone headlines: the second clause steps back. */
   .text-gradient {
-    background: linear-gradient(100deg, var(--brand) 10%, var(--accent) 60%, #ec4899 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: color-mix(in oklab, var(--ink) 55%, transparent);
   }
   .bg-grid {
     background-image:
@@ -135,6 +224,17 @@ html {
   }
   .mask-fade-b {
     mask-image: linear-gradient(to bottom, black 40%, transparent);
+  }
+  /* Telegram chat wallpaper: hand-drawn doodles over a night-blue gradient. */
+  .tg-doodles {
+    background-image: var(--tg-doodles);
+    background-size: 240px 240px;
+  }
+  .tg-sky {
+    background:
+      radial-gradient(120% 90% at 15% 0%, rgba(42, 171, 238, 0.32), transparent 55%),
+      radial-gradient(90% 80% at 100% 100%, rgba(84, 108, 230, 0.28), transparent 60%),
+      linear-gradient(160deg, #0b2a4a 0%, #0a1a38 45%, #0b1430 100%);
   }
   .mask-fade-x {
     mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);

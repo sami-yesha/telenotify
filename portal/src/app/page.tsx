@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { GITHUB_URL, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/site';
 import { Developers } from '@/components/landing/developers';
 import { Ethiopia } from '@/components/landing/ethiopia';
@@ -15,6 +15,7 @@ import { UseCases } from '@/components/landing/use-cases';
 import { VerifySection } from '@/components/landing/verify-section';
 
 export const metadata: Metadata = { alternates: { canonical: '/' } };
+export const viewport: Viewport = { themeColor: '#01061a', viewportFit: 'cover' };
 
 // Structured data so search engines know this is a software product with a free plan.
 const jsonLd = {
@@ -30,9 +31,14 @@ const jsonLd = {
   codeRepository: GITHUB_URL,
 };
 
+// Hides the hero's parts before first paint so the entrance can reveal them. Only when
+// Web Animations and matchMedia exist and motion is allowed; gives up after 3.5 s.
+const introScript = `(function(){try{var d=document.documentElement;if(d.dataset.intro||!('animate' in d)||!window.matchMedia||matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('intro');setTimeout(function(){if(!d.dataset.intro)d.classList.remove('intro')},3500)}catch(e){}})()`;
+
 export default function LandingPage() {
   return (
-    <div className="overflow-x-clip">
+    <div className="landing overflow-x-clip">
+      <script dangerouslySetInnerHTML={{ __html: introScript }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <LandingNav />
       <main>

@@ -55,14 +55,14 @@ const faqs = [
 export function Faq() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section id="faq" className="scroll-mt-20 bg-surface/60 py-24 sm:py-32">
+    <section id="faq" className="scroll-mt-20 py-24 sm:py-32">
       <div className="mx-auto max-w-3xl px-5">
         <SectionHeading eyebrow="FAQ" title="Questions, answered." />
-        <div className="mt-12 divide-y divide-line rounded-3xl border border-line bg-surface shadow-soft">
+        <div className="mt-12 divide-y divide-line border-y border-line">
           {faqs.map((faq, i) => (
             <div key={faq.q}>
-              <button onClick={() => setOpen(open === i ? null : i)} className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left">
-                <span className="font-medium text-ink">{faq.q}</span>
+              <button onClick={() => setOpen(open === i ? null : i)} className="flex w-full items-center justify-between gap-4 px-1 py-5 text-left">
+                <span className="text-[17px] tracking-[-0.015em] text-ink">{faq.q}</span>
                 <span className="grid size-7 shrink-0 place-items-center rounded-full border border-line text-muted">
                   {open === i ? <Minus className="size-3.5" /> : <Plus className="size-3.5" />}
                 </span>
@@ -76,7 +76,7 @@ export function Faq() {
                     transition={{ duration: 0.25 }}
                     className="overflow-hidden"
                   >
-                    <p className="px-6 pb-5 leading-relaxed text-muted">{faq.a}</p>
+                    <p className="px-1 pb-6 pr-12 leading-relaxed text-muted">{faq.a}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -91,23 +91,21 @@ export function Faq() {
 export function FinalCta() {
   return (
     <section className="px-5 py-24 sm:py-32">
-      <Reveal className="relative mx-auto max-w-5xl overflow-hidden rounded-[2.5rem] bg-[#0b1020] px-6 py-16 text-center shadow-lift sm:px-16 sm:py-20">
-        <div className="pointer-events-none absolute -left-20 -top-20 size-80 rounded-full bg-sky-500/30 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 -right-10 size-80 rounded-full bg-indigo-500/30 blur-3xl" />
-        <div className="pointer-events-none absolute inset-0 opacity-[0.15] [background-image:radial-gradient(white_1px,transparent_1px)] [background-size:22px_22px]" />
-        <h2 className="relative font-display text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
-          Your next notification could
-          <br className="hidden sm:block" /> be on Telegram today.
+      <Reveal className="relative mx-auto max-w-5xl overflow-hidden rounded-[1.25rem] tg-sky px-6 py-16 text-center sm:px-16 sm:py-24">
+        <div className="tg-doodles pointer-events-none absolute inset-0 opacity-[0.07]" />
+        <h2 className="relative font-display text-[2.2rem] font-normal leading-[0.98] tracking-[-0.03em] text-white sm:text-[4rem]">
+          Stop paying for OTPs.
+          <br className="hidden sm:block" /> Start on Telegram today.
         </h2>
-        <p className="relative mx-auto mt-5 max-w-xl text-lg text-slate-300">Create an account, grab your sandbox key and send yourself a message in minutes. Free and open source, no card required.</p>
+        <p className="relative mx-auto mt-5 max-w-xl text-lg text-sky-100/75">Create an account, grab your sandbox key and send yourself a message in minutes. Free and open source, no card required.</p>
         <div className="relative mt-9 flex flex-wrap justify-center gap-3">
           <Link
             href="/signup"
-            className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-[15px] font-semibold text-slate-900 transition-transform hover:-translate-y-0.5"
+            className="group inline-flex items-center gap-2 rounded-[4.5px] bg-white px-6 py-3 text-[15px] font-medium text-[#0a0a0a] transition-[background-color,box-shadow] hover:bg-[#e8eef7] hover:shadow-[0_0_0_4px_rgba(120,200,255,0.12)]"
           >
-            Start free <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+            Start free 
           </Link>
-          <Link href="/login" className="rounded-full border border-white/20 px-6 py-3 text-[15px] font-medium text-white hover:bg-white/10">
+          <Link href="/login" className="rounded-[4.5px] border border-white/20 px-6 py-3 text-[15px] font-medium text-white hover:bg-white/10">
             Sign in
           </Link>
         </div>
@@ -118,11 +116,11 @@ export function FinalCta() {
 
 export function Footer() {
   return (
-    <footer className="border-t border-line">
+    <footer className="border-t border-line bg-[#000412]">
       <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-5 py-10 sm:flex-row sm:items-center">
         <div>
           <Logo />
-          <p className="mt-2 text-sm text-muted">Customer notifications on Telegram, with one API call.</p>
+          <p className="mt-2 text-sm text-muted">Phone verification and notifications on Telegram. No SMS bill.</p>
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
           <a href="#features" className="hover:text-ink">Features</a>

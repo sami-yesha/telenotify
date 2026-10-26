@@ -87,7 +87,7 @@ export default function HostedVerifyPage() {
     <VerifyShell>
       <Card>
         <header className="flex items-center gap-3">
-          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-slate-700 to-slate-900 font-display text-lg font-bold text-white">
+          <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-[#2b5278] font-display text-lg font-medium text-white">
             {data.orgName.charAt(0).toUpperCase()}
           </span>
           <div className="min-w-0">
@@ -128,7 +128,7 @@ function Waiting({ data }: { data: HostedVerification }) {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold tracking-tight text-ink">Verify with Telegram</h1>
+      <h1 className="font-display text-[2rem] font-normal leading-[1.05] text-ink">Verify with Telegram</h1>
       <p className="mt-1.5 text-sm leading-relaxed text-muted">No code to type. Telegram shares only your phone number, nothing else.</p>
 
       <ol className="mt-6 space-y-3">
@@ -147,12 +147,12 @@ function Waiting({ data }: { data: HostedVerification }) {
             // Open Telegram separately so this page stays and can hand the result back.
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 flex items-center justify-center gap-2 rounded-2xl bg-[#2aabee] px-5 py-3.5 text-[15px] font-semibold text-white shadow-soft transition-transform hover:-translate-y-0.5"
+            className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-[#2aabee] px-5 py-3.5 text-[15px] font-semibold text-white shadow-soft transition-shadow hover:shadow-[0_0_0_4px_rgb(42_171_238_/_0.14)]"
           >
             <Smartphone className="size-5" /> {opened ? 'Back to Telegram' : 'Open Telegram'} <ArrowRight className="size-4" />
           </a>
           {/* On a computer, scan with the phone instead. */}
-          <div className="mt-5 hidden items-center gap-4 rounded-2xl border border-line bg-subtle/50 p-4 sm:flex">
+          <div className="mt-5 hidden items-center gap-4 rounded-xl border border-line bg-subtle/50 p-4 sm:flex">
             <div className="shrink-0 rounded-xl bg-white p-1.5">{qr ? <img src={qr} alt="QR code to open Telegram" className="size-28" /> : <div className="size-28 animate-pulse rounded-lg bg-slate-100" />}</div>
             <p className="text-sm text-muted">On a computer? Scan this with your phone&apos;s camera to open Telegram there.</p>
           </div>
@@ -194,7 +194,7 @@ function Verified({ phone, handedBack, site }: { phone: string | null; handedBac
           <motion.path d="M5 12.5l4.5 4.5L19 7.5" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.15, duration: 0.4 }} />
         </motion.svg>
       </motion.span>
-      <h1 className="mt-5 font-display text-2xl font-bold text-ink">Phone number verified</h1>
+      <h1 className="mt-5 font-display text-2xl font-medium text-ink">Phone number verified</h1>
       {phone && <p className="mt-1 font-mono text-sm text-muted">+{phone.replace(/^(\d{3})(\d{2})\d+(\d{2})$/, '$1 $2•• ••• •$3')}</p>}
       <p className="mt-4 text-sm text-muted">
         {handedBack === 'popup' ? 'All done. This window will close.' : handedBack === 'redirect' ? `Taking you back to ${site ?? 'the site'}…` : `You can go back to ${site ?? 'the site'} now.`}
@@ -206,10 +206,10 @@ function Verified({ phone, handedBack, site }: { phone: string | null; handedBac
 function Problem({ title, icon: Icon = AlertTriangle, children }: { title: string; icon?: React.ComponentType<{ className?: string }>; children: React.ReactNode }) {
   return (
     <div className="flex flex-col items-center py-2 text-center">
-      <span className="grid size-14 place-items-center rounded-2xl bg-amber-500/10 text-amber-500">
+      <span className="grid size-14 place-items-center rounded-xl bg-amber-500/10 text-amber-500">
         <Icon className="size-7" />
       </span>
-      <h1 className="mt-4 font-display text-xl font-bold text-ink">{title}</h1>
+      <h1 className="mt-4 font-display text-xl font-medium text-ink">{title}</h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">{children}</p>
     </div>
   );

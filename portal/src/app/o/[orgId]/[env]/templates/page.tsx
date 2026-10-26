@@ -54,7 +54,7 @@ export default function TemplatesPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {templates.map((t) => (
-            <div key={t.id} className="flex flex-col rounded-2xl border border-line bg-surface p-5 shadow-soft">
+            <div key={t.id} className="flex flex-col rounded-xl border border-line bg-surface p-5 shadow-soft">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="font-semibold text-ink">{t.name}</p>
@@ -203,9 +203,9 @@ function TemplateEditor({ template, path, onClose, onSaved }: { template: Messag
           </div>
         )}
 
-        <div className="rounded-2xl bg-[#0e1621] p-3">
+        <div className="rounded-xl bg-[#0e1621] p-3">
           <p className="mb-2 text-[11px] uppercase tracking-wide text-slate-400">Preview · {label(active)}</p>
-          <div className="w-fit max-w-full whitespace-pre-wrap rounded-2xl rounded-bl-md bg-[#182533] px-3 py-2 text-sm text-white">{preview || <span className="text-slate-500">Nothing written in this language yet</span>}</div>
+          <div className="w-fit max-w-full whitespace-pre-wrap rounded-xl rounded-bl-md bg-[#182533] px-3 py-2 text-sm text-white">{preview || <span className="text-slate-500">Nothing written in this language yet</span>}</div>
         </div>
 
         <CodeBlock language="send it" code={sendExample} />

@@ -36,7 +36,6 @@ export function OneLineVerify() {
 
   return (
     <section id="verify-widget" className="relative scroll-mt-20 overflow-hidden py-24 sm:py-32">
-      <div className="pointer-events-none absolute -left-40 top-24 size-[480px] rounded-full bg-gradient-to-br from-brand/15 to-accent/10 blur-3xl" />
       <div className="relative mx-auto max-w-6xl px-5">
         <SectionHeading
           eyebrow="New · Verify widget"
@@ -50,7 +49,7 @@ export function OneLineVerify() {
 
         <div className="mt-14 grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           {/* The code */}
-          <Reveal className="overflow-hidden rounded-3xl border border-white/10 bg-[#0b1020] shadow-lift">
+          <Reveal className="overflow-hidden rounded-3xl border border-white/10 bg-[#030a1c] shadow-lift">
             <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
               <span className="flex gap-1.5">
                 <span className="size-2.5 rounded-full bg-red-400/70" />
@@ -91,7 +90,7 @@ export function OneLineVerify() {
               </span>
             </div>
             <div className="p-7">
-              <p className="font-display text-xl font-bold text-ink">Create your account</p>
+              <p className="font-display text-xl font-medium text-ink">Create your account</p>
               <p className="mt-1 text-sm text-muted">Confirm your phone number to continue.</p>
               <div className="mt-5 space-y-3">
                 <div className="rounded-xl border border-line px-3.5 py-2.5 text-sm text-muted">Hana Tesfaye</div>
@@ -147,7 +146,7 @@ export function OneLineVerify() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {POINTS.map((point, i) => (
             <Reveal key={point.title} delay={0.08 * i} className="rounded-2xl border border-line bg-surface p-5 shadow-soft">
-              <span className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-brand/15 to-accent/15 text-brand ring-1 ring-inset ring-brand/15">
+              <span className="grid size-10 place-items-center rounded-xl bg-brand-soft text-brand ring-1 ring-inset ring-brand/15">
                 <point.icon className="size-5" />
               </span>
               <p className="mt-3 font-semibold text-ink">{point.title}</p>
@@ -157,7 +156,7 @@ export function OneLineVerify() {
         </div>
 
         <Reveal delay={0.1} className="mt-10 flex justify-center">
-          <Link href="/signup" className="rounded-full bg-ink px-6 py-3 text-[15px] font-semibold text-page shadow-soft transition-transform hover:-translate-y-0.5">
+          <Link href="/signup" className="rounded-[4.5px] bg-ink px-6 py-3 text-[15px] font-semibold text-page shadow-soft transition-colors hover:bg-[#e8eef7]">
             Get your widget key, free
           </Link>
         </Reveal>

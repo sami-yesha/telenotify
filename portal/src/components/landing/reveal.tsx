@@ -18,9 +18,9 @@ export function Reveal({ delay = 0, y = 24, ...props }: HTMLMotionProps<'div'> &
 export function SectionHeading({ eyebrow, title, body }: { eyebrow: string; title: React.ReactNode; body?: React.ReactNode }) {
   return (
     <Reveal className="mx-auto max-w-2xl text-center">
-      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand">{eyebrow}</p>
-      <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-ink sm:text-[2.6rem] sm:leading-[1.1]">{title}</h2>
-      {body && <p className="mt-4 text-lg leading-relaxed text-muted">{body}</p>}
+      <p className="text-[13px] font-medium tracking-[-0.005em] text-brand">{eyebrow}</p>
+      <h2 className="mt-3 font-display text-[2.1rem] text-ink sm:text-[3.25rem]">{title}</h2>
+      {body && <p className="mx-auto mt-5 max-w-xl text-[17px] leading-relaxed tracking-[-0.005em] text-muted sm:text-lg">{body}</p>}
     </Reveal>
   );
 }

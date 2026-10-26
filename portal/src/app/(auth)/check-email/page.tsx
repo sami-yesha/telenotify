@@ -39,7 +39,7 @@ export default function CheckEmailPage() {
 
   return (
     <>
-      <h1 className="font-display text-2xl font-bold tracking-tight text-ink">Check your email</h1>
+      <h1 className="font-display text-[2rem] font-normal leading-[1.05] text-ink">Check your email</h1>
       <p className="mt-2 text-sm text-muted">
         We sent a verification link to <span className="font-medium text-ink">{me?.email ?? 'your email'}</span>. Open it to continue.
       </p>

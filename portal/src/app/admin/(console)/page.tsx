@@ -36,7 +36,7 @@ export default function AdminOverview() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight text-ink sm:text-[1.75rem]">Overview</h1>
+        <h1 className="font-display text-[2rem] font-normal leading-[1.05] text-ink sm:text-[1.75rem]">Overview</h1>
         <p className="mt-1.5 text-sm text-muted">How the hosted service is doing. Updates every minute.</p>
       </div>
 
@@ -50,7 +50,7 @@ export default function AdminOverview() {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Card title="Messages per day" description={`${n(liveTotal)} live messages in the last 30 days, plus sandbox tests.`}>
-          <Bars days={days} series={[{ key: 'live', label: 'Live', className: 'bg-gradient-to-t from-brand to-accent' }, { key: 'sandbox', label: 'Sandbox', className: 'bg-amber-400/70' }]} />
+          <Bars days={days} series={[{ key: 'live', label: 'Live', className: 'bg-brand' }, { key: 'sandbox', label: 'Sandbox', className: 'bg-amber-400/70' }]} />
         </Card>
         <Card title="Sign-ups per day" description={`${n(signupTotal)} new users in the last 30 days.`}>
           <Bars days={days} series={[{ key: 'signups', label: 'Sign-ups', className: 'bg-emerald-500' }]} />
@@ -97,11 +97,11 @@ function Tile({ icon: Icon, label, value, sub, tone, href }: { icon: React.Compo
         <p className="text-sm text-muted">{label}</p>
         <Icon className={cn('size-4', tone === 'amber' ? 'text-amber-500' : tone === 'red' ? 'text-red-500' : 'text-muted')} />
       </div>
-      <p className={cn('mt-1 font-display text-2xl font-bold tabular-nums', tone === 'amber' ? 'text-amber-600 dark:text-amber-400' : tone === 'red' ? 'text-red-600 dark:text-red-400' : 'text-ink')}>{value}</p>
+      <p className={cn('mt-1 font-display text-2xl font-medium tabular-nums', tone === 'amber' ? 'text-amber-600 dark:text-amber-400' : tone === 'red' ? 'text-red-600 dark:text-red-400' : 'text-ink')}>{value}</p>
       {sub && <p className="mt-0.5 text-xs text-muted">{sub}</p>}
     </>
   );
-  const className = 'block rounded-2xl border border-line bg-surface p-4 shadow-soft transition-shadow hover:shadow-lift';
+  const className = 'block rounded-xl border border-line bg-surface p-4 shadow-soft transition-shadow hover:shadow-lift';
   return href ? (
     <Link href={href} className={className}>
       {body}

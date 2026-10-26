@@ -76,7 +76,7 @@ export default function TeamPage() {
               <tr key={m.userId}>
                 <td>
                   <span className="flex items-center gap-2.5">
-                    <span className="grid size-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand to-accent text-xs font-semibold text-white">
+                    <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand text-xs font-semibold text-white">
                       {m.name.charAt(0).toUpperCase()}
                     </span>
                     <span className="font-medium text-ink">

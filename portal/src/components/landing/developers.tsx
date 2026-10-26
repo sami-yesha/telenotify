@@ -73,12 +73,12 @@ export function Developers() {
         />
 
         <div className="mt-16 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-          <Reveal className="overflow-hidden rounded-3xl border border-white/10 bg-[#0b1020] shadow-lift">
+          <Reveal className="overflow-hidden rounded-3xl border border-white/10 bg-[#030a1c] shadow-lift">
             <div className="flex items-center gap-1 border-b border-white/10 px-3 pt-3">
               {(Object.keys(samples) as Lang[]).map((key) => (
                 <button key={key} onClick={() => setLang(key)} className="relative px-3.5 pb-3 pt-1 text-sm font-medium">
                   <span className={cn('relative z-10 transition-colors', lang === key ? 'text-white' : 'text-slate-400 hover:text-slate-200')}>{key}</span>
-                  {lang === key && <motion.span layoutId="code-tab" className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-sky-400 to-indigo-400" />}
+                  {lang === key && <motion.span layoutId="code-tab" className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-brand" />}
                 </button>
               ))}
               <button

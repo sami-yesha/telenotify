@@ -76,7 +76,6 @@ const PERKS = [
 export function Sdk() {
   return (
     <section id="sdk" className="relative scroll-mt-20 overflow-hidden py-24 sm:py-32">
-      <div className="pointer-events-none absolute left-1/2 top-40 size-[36rem] -translate-x-1/2 rounded-full bg-gradient-to-br from-brand/15 via-accent/10 to-transparent blur-3xl" />
       <div className="relative mx-auto max-w-6xl px-5">
         <SectionHeading
           eyebrow="Official SDK"
@@ -120,7 +119,7 @@ function InstallPill() {
         setCopied(true);
         setTimeout(() => setCopied(false), 1500);
       }}
-      className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-[#0b1020] px-5 py-3.5 font-mono text-sm text-slate-200 shadow-lift transition-transform hover:-translate-y-0.5"
+      className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-[#030a1c] px-5 py-3.5 font-mono text-sm text-slate-200 transition-colors hover:border-white/25"
       aria-label="Copy install command"
     >
       <span className="text-emerald-400">$</span>
@@ -148,7 +147,6 @@ function FlowDiagram() {
   const inView = useInView(ref, { once: false, margin: '-80px' });
   return (
     <div ref={ref} className="relative overflow-hidden rounded-3xl border border-line bg-surface/80 p-6 shadow-soft backdrop-blur sm:p-10">
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-30 [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" />
 
       <div className="relative grid grid-cols-1 items-center gap-4 md:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] md:gap-0">
         {NODES.map((node, i) => (
@@ -211,7 +209,7 @@ function FlowItem({ node, index, last, active }: { node: (typeof NODES)[number];
       </motion.div>
       {!last && (
         <div className="relative mx-auto h-8 w-px md:h-px md:w-16 lg:w-24">
-          <div className="absolute inset-0 bg-gradient-to-b from-brand/50 to-accent/50 md:bg-gradient-to-r" />
+          <div className="absolute inset-0 bg-brand/40" />
           <Pulse active={active} delay={index * 0.45} />
         </div>
       )}
@@ -225,13 +223,13 @@ function Pulse({ active, delay }: { active: boolean; delay: number }) {
   return (
     <>
       <motion.span
-        className="absolute left-1/2 size-2 -translate-x-1/2 rounded-full bg-accent shadow-[0_0_10px_2px_rgb(99_102_241_/_0.6)] md:hidden"
+        className="absolute left-1/2 size-2 -translate-x-1/2 rounded-full bg-accent shadow-[0_0_10px_2px_rgb(42_171_238_/_0.6)] md:hidden"
         initial={{ top: '0%', opacity: 0 }}
         animate={{ top: ['0%', '100%'], opacity: [0, 1, 0] }}
         transition={{ delay, duration: 1.1, repeat: Infinity, repeatDelay: 0.7, ease: 'easeInOut' }}
       />
       <motion.span
-        className="absolute top-1/2 hidden size-2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_10px_2px_rgb(99_102_241_/_0.6)] md:block"
+        className="absolute top-1/2 hidden size-2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_10px_2px_rgb(42_171_238_/_0.6)] md:block"
         initial={{ left: '0%', opacity: 0 }}
         animate={{ left: ['0%', '100%'], opacity: [0, 1, 0] }}
         transition={{ delay, duration: 1.1, repeat: Infinity, repeatDelay: 0.7, ease: 'easeInOut' }}
@@ -294,7 +292,7 @@ function Walkthrough() {
                 <span
                   className={cn(
                     'relative z-10 grid size-9 shrink-0 place-items-center rounded-xl transition-colors',
-                    active ? 'bg-gradient-to-br from-brand to-accent text-white shadow-soft' : done ? 'bg-emerald-500 text-white' : 'bg-subtle text-muted ring-1 ring-inset ring-line',
+                    active ? 'bg-brand text-white shadow-soft' : done ? 'bg-emerald-500 text-white' : 'bg-subtle text-muted ring-1 ring-inset ring-line',
                   )}
                 >
                   {done ? <Check className="size-4" /> : <s.icon className="size-4" />}
@@ -326,7 +324,7 @@ function Walkthrough() {
         })}
       </ol>
 
-      <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#0b1020] shadow-lift">
+      <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#030a1c] shadow-lift">
         <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
           <span className="flex gap-1.5">
             <span className="size-2.5 rounded-full bg-red-400/70" />

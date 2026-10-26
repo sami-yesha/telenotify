@@ -11,7 +11,7 @@ export function GoogleButton({ label }: { label: string }) {
     <>
       <a
         href="/api/auth/google"
-        className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink shadow-soft transition-all hover:-translate-y-px hover:bg-subtle"
+        className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink shadow-soft transition-all hover:shadow-[0_0_0_4px_rgb(42_171_238_/_0.14)] hover:bg-subtle"
       >
         <svg viewBox="0 0 24 24" className="size-4" aria-hidden>
           <path fill="#4285F4" d="M22.6 12.3c0-.8-.1-1.6-.2-2.3H12v4.4h5.9a5 5 0 0 1-2.2 3.3v2.7h3.6c2.1-1.9 3.3-4.8 3.3-8.1Z" />
