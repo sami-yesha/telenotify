@@ -20,7 +20,11 @@ export interface UpdateSmsFallback {
   token?: string | null;
   identifierId?: string | null;
   senderName?: string | null;
+  /** Most SMS in any 24 hours; null removes the cap. */
+  dailyLimit?: number | null;
 }
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 // When Telegram can't reach a customer, send the same text by SMS through the
 // organization's own AfroMessage account. We never pay for or resell SMS: the
@@ -39,9 +43,11 @@ export class SmsFallbackService {
 
   // ---------- Settings ----------
 
-  view(environment: Environment) {
+  async view(environment: Environment) {
     const sandbox = environment.type === 'SANDBOX';
     return {
+      dailyLimit: environment.smsDailyLimit,
+      sentLast24h: await this.sentLast24h(environment.id),
       enabled: environment.smsFallbackEnabled,
       provider: 'afromessage',
       simulated: sandbox,
@@ -63,6 +69,7 @@ export class SmsFallbackService {
     }
     if (dto.identifierId !== undefined) data.afroIdentifierId = dto.identifierId?.trim() || null;
     if (dto.senderName !== undefined) data.afroSenderName = dto.senderName?.trim() || null;
+    if (dto.dailyLimit !== undefined) data.smsDailyLimit = dto.dailyLimit;
     if (dto.enabled !== undefined && dto.token !== null) data.smsFallbackEnabled = dto.enabled;
 
     const hasToken = data.afroTokenEncrypted !== undefined ? Boolean(data.afroTokenEncrypted) : Boolean(environment.afroTokenEncrypted);
@@ -72,9 +79,10 @@ export class SmsFallbackService {
     const updated = await this.prisma.environment.update({ where: { id: environment.id }, data });
     await this.audit.record(environment.orgId, actor, 'sms_fallback.updated', environment.type.toLowerCase(), {
       enabled: updated.smsFallbackEnabled,
+      ...(dto.dailyLimit !== undefined ? { dailyLimit: dto.dailyLimit } : {}),
       ...(data.afroTokenEncrypted !== undefined ? { token: data.afroTokenEncrypted ? 'replaced' : 'removed' } : {}),
     });
-    return { ...this.view(updated), ...(tokenCheck ? { tokenCheck } : {}) };
+    return { ...(await this.view(updated)), ...(tokenCheck ? { tokenCheck } : {}) };
   }
 
   /** Re-checks the saved token, e.g. after topping up or rotating it on AfroMessage. */
@@ -111,6 +119,42 @@ export class SmsFallbackService {
     }
   }
 
+  // ---------- Transparency ----------
+
+  // Every SMS sent (or attempted) with the organization's token, newest first, so it
+  // can be matched line by line against the sent log in their AfroMessage dashboard.
+  async history(environment: Environment, before?: string) {
+    const take = 50;
+    const rows = await this.prisma.message.findMany({
+      where: {
+        environmentId: environment.id,
+        fallbackStatus: { in: ['QUEUED', 'SENT', 'FAILED', 'SKIPPED'] },
+        ...(before ? { fallbackAt: { lt: new Date(before) } } : {}),
+      },
+      orderBy: { fallbackAt: 'desc' },
+      take: take + 1,
+      include: { customer: true },
+    });
+    const items = rows.slice(0, take).map((m) => ({
+      messageId: m.id,
+      to: m.customer.externalId,
+      phone: m.customer.phone,
+      status: m.fallbackStatus!.toLowerCase(),
+      telegramReason: m.reason,
+      providerMessageId: m.fallbackProviderId,
+      error: m.fallbackError,
+      at: m.fallbackAt,
+    }));
+    return { items, next: rows.length > take ? items[items.length - 1].at : null };
+  }
+
+  /** Queued or sent in the last 24 hours: what the daily limit counts. */
+  private sentLast24h(environmentId: string) {
+    return this.prisma.message.count({
+      where: { environmentId, fallbackStatus: { in: ['QUEUED', 'SENT'] }, fallbackAt: { gte: new Date(Date.now() - DAY_MS) } },
+    });
+  }
+
   // ---------- Sending ----------
 
   // Call once a message has ended UNDELIVERABLE or FAILED, before emitting its event,
@@ -125,7 +169,16 @@ export class SmsFallbackService {
         include: { customer: true },
       });
     }
-    const queued = await this.prisma.message.update({ where: { id: message.id }, data: { fallbackStatus: 'QUEUED' }, include: { customer: true } });
+    if (environment.smsDailyLimit != null && (await this.sentLast24h(environment.id)) >= environment.smsDailyLimit) {
+      this.logger.warn(`SMS fallback daily limit (${environment.smsDailyLimit}) reached for environment ${environment.id}`);
+      return this.prisma.message.update({
+        where: { id: message.id },
+        data: { fallbackStatus: 'SKIPPED', fallbackError: `Your daily SMS limit (${environment.smsDailyLimit} in 24 hours) was reached`, fallbackAt: new Date() },
+        include: { customer: true },
+      });
+    }
+    // fallbackAt marks when it was queued until it's sent, so the daily limit counts it.
+    const queued = await this.prisma.message.update({ where: { id: message.id }, data: { fallbackStatus: 'QUEUED', fallbackAt: new Date() }, include: { customer: true } });
     await this.queue.add('send', { messageId: message.id }, { jobId: `fallback_${message.id}` });
     return queued;
   }

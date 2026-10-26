@@ -123,6 +123,11 @@ export class PortalController {
     return this.smsFallback.update(environment, dto, user);
   }
 
+  @Get(':orgId/envs/:env/sms-fallback/history')
+  smsFallbackHistory(@CurrentEnvironment() environment: EnvironmentWithOrg, @Query('before') before?: string) {
+    return this.smsFallback.history(environment, before && !Number.isNaN(Date.parse(before)) ? before : undefined);
+  }
+
   @Post(':orgId/envs/:env/sms-fallback/check')
   @HttpCode(200)
   @Throttle(AUTH_LIMITS.testSms)

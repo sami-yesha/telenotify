@@ -1,4 +1,4 @@
-import { ArrayMaxSize, IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, ValidateIf } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, Matches, Max, MaxLength, Min, ValidateIf } from 'class-validator';
 import { InlineButton } from '../telegram/telegram-api.client';
 
 export class CreateOrgDto {
@@ -49,6 +49,13 @@ export class UpdateSmsFallbackDto {
   @IsString()
   @MaxLength(11)
   senderName?: string | null;
+
+  // null removes the cap.
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(100000)
+  dailyLimit?: number | null;
 }
 
 export class TestSmsDto {

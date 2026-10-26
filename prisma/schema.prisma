@@ -159,6 +159,9 @@ model Environment {
   afroTokenEncrypted String?
   afroIdentifierId   String?
   afroSenderName     String?
+  // Most fallback SMS in any 24 hours; null = no cap. Set by the organization so
+  // a bug or a misuse of its token can only ever cost this much.
+  smsDailyLimit      Int?
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
 
@@ -277,7 +280,7 @@ enum FallbackStatus {
   QUEUED
   SENT
   FAILED
-  // Fallback is on but this customer has no phone number.
+  // Fallback is on but not sent: no phone number, or the daily SMS limit was reached.
   SKIPPED
 }
 
@@ -317,6 +320,7 @@ model Message {
   @@unique([environmentId, idempotencyKey])
   @@index([environmentId, createdAt])
   @@index([environmentId, status])
+  @@index([environmentId, fallbackAt])
 }
 
 // ---------- Phone verification ----------

@@ -218,8 +218,27 @@ export interface SmsFallbackSettings {
   tokenHint: string | null;
   identifierId: string | null;
   senderName: string | null;
+  /** Most SMS in any 24 hours; null = no cap. */
+  dailyLimit: number | null;
+  /** Queued or sent in the last 24 hours (what the limit counts). */
+  sentLast24h: number;
   /** Only after saving a new token: what AfroMessage said about it. */
   tokenCheck?: AfroTokenCheck;
+}
+
+export interface SmsFallbackHistory {
+  items: {
+    messageId: string;
+    to: string;
+    phone: string | null;
+    status: 'queued' | 'sent' | 'failed' | 'skipped';
+    telegramReason: string | null;
+    providerMessageId: string | null;
+    error: string | null;
+    at: string | null;
+  }[];
+  /** Pass as ?before= for the next page; null when there are no more. */
+  next: string | null;
 }
 
 export interface AfroTokenCheck {
