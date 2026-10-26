@@ -20,7 +20,7 @@ const points = [
   {
     icon: WifiOff,
     title: 'Never stuck without a plan',
-    body: 'If someone isn’t on Telegram, or Telegram can’t reach them, you’re told instantly so your SMS fallback covers them.',
+    body: 'If someone isn’t on Telegram, or Telegram can’t reach them, we send the message by SMS through your AfroMessage account. Automatically.',
   },
 ];
 

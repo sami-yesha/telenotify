@@ -13,6 +13,7 @@ import type { Me } from '@/lib/types';
 const links = [
   { href: '#verify', label: 'Verify phones' },
   { href: '#savings', label: 'Savings' },
+  { href: '#sms-fallback', label: 'SMS fallback' },
   { href: '#developers', label: 'Developers' },
   { href: '#sdk', label: 'SDK' },
   { href: '#open-source', label: 'Open source' },

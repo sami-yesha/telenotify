@@ -10,6 +10,7 @@ import { LandingNav } from '@/components/landing/nav';
 import { OneLineVerify } from '@/components/landing/one-line-verify';
 import { OpenSource } from '@/components/landing/open-source';
 import { Savings } from '@/components/landing/savings';
+import { SmsFallbackSection } from '@/components/landing/sms-fallback';
 import { Sdk } from '@/components/landing/sdk';
 import { UseCases } from '@/components/landing/use-cases';
 import { VerifySection } from '@/components/landing/verify-section';
@@ -48,6 +49,7 @@ export default function LandingPage() {
         <VerifySection />
         <OneLineVerify />
         <Savings />
+        <SmsFallbackSection />
         <Features />
         <HowItWorks />
         <Developers />

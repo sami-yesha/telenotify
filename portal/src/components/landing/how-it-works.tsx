@@ -20,7 +20,7 @@ const steps = [
   {
     icon: Webhook,
     title: 'You always know what happened',
-    body: 'SENT, or UNDELIVERABLE with a reason, so your own SMS or email fallback kicks in only for the customers who need it.',
+    body: 'SENT, or UNDELIVERABLE with a reason. With SMS fallback on, we text the customers Telegram can’t reach, through your AfroMessage account.',
     code: 'message.sent · message.undeliverable',
   },
 ];

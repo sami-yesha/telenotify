@@ -26,9 +26,8 @@ const res = await fetch('https://api.telenotify.dev/v1/messages', {
 });
 
 const message = await res.json();
-if (message.status === 'UNDELIVERABLE') {
-  await sms.send(order.phone, text); // your fallback, only when needed
-}`,
+// Not on Telegram? With SMS fallback on, we text them for you:
+// message.fallback → { channel: 'sms', status: 'queued' }`,
   Python: `import os, requests
 
 text = f"Order #{order.id} is out for delivery 🚚"
@@ -43,8 +42,8 @@ res = requests.post(
 )
 
 message = res.json()
-if message["status"] == "UNDELIVERABLE":
-    sms.send(order.phone, text)  # your fallback, only when needed`,
+# Not on Telegram? With SMS fallback on, we text them for you:
+# message["fallback"] → {"channel": "sms", "status": "queued"}`,
   cURL: `curl -X POST https://api.telenotify.dev/v1/messages \\
   -H "x-api-key: tn_test_…" \\
   -H "content-type: application/json" \\

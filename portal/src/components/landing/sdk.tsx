@@ -45,7 +45,7 @@ const telenotify = new Telenotify({
 });
 
 if (message.status === 'UNDELIVERABLE') {
-  // Not on Telegram: your SMS, or our AfroMessage fallback
+  // Not on Telegram: we send it by SMS through your AfroMessage account
 }`,
   },
   {
@@ -172,7 +172,7 @@ function FlowDiagram() {
           </span>
           <div className="min-w-0 text-sm">
             <p className="font-medium text-ink">Not on Telegram? SMS fallback</p>
-            <p className="truncate text-xs text-muted">Your provider, or ours through your AfroMessage account</p>
+            <p className="truncate text-xs text-muted">Sent for you through your AfroMessage account</p>
           </div>
           <TravelDot className="ml-auto" active={inView} color="bg-amber-500" />
         </div>

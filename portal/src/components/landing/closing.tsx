@@ -20,7 +20,7 @@ const faqs = [
   },
   {
     q: 'What happens if a customer isn’t on Telegram?',
-    a: 'The API returns UNDELIVERABLE with reason not_linked immediately. Your system sends that message through your existing SMS or email provider. We tell you exactly when it’s needed.',
+    a: 'Turn on SMS fallback and we send the same message by SMS through your own AfroMessage account, automatically. You don’t integrate with AfroMessage: you only paste your AfroMessage token in the portal, and you pay AfroMessage directly with no markup from us. Prefer your own provider? The API returns UNDELIVERABLE with a reason and we send you a webhook, so your system can send it instead.',
   },
   {
     q: 'Will messages show my business name?',
