@@ -1,5 +1,5 @@
 import { AfroMessageError, checkAfroMessageToken, sendAfroMessage, toAfroMessageNumber } from './afromessage.client';
-import { smsText, SmsFallbackService } from './sms-fallback.service';
+import { isSimulated, smsText, SmsFallbackService } from './sms-fallback.service';
 
 const json = (status: number, body: unknown) => async () => new Response(JSON.stringify(body), { status });
 
@@ -154,5 +154,32 @@ describe('SmsFallbackService.history', () => {
     expect(page.items[0]).toEqual({ messageId: 'm0', to: 'user-0', phone: '251911223344', status: 'sent', telegramReason: 'not_linked', providerMessageId: 'afro-0', error: null, at: at(0) });
     expect(page.next).toEqual(at(49));
     expect(prisma.message.findMany.mock.calls[0][0]).toMatchObject({ where: { environmentId: 'env-1' }, orderBy: { fallbackAt: 'desc' } });
+  });
+});
+
+describe('isSimulated', () => {
+  it('simulates only in a sandbox without a token', () => {
+    expect(isSimulated({ type: 'SANDBOX', afroTokenEncrypted: null })).toBe(true);
+    expect(isSimulated({ type: 'SANDBOX', afroTokenEncrypted: 'enc' })).toBe(false);
+    expect(isSimulated({ type: 'LIVE', afroTokenEncrypted: null })).toBe(false);
+  });
+});
+
+describe('SmsFallbackService.sendTest in the sandbox', () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  it('simulates without a token and sends a real SMS with one', async () => {
+    const key = Buffer.alloc(32, 1).toString('base64');
+    const { encrypt } = await import('../common/crypto');
+    const service = new SmsFallbackService({} as any, { getOrThrow: () => key } as any, {} as any, {} as any, {} as any);
+    const fetch = jest.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify({ acknowledge: 'success', response: { message_id: 'afro-1' } }), { status: 200 }));
+    const org = { name: 'Mela' };
+
+    expect(await service.sendTest({ type: 'SANDBOX', afroTokenEncrypted: null, org } as any, '0911223344')).toMatchObject({ simulated: true });
+    expect(fetch).not.toHaveBeenCalled();
+
+    const withToken = { type: 'SANDBOX', afroTokenEncrypted: encrypt('tok', key), org } as any;
+    expect(await service.sendTest(withToken, '0911223344')).toMatchObject({ simulated: false, providerMessageId: 'afro-1' });
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 });

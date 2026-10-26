@@ -45,6 +45,7 @@ export default function SmsFallbackPage() {
   const path = `${envPath(orgId, env)}/sms-fallback`;
   const { data: settings, mutate } = useSWR<SmsFallbackSettings>(path, fetcher);
   const [mode, setMode] = useState<Mode>('telenotify');
+  const sandbox = env === 'sandbox';
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -175,7 +176,13 @@ export default function SmsFallbackPage() {
                   <Card
                     icon={MessageSquareText}
                     title="Automatic SMS"
-                    description={settings.simulated ? 'Sandbox: nothing is sent. Messages show a simulated SMS so you can build against the events.' : 'Uses the AfroMessage credentials below.'}
+                    description={
+                      settings.simulated
+                        ? 'Sandbox: nothing is sent. Messages show a simulated SMS so you can build against the events. Add a token below to send real ones.'
+                        : sandbox
+                          ? 'Sandbox with your token: real SMS are sent on your AfroMessage balance. Remove the token to go back to simulated.'
+                          : 'Uses the AfroMessage credentials below.'
+                    }
                     actions={
                       <Toggle
                         checked={settings.enabled}
@@ -190,23 +197,20 @@ export default function SmsFallbackPage() {
                         {settings.enabled ? 'On' : 'Off'}
                       </Badge>
                       {settings.simulated && <Badge tone="amber">Simulated</Badge>}
+                      {sandbox && !settings.simulated && <Badge tone="blue">Real SMS</Badge>}
                       {!settings.simulated && !settings.configured && <span className="text-muted">Add your AfroMessage token to turn it on.</span>}
                     </div>
                   </Card>
 
-                  {settings.simulated && (
-                    <Card icon={ShieldCheck} title="AfroMessage account" description="Your AfroMessage token is added in Live. The sandbox never sends a real SMS, so it doesn't need one.">
-                      <Link
-                        href={`/o/${orgId}/live/sms-fallback`}
-                        className="inline-flex items-center gap-2 rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-page shadow-soft"
-                      >
-                        <KeyRound className="size-4" /> Add your token in Live →
-                      </Link>
-                    </Card>
-                  )}
-
-                  {!settings.simulated && (
-                    <Card icon={ShieldCheck} title="AfroMessage account" description="Find these in your AfroMessage dashboard. The token is encrypted and never shown again.">
+                  <Card
+                    icon={ShieldCheck}
+                    title="AfroMessage account"
+                    description={
+                      sandbox
+                        ? 'Optional in the sandbox. Without a token, SMS are simulated. Add one to send real SMS (on your AfroMessage balance) and test the whole flow on your own phone.'
+                        : 'Find these in your AfroMessage dashboard. The token is encrypted and never shown again.'
+                    }
+                  >
                       <form onSubmit={saveCredentials} className="space-y-4">
                         <Input
                           name="token"
@@ -232,7 +236,10 @@ export default function SmsFallbackPage() {
                             <Button
                               type="button"
                               variant="ghost"
-                              onClick={() => confirm('Remove your AfroMessage token? It is deleted at once and automatic SMS turns off.') && save({ token: null })}
+                              onClick={() =>
+                              confirm(sandbox ? 'Remove your AfroMessage token? It is deleted at once and the sandbox goes back to simulated SMS.' : 'Remove your AfroMessage token? It is deleted at once and automatic SMS turns off.') &&
+                              save({ token: null })
+                            }
                             >
                               <Trash2 className="size-4" /> Remove token
                             </Button>
@@ -250,8 +257,7 @@ export default function SmsFallbackPage() {
                           )}
                         </div>
                       )}
-                    </Card>
-                  )}
+                  </Card>
 
                   <DailyLimit settings={settings} saving={saving} onSave={(dailyLimit) => save({ dailyLimit })} />
                   <TestSms path={path} simulated={settings.simulated} configured={settings.configured} />

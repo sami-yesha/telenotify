@@ -28,7 +28,8 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 // When Telegram can't reach a customer, send the same text by SMS through the
 // organization's own AfroMessage account. We never pay for or resell SMS: the
-// organization's token and balance are used. The sandbox only simulates it.
+// organization's token and balance are used. The sandbox simulates it, unless the
+// organization saves a token there too to test real SMS on their own phone.
 @Injectable()
 export class SmsFallbackService {
   private readonly logger = new Logger(SmsFallbackService.name);
@@ -44,14 +45,14 @@ export class SmsFallbackService {
   // ---------- Settings ----------
 
   async view(environment: Environment) {
-    const sandbox = environment.type === 'SANDBOX';
+    const simulated = isSimulated(environment);
     return {
       dailyLimit: environment.smsDailyLimit,
       sentLast24h: await this.sentLast24h(environment.id),
       enabled: environment.smsFallbackEnabled,
       provider: 'afromessage',
-      simulated: sandbox,
-      configured: sandbox || Boolean(environment.afroTokenEncrypted),
+      simulated,
+      configured: simulated || Boolean(environment.afroTokenEncrypted),
       tokenHint: environment.afroTokenEncrypted ? `…${this.token(environment).slice(-4)}` : null,
       identifierId: environment.afroIdentifierId,
       senderName: environment.afroSenderName,
@@ -61,7 +62,9 @@ export class SmsFallbackService {
   async update(environment: Environment, dto: UpdateSmsFallback, actor: User) {
     const data: Partial<Environment> = {};
     let tokenCheck: Awaited<ReturnType<SmsFallbackService['checkToken']>> | undefined;
-    if (dto.token === null) Object.assign(data, { afroTokenEncrypted: null, smsFallbackEnabled: false });
+    // Live can't send without a token, so removing it turns fallback off; the sandbox
+    // just goes back to simulating.
+    if (dto.token === null) Object.assign(data, { afroTokenEncrypted: null, ...(environment.type === 'LIVE' ? { smsFallbackEnabled: false } : {}) });
     else if (dto.token?.trim()) {
       // Ask AfroMessage first, so a typo is caught now and not when a customer misses an SMS.
       tokenCheck = await this.checkToken(dto.token.trim());
@@ -108,7 +111,7 @@ export class SmsFallbackService {
   async sendTest(environment: Environment & { org: Organization }, phone: string) {
     const to = normalizePhone(phone);
     if (to.length < 9) throw new BadRequestException('Enter a valid phone number');
-    if (environment.type === 'SANDBOX') return { ok: true, simulated: true, to };
+    if (isSimulated(environment)) return { ok: true, simulated: true, to };
     if (!environment.afroTokenEncrypted) throw new BadRequestException('Add your AfroMessage API token first');
     try {
       const { messageId } = await sendAfroMessage(this.credentials(environment), toAfroMessageNumber(to), `Telenotify test: SMS fallback for ${environment.org.name} works.`);
@@ -189,7 +192,7 @@ export class SmsFallbackService {
     if (!message || message.fallbackStatus !== 'QUEUED') return;
     const { environment, customer } = message;
 
-    if (environment.type === 'SANDBOX') return this.markSent(environment, message, 'simulated');
+    if (isSimulated(environment)) return this.markSent(environment, message, 'simulated');
     if (!environment.smsFallbackEnabled || !environment.afroTokenEncrypted || !customer.phone) {
       return this.markFailed(environment, message, 'SMS fallback was turned off before this message was sent');
     }
@@ -229,6 +232,11 @@ export class SmsFallbackService {
   private credentials(environment: Environment): AfroMessageCredentials {
     return { token: this.token(environment), identifierId: environment.afroIdentifierId, senderName: environment.afroSenderName };
   }
+}
+
+/** Sandbox without a token: nothing is sent. A sandbox with a token sends real SMS. */
+export function isSimulated(environment: Pick<Environment, 'type' | 'afroTokenEncrypted'>): boolean {
+  return environment.type === 'SANDBOX' && !environment.afroTokenEncrypted;
 }
 
 /** The message text, with URL buttons written out since SMS has none. */
