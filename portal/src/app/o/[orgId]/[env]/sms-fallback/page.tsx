@@ -194,6 +194,17 @@ export default function SmsFallbackPage() {
                     </div>
                   </Card>
 
+                  {settings.simulated && (
+                    <Card icon={ShieldCheck} title="AfroMessage account" description="Your AfroMessage token is added in Live. The sandbox never sends a real SMS, so it doesn't need one.">
+                      <Link
+                        href={`/o/${orgId}/live/sms-fallback`}
+                        className="inline-flex items-center gap-2 rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-page shadow-soft"
+                      >
+                        <KeyRound className="size-4" /> Add your token in Live →
+                      </Link>
+                    </Card>
+                  )}
+
                   {!settings.simulated && (
                     <Card icon={ShieldCheck} title="AfroMessage account" description="Find these in your AfroMessage dashboard. The token is encrypted and never shown again.">
                       <form onSubmit={saveCredentials} className="space-y-4">
