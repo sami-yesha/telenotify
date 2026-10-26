@@ -218,6 +218,14 @@ export interface SmsFallbackSettings {
   tokenHint: string | null;
   identifierId: string | null;
   senderName: string | null;
+  /** Only after saving a new token: what AfroMessage said about it. */
+  tokenCheck?: AfroTokenCheck;
+}
+
+export interface AfroTokenCheck {
+  /** false: AfroMessage couldn't be reached, so the token was saved unchecked. */
+  verified: boolean;
+  balance: string | null;
 }
 
 export interface MessageFallback {

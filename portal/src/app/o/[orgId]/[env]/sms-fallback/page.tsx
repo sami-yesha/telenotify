@@ -1,13 +1,13 @@
 'use client';
 
-import { FlaskConical, MessageSquareText, Send, ShieldCheck } from 'lucide-react';
+import { BadgeCheck, FlaskConical, MessageSquareText, Send, ShieldCheck } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import useSWR from 'swr';
 import { Alert, Badge, Button, Card, CodeBlock, Input, PageHeader, Skeleton } from '@/components/ui';
 import { api, ApiError, fetcher } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { envPath, useOrgParams } from '@/lib/hooks';
-import type { SmsFallbackSettings } from '@/lib/types';
+import type { AfroTokenCheck, SmsFallbackSettings } from '@/lib/types';
 
 const steps = [
   'A message can’t be delivered on Telegram: the customer never connected, blocked the bot, or Telegram kept failing.',
@@ -22,18 +22,37 @@ export default function SmsFallbackPage() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [check, setCheck] = useState<AfroTokenCheck | null>(null);
+  const [checking, setChecking] = useState(false);
 
   async function save(body: Record<string, unknown>) {
     setSaving(true);
     setError(null);
     setSaved(false);
+    setCheck(null);
     try {
-      mutate(await api<SmsFallbackSettings>(path, { method: 'PUT', body }), false);
+      const { tokenCheck, ...next } = await api<SmsFallbackSettings>(path, { method: 'PUT', body });
+      mutate(next, false);
+      if (tokenCheck) setCheck(tokenCheck);
       setSaved(true);
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'Something went wrong');
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function checkToken() {
+    setChecking(true);
+    setError(null);
+    setSaved(false);
+    setCheck(null);
+    try {
+      setCheck(await api<AfroTokenCheck>(`${path}/check`, { method: 'POST' }));
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Something went wrong');
+    } finally {
+      setChecking(false);
     }
   }
 
@@ -108,6 +127,11 @@ export default function SmsFallbackPage() {
                       Save
                     </Button>
                     {settings.tokenHint && (
+                      <Button type="button" variant="secondary" loading={checking} onClick={checkToken}>
+                        <BadgeCheck className="size-4" /> Check token
+                      </Button>
+                    )}
+                    {settings.tokenHint && (
                       <Button
                         type="button"
                         variant="ghost"
@@ -118,6 +142,17 @@ export default function SmsFallbackPage() {
                     )}
                   </div>
                 </form>
+                {check && (
+                  <div className="mt-4">
+                    {check.verified ? (
+                      <Alert tone="green">
+                        AfroMessage accepted this token.{check.balance !== null && <> Balance: <b>{check.balance}</b>.</>}
+                      </Alert>
+                    ) : (
+                      <Alert tone="amber">Saved, but AfroMessage couldn&apos;t be reached to check the token. Use “Check token” or send a test SMS to confirm it.</Alert>
+                    )}
+                  </div>
+                )}
               </Card>
             )}
 

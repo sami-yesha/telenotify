@@ -123,6 +123,13 @@ export class PortalController {
     return this.smsFallback.update(environment, dto, user);
   }
 
+  @Post(':orgId/envs/:env/sms-fallback/check')
+  @HttpCode(200)
+  @Throttle(AUTH_LIMITS.testSms)
+  checkSmsFallbackToken(@CurrentEnvironment() environment: EnvironmentWithOrg) {
+    return this.smsFallback.checkSavedToken(environment);
+  }
+
   @Post(':orgId/envs/:env/sms-fallback/test')
   @HttpCode(200)
   @Throttle(AUTH_LIMITS.testSms)

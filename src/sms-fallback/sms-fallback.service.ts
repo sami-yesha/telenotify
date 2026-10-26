@@ -9,7 +9,7 @@ import { normalizePhone } from '../common/phone';
 import { toMessageView } from '../messages/message-view';
 import { PrismaService } from '../prisma/prisma.service';
 import { WebhooksService } from '../webhooks/webhooks.service';
-import { AfroMessageCredentials, AfroMessageError, sendAfroMessage, toAfroMessageNumber } from './afromessage.client';
+import { AfroMessageCredentials, AfroMessageError, checkAfroMessageToken, sendAfroMessage, toAfroMessageNumber } from './afromessage.client';
 import { FallbackJob, SMS_FALLBACK_QUEUE } from './sms-fallback.constants';
 
 type MessageWithCustomer = Message & { customer: Customer };
@@ -54,8 +54,13 @@ export class SmsFallbackService {
 
   async update(environment: Environment, dto: UpdateSmsFallback, actor: User) {
     const data: Partial<Environment> = {};
+    let tokenCheck: Awaited<ReturnType<SmsFallbackService['checkToken']>> | undefined;
     if (dto.token === null) Object.assign(data, { afroTokenEncrypted: null, smsFallbackEnabled: false });
-    else if (dto.token?.trim()) data.afroTokenEncrypted = encrypt(dto.token.trim(), this.config.getOrThrow('ENCRYPTION_KEY'));
+    else if (dto.token?.trim()) {
+      // Ask AfroMessage first, so a typo is caught now and not when a customer misses an SMS.
+      tokenCheck = await this.checkToken(dto.token.trim());
+      data.afroTokenEncrypted = encrypt(dto.token.trim(), this.config.getOrThrow('ENCRYPTION_KEY'));
+    }
     if (dto.identifierId !== undefined) data.afroIdentifierId = dto.identifierId?.trim() || null;
     if (dto.senderName !== undefined) data.afroSenderName = dto.senderName?.trim() || null;
     if (dto.enabled !== undefined && dto.token !== null) data.smsFallbackEnabled = dto.enabled;
@@ -69,7 +74,27 @@ export class SmsFallbackService {
       enabled: updated.smsFallbackEnabled,
       ...(data.afroTokenEncrypted !== undefined ? { token: data.afroTokenEncrypted ? 'replaced' : 'removed' } : {}),
     });
-    return this.view(updated);
+    return { ...this.view(updated), ...(tokenCheck ? { tokenCheck } : {}) };
+  }
+
+  /** Re-checks the saved token, e.g. after topping up or rotating it on AfroMessage. */
+  async checkSavedToken(environment: Environment) {
+    if (!environment.afroTokenEncrypted) throw new BadRequestException('Add your AfroMessage API token first');
+    return this.checkToken(this.token(environment));
+  }
+
+  // Rejects a token AfroMessage refuses. If AfroMessage can't be reached we still
+  // save it, and say it wasn't checked, rather than block the settings page.
+  private async checkToken(token: string): Promise<{ verified: boolean; balance: string | null }> {
+    try {
+      const result = await checkAfroMessageToken(token);
+      if (!result.valid) throw new BadRequestException(`AfroMessage rejected this token: ${result.reason}. Copy it again from your AfroMessage dashboard.`);
+      return { verified: true, balance: result.balance };
+    } catch (error) {
+      if (!(error instanceof AfroMessageError)) throw error;
+      this.logger.warn(`Could not check an AfroMessage token: ${error.message}`);
+      return { verified: false, balance: null };
+    }
   }
 
   async sendTest(environment: Environment & { org: Organization }, phone: string) {

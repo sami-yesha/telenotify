@@ -1,4 +1,4 @@
-import { AfroMessageError, sendAfroMessage, toAfroMessageNumber } from './afromessage.client';
+import { AfroMessageError, checkAfroMessageToken, sendAfroMessage, toAfroMessageNumber } from './afromessage.client';
 import { smsText, SmsFallbackService } from './sms-fallback.service';
 
 const json = (status: number, body: unknown) => async () => new Response(JSON.stringify(body), { status });
@@ -70,5 +70,54 @@ describe('SmsFallbackService.trigger', () => {
       expect((await run()).fallbackStatus).toBeNull();
       expect(prisma.message.update).not.toHaveBeenCalled();
     }
+  });
+});
+
+describe('checkAfroMessageToken', () => {
+  const text = (status: number, body: string) => async () => new Response(body, { status });
+
+  it('reports a rejected token with AfroMessage\'s reason', async () => {
+    const result = await checkAfroMessageToken('bad', text(401, 'Unauthorized (401-11) : Invalid token. JWT signature does not match locally computed signature. JWT validity cannot be asserted.') as any);
+    expect(result).toEqual({ valid: false, reason: 'Invalid token' });
+  });
+
+  it('accepts the token and picks out a balance wherever it is', async () => {
+    expect(await checkAfroMessageToken('ok', json(200, { acknowledge: 'success', response: { balance: 412.5 } }) as any)).toEqual({ valid: true, balance: '412.5' });
+    expect(await checkAfroMessageToken('ok', text(200, 'fine') as any)).toEqual({ valid: true, balance: null });
+  });
+
+  it('throws a retryable error when AfroMessage is down', async () => {
+    await expect(checkAfroMessageToken('t', json(503, {}) as any)).rejects.toMatchObject({ retryable: true });
+  });
+});
+
+describe('SmsFallbackService.update token check', () => {
+  const key = Buffer.alloc(32, 1).toString('base64');
+  function setup() {
+    const prisma = { environment: { update: jest.fn().mockImplementation(({ data }) => Promise.resolve({ id: 'env-1', type: 'LIVE', smsFallbackEnabled: false, ...data })) } };
+    const config = { getOrThrow: () => key };
+    const service = new SmsFallbackService(prisma as any, config as any, {} as any, { record: jest.fn() } as any, {} as any);
+    return { service, prisma, env: { id: 'env-1', orgId: 'org-1', type: 'LIVE', afroTokenEncrypted: null } as any };
+  }
+  afterEach(() => jest.restoreAllMocks());
+
+  it('refuses to save a token AfroMessage rejects', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue(new Response('Unauthorized (401-11) : Invalid token. JWT strings must contain exactly 2 period characters.', { status: 401 }));
+    const { service, prisma, env } = setup();
+    await expect(service.update(env, { token: 'typo' }, {} as any)).rejects.toThrow(/AfroMessage rejected this token/);
+    expect(prisma.environment.update).not.toHaveBeenCalled();
+  });
+
+  it('saves a good token and returns the check', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify({ acknowledge: 'success', response: { balance: 90 } }), { status: 200 }));
+    const { service, env } = setup();
+    const view = await service.update(env, { token: 'good' }, {} as any);
+    expect(view).toMatchObject({ configured: true, tokenHint: '…good', tokenCheck: { verified: true, balance: '90' } });
+  });
+
+  it('still saves when AfroMessage is unreachable, marked unverified', async () => {
+    jest.spyOn(global, 'fetch').mockRejectedValue(new Error('ECONNRESET'));
+    const { service, env } = setup();
+    expect(await service.update(env, { token: 'good' }, {} as any)).toMatchObject({ tokenCheck: { verified: false } });
   });
 });

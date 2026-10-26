@@ -61,3 +61,46 @@ export async function sendAfroMessage(
 export function toAfroMessageNumber(phone: string): string {
   return phone.startsWith('+') ? phone : `+${phone}`;
 }
+
+const BALANCE_URL = 'https://api.afromessage.com/api/balance';
+
+export type TokenCheck = { valid: true; balance: string | null } | { valid: false; reason: string };
+
+// Checks a token without sending an SMS. AfroMessage authenticates before anything
+// else, so a 401/403 means the token itself is wrong. Network trouble throws a
+// retryable AfroMessageError: the caller decides whether that should block a save.
+export async function checkAfroMessageToken(token: string, fetchImpl: typeof fetch = fetch): Promise<TokenCheck> {
+  let response: Response;
+  try {
+    response = await fetchImpl(BALANCE_URL, { headers: { authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(TIMEOUT_MS) });
+  } catch (error) {
+    throw new AfroMessageError(`AfroMessage unreachable: ${(error as Error).message}`, true);
+  }
+  const raw = await response.text();
+  if (response.status === 401 || response.status === 403) {
+    // e.g. "Unauthorized (401-11) : Invalid token. JWT signature does not match…"
+    const detail = raw.replace(/^Unauthorized \([^)]*\)\s*:\s*/, '').split('. ')[0].trim();
+    return { valid: false, reason: detail || 'Invalid token' };
+  }
+  if (!response.ok) throw new AfroMessageError(`AfroMessage error (HTTP ${response.status})`, response.status >= 500);
+  return { valid: true, balance: findBalance(raw) };
+}
+
+// The balance response isn't documented, so look for a "balance" field anywhere in it.
+function findBalance(raw: string): string | null {
+  try {
+    const search = (value: unknown): unknown => {
+      if (!value || typeof value !== 'object') return undefined;
+      for (const [key, inner] of Object.entries(value)) {
+        if (/balance/i.test(key) && (typeof inner === 'number' || typeof inner === 'string')) return inner;
+        const found = search(inner);
+        if (found !== undefined) return found;
+      }
+      return undefined;
+    };
+    const found = search(JSON.parse(raw));
+    return found === undefined ? null : String(found);
+  } catch {
+    return null;
+  }
+}
