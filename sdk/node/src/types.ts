@@ -119,7 +119,10 @@ export type VerificationStatus = 'PENDING' | 'AWAITING_CONTACT' | 'VERIFIED' | '
 export interface Verification {
   id: string;
   status: VerificationStatus;
-  reason: 'phone_mismatch' | null;
+  /** phone_mismatch: the Telegram number differs from `phone`. denied: a Telenotify Pass member tapped "No". */
+  reason: 'phone_mismatch' | 'denied' | null;
+  /** How it completed: "telegram" (shared their contact with your bot) or "pass" (one tap in Telenotify Pass). */
+  method: 'telegram' | 'pass' | null;
   externalId: string | null;
   /** The verified number (normalized, e.g. 251911223344) once VERIFIED. */
   phone: string | null;

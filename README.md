@@ -116,6 +116,7 @@ The portal includes:
 - **Live bot:** connect your own bot.
 - **Logs:** messages and customers.
 - **Integration guide.**
+- **Telenotify Pass:** an optional network of people who verified their phone once. When a business passes `phone` to a verification, a member gets a Yes/No in our Pass bot (`PASS_BOT_TOKEN`) and confirms with one tap (`method: "pass"`). Opt-in, `/stop` deletes them, membership is never revealed to businesses, and requests are rate-limited.
 - **Verified business badge:** owners send their legal name, TIN and trade license from Organization settings; an operator checks them and approves in `/admin`. The badge shows on the hosted verify page, at the public `/check` page ("Is this bot real?") and, optionally, on the bot's Telegram profile. Only the hosted service can grant it (see [TRADEMARK.md](TRADEMARK.md)).
 
 ## Security

@@ -15,9 +15,10 @@ function setup(open: object | null) {
   const customers = { linkVerified: jest.fn().mockResolvedValue({ linked: true }) };
   const webhooks = { emit: jest.fn() };
   const billing = { assertWithinQuota: jest.fn() };
-  const service = new VerificationsService(prisma as any, telegram as any, customers as any, webhooks as any, billing as any, { get: (_k: string, d: unknown) => d ?? 'http://portal.test' } as any);
+  const pass = { offer: jest.fn(), enabled: () => true, joinUrl: jest.fn().mockResolvedValue('https://t.me/pass_bot?start=j_x'), replaceRequest: jest.fn() };
+  const service = new VerificationsService(prisma as any, telegram as any, customers as any, webhooks as any, billing as any, { get: (_k: string, d: unknown) => d ?? 'http://portal.test' } as any, pass as any);
   const events = () => webhooks.emit.mock.calls.map((c) => c[1]);
-  return { service, prisma, customers, events };
+  return { service, prisma, customers, events, pass };
 }
 
 const chat = { chatId: '777', username: 'kebede' };
@@ -42,7 +43,7 @@ describe('VerificationsService', () => {
   it('verifies the shared own contact and links the customer', async () => {
     const { service, customers, events } = setup(awaiting());
     const outcome = await service.completeWithContact({ environmentId: 'env-1' }, chat, { phone_number: '+251911223344', user_id: 42 }, 42);
-    expect(outcome).toEqual({ kind: 'verified', orgName: 'Abebe Pharmacy' });
+    expect(outcome).toEqual({ kind: 'verified', orgName: 'Abebe Pharmacy', passJoinUrl: 'https://t.me/pass_bot?start=j_x' });
     expect(customers.linkVerified).toHaveBeenCalledWith(environment, 'cust_1', '251911223344', chat);
     expect(events()).toEqual(['customer.linked', 'verification.completed']);
   });

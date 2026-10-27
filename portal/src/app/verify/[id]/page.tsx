@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertTriangle, ArrowRight, BadgeCheck, Check, Clock, Smartphone } from 'lucide-react';
+import { AlertTriangle, ArrowRight, BadgeCheck, Check, Clock, Fingerprint, Smartphone } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useParams } from 'next/navigation';
 import QRCode from 'qrcode';
@@ -26,6 +26,10 @@ interface HostedVerification {
   origin: string | null;
   phone: string | null;
   token: string | null;
+  /** A number was given and Telenotify Pass is on: a member may have a Yes/No waiting in Telegram. */
+  passAvailable: boolean;
+  /** After verifying: join Telenotify Pass to verify with one tap next time. */
+  passJoinUrl: string | null;
 }
 
 const FINAL = ['VERIFIED', 'FAILED', 'EXPIRED'];
@@ -53,13 +57,14 @@ export default function HostedVerifyPage() {
       // Only the allowed website that opened this popup can receive it.
       window.opener.postMessage(message, data.origin);
       setHandedBack('popup');
-      if (data.status === 'VERIFIED') setTimeout(() => window.close(), 1600);
+      // The site already has the result; stay open if we're offering Telenotify Pass.
+      if (data.status === 'VERIFIED' && !data.passJoinUrl) setTimeout(() => window.close(), 1600);
     } else if (data.returnUrl) {
       setHandedBack('redirect');
       const target = new URL(data.returnUrl);
       target.searchParams.set('telenotify_verification', data.id);
       if (data.token) target.searchParams.set('telenotify_token', data.token);
-      setTimeout(() => window.location.assign(target.toString()), data.status === 'VERIFIED' ? 1600 : 3500);
+      setTimeout(() => window.location.assign(target.toString()), data.status === 'VERIFIED' ? (data.passJoinUrl ? 6000 : 1600) : 3500);
     }
   }, [data]);
 
@@ -119,7 +124,7 @@ export default function HostedVerifyPage() {
         <AnimatePresence mode="wait">
           <motion.div key={data.status} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="mt-7">
             {data.status === 'VERIFIED' ? (
-              <Verified phone={data.phone} handedBack={handedBack} site={site} />
+              <Verified phone={data.phone} handedBack={handedBack} site={site} passJoinUrl={data.passJoinUrl} />
             ) : data.status === 'FAILED' ? (
               <Problem title="That number doesn't match">
                 The phone number on this Telegram account isn&apos;t the one you entered at {data.orgName}. Go back and check the number.
@@ -178,6 +183,15 @@ function Waiting({ data }: { data: HostedVerification }) {
         </>
       )}
 
+      {data.passAvailable && (
+        <p className="mt-5 flex items-start gap-2 rounded-lg bg-brand/5 px-3 py-2 text-xs text-muted ring-1 ring-inset ring-brand/15">
+          <Fingerprint className="mt-0.5 size-4 shrink-0 text-brand" />
+          <span>
+            <b className="text-ink">Using Telenotify Pass?</b> Check Telegram: you may already have a Yes/No request there.
+          </span>
+        </p>
+      )}
+
       <p className="mt-5 flex items-center justify-center gap-2 text-xs text-muted">
         <span className="relative flex size-2">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand opacity-60" />
@@ -200,7 +214,7 @@ function Step({ n, done, active, children }: { n: number; done: boolean; active:
   );
 }
 
-function Verified({ phone, handedBack, site }: { phone: string | null; handedBack: 'popup' | 'redirect' | null; site: string | null }) {
+function Verified({ phone, handedBack, site, passJoinUrl }: { phone: string | null; handedBack: 'popup' | 'redirect' | null; site: string | null; passJoinUrl: string | null }) {
   return (
     <div className="flex flex-col items-center py-4 text-center">
       <motion.span
@@ -216,8 +230,22 @@ function Verified({ phone, handedBack, site }: { phone: string | null; handedBac
       <h1 className="mt-5 font-display text-2xl font-medium text-ink">Phone number verified</h1>
       {phone && <p className="mt-1 font-mono text-sm text-muted">+{phone.replace(/^(\d{3})(\d{2})\d+(\d{2})$/, '$1 $2•• ••• •$3')}</p>}
       <p className="mt-4 text-sm text-muted">
-        {handedBack === 'popup' ? 'All done. This window will close.' : handedBack === 'redirect' ? `Taking you back to ${site ?? 'the site'}…` : `You can go back to ${site ?? 'the site'} now.`}
+        {handedBack === 'popup' ? (passJoinUrl ? 'All done. You can close this window.' : 'All done. This window will close.') : handedBack === 'redirect' ? `Taking you back to ${site ?? 'the site'}…` : `You can go back to ${site ?? 'the site'} now.`}
       </p>
+      {passJoinUrl && (
+        <a
+          href={passJoinUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-5 flex w-full items-center gap-3 rounded-xl border border-brand/25 bg-brand/5 px-4 py-3 text-left transition-colors hover:bg-brand/10"
+        >
+          <Fingerprint className="size-5 shrink-0 text-brand" />
+          <span className="text-sm">
+            <b className="block text-ink">Verify with one tap next time</b>
+            <span className="text-muted">Join Telenotify Pass in Telegram. You approve every request; /stop anytime.</span>
+          </span>
+        </a>
+      )}
     </div>
   );
 }

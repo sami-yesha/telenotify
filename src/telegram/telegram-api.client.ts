@@ -6,6 +6,12 @@ export interface InlineButton {
   url: string;
 }
 
+/** A button that sends `data` back to the bot (a callback_query) instead of opening a link. */
+export interface CallbackButton {
+  text: string;
+  callback_data: string;
+}
+
 export class TelegramApiError extends Error {
   constructor(
     readonly errorCode: number,
@@ -47,11 +53,11 @@ export class TelegramApiClient {
     return this.call('setMyShortDescription', { short_description: shortDescription });
   }
 
-  setWebhook(url: string, secretToken: string): Promise<boolean> {
+  setWebhook(url: string, secretToken: string, allowedUpdates: string[] = ['message', 'my_chat_member']): Promise<boolean> {
     return this.call('setWebhook', {
       url,
       secret_token: secretToken,
-      allowed_updates: ['message', 'my_chat_member'],
+      allowed_updates: allowedUpdates,
     });
   }
 
@@ -62,7 +68,7 @@ export class TelegramApiClient {
   sendMessage(
     chatId: string,
     text: string,
-    options: { buttons?: InlineButton[][]; requestContact?: boolean; html?: boolean } = {},
+    options: { buttons?: (InlineButton | CallbackButton)[][]; requestContact?: boolean; html?: boolean } = {},
   ): Promise<{ message_id: number }> {
     let replyMarkup: unknown;
     if (options.buttons?.length) {
@@ -79,6 +85,16 @@ export class TelegramApiClient {
 
   removeKeyboardMessage(chatId: string, text: string): Promise<{ message_id: number }> {
     return this.call('sendMessage', { chat_id: chatId, text, reply_markup: { remove_keyboard: true } });
+  }
+
+  /** Replaces a sent message's text; buttons are removed unless given. */
+  editMessageText(chatId: string, messageId: string | number, text: string, buttons?: (InlineButton | CallbackButton)[][]): Promise<unknown> {
+    return this.call('editMessageText', { chat_id: chatId, message_id: Number(messageId), text, reply_markup: { inline_keyboard: buttons ?? [] } });
+  }
+
+  /** Stops the button's loading spinner; text shows as a small toast. */
+  answerCallbackQuery(callbackQueryId: string, text?: string): Promise<boolean> {
+    return this.call('answerCallbackQuery', { callback_query_id: callbackQueryId, ...(text ? { text } : {}) });
   }
 
   private async call<T>(method: string, body: Record<string, unknown>): Promise<T> {

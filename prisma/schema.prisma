@@ -381,13 +381,38 @@ model Verification {
   // popup receives the result (postMessage).
   returnUrl      String?
   origin         String?
+  // How it completed: "telegram" (shared contact with the business's bot) or "pass".
+  method         String?
+  // Telenotify Pass: the member we asked to confirm with one tap, and that message.
+  passIdentityId String?
+  passPushedAt   DateTime?
+  passMessageId  String?
+  // In t.me/<pass bot>?start=j_<token>: joins Pass with the number verified here.
+  passJoinToken  String?            @unique
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
 
-  environment Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  environment  Environment   @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  passIdentity PassIdentity? @relation(fields: [passIdentityId], references: [id], onDelete: SetNull)
 
   @@index([environmentId, createdAt])
   @@index([telegramChatId, status])
+  @@index([passIdentityId, passPushedAt])
+}
+
+// Telenotify Pass: a person who chose to keep their Telegram-verified number with us,
+// so any business on Telenotify can confirm it with one tap in the Pass bot. Opt-in,
+// and /stop or blocking the bot deletes the row.
+model PassIdentity {
+  id             String   @id @default(uuid())
+  telegramUserId String   @unique
+  // Their private chat with the Pass bot.
+  chatId         String
+  phone          String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  verifications Verification[]
 }
 
 // ---------- Webhook delivery log ----------

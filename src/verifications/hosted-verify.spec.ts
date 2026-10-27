@@ -34,6 +34,7 @@ describe('VerificationsService.createPublic', () => {
       {} as any,
       { assertWithinQuota: jest.fn() } as any,
       { get: (_k: string, d: unknown) => (_k === 'PORTAL_URL' ? 'https://portal.test' : d) } as any,
+      { offer: jest.fn(), enabled: () => false, joinUrl: jest.fn().mockResolvedValue(null), replaceRequest: jest.fn() } as any,
     );
     return { service, prisma };
   }

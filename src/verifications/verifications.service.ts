@@ -9,6 +9,7 @@ import { ChatScope, CustomersService, TelegramChat } from '../customers/customer
 import { PrismaService } from '../prisma/prisma.service';
 import { TelegramService } from '../telegram/telegram.service';
 import { WebhooksService } from '../webhooks/webhooks.service';
+import { maskPhone, PassService } from './pass.service';
 import { signResult } from './result-token';
 
 // Telegram start parameters for verification links look like "v_<token>".
@@ -17,7 +18,7 @@ export const VERIFICATION_PREFIX = 'v_';
 export type ContactOutcome =
   | { kind: 'none' }
   | { kind: 'not_own_contact' }
-  | { kind: 'verified'; orgName: string }
+  | { kind: 'verified'; orgName: string; passJoinUrl: string | null }
   | { kind: 'mismatch'; orgName: string };
 
 @Injectable()
@@ -29,6 +30,7 @@ export class VerificationsService {
     private readonly webhooks: WebhooksService,
     private readonly billing: BillingService,
     private readonly config: ConfigService,
+    private readonly pass: PassService,
   ) {}
 
   async create(
@@ -56,6 +58,8 @@ export class VerificationsService {
         origin: input.origin,
       },
     });
+    // A Telenotify Pass member with this number gets a one-tap Yes/No in parallel.
+    if (verification.expectedPhone) void this.pass.offer(verification.id);
     return this.toView(verification, botUsername);
   }
 
@@ -116,7 +120,7 @@ export class VerificationsService {
     if (verification.expectedPhone && verification.expectedPhone !== phone) {
       const failed = await this.prisma.verification.update({
         where: { id: verification.id },
-        data: { status: 'FAILED', reason: 'phone_mismatch', phone, telegramUserId: String(fromUserId) },
+        data: { status: 'FAILED', reason: 'phone_mismatch', phone, telegramUserId: String(fromUserId), method: 'telegram' },
       });
       await this.webhooks.emit(environment, 'verification.failed', this.toView(failed));
       return { kind: 'mismatch', orgName };
@@ -124,8 +128,9 @@ export class VerificationsService {
 
     const verified = await this.prisma.verification.update({
       where: { id: verification.id },
-      data: { status: 'VERIFIED', phone, telegramUserId: String(fromUserId), verifiedAt: new Date() },
+      data: { status: 'VERIFIED', phone, telegramUserId: String(fromUserId), verifiedAt: new Date(), method: 'telegram' },
     });
+    await this.pass.replaceRequest({ ...verified, passIdentity: await this.passIdentityOf(verified) }, `✅ Confirmed in ${orgName}'s bot.`);
     if (verification.externalId) {
       const { linked } = await this.customers.linkVerified(environment, verification.externalId, phone, chat);
       if (linked) {
@@ -133,7 +138,44 @@ export class VerificationsService {
       }
     }
     await this.webhooks.emit(environment, 'verification.completed', this.toView(verified));
-    return { kind: 'verified', orgName };
+    return { kind: 'verified', orgName, passJoinUrl: await this.pass.joinUrl(verified) };
+  }
+
+  // ---------- Telenotify Pass ----------
+
+  // The member tapped Yes or No on a request in the Pass bot. Only the member it was
+  // sent to can answer, and only while the verification is still open.
+  async answerPass(verificationId: string, telegramUserId: number, approve: boolean): Promise<{ kind: 'verified' | 'denied' | 'closed' | 'not_yours'; orgName: string; text: string }> {
+    const found = await this.prisma.verification.findUnique({ where: { id: verificationId }, include: { environment: { include: { org: true } }, passIdentity: true } });
+    if (!found) return { kind: 'closed', orgName: '', text: 'This request no longer exists.' };
+    const orgName = found.environment.org.name;
+    if (!found.passIdentity || found.passIdentity.telegramUserId !== String(telegramUserId)) return { kind: 'not_yours', orgName, text: 'This request was not sent to you.' };
+    const verification = await this.expireIfDue(found);
+    if (!['PENDING', 'AWAITING_CONTACT'].includes(verification.status)) {
+      const text = verification.status === 'VERIFIED' ? `✅ Already confirmed for ${orgName}.` : `This request from ${orgName} has ${verification.status === 'EXPIRED' ? 'expired' : 'closed'}. Start again on their website if you need to.`;
+      await this.pass.replaceRequest(found, text);
+      return { kind: 'closed', orgName, text };
+    }
+    const { environment, passIdentity } = found;
+    if (approve) {
+      const verified = await this.prisma.verification.update({
+        where: { id: verification.id },
+        data: { status: 'VERIFIED', phone: passIdentity.phone, telegramUserId: passIdentity.telegramUserId, verifiedAt: new Date(), method: 'pass' },
+      });
+      await this.webhooks.emit(environment, 'verification.completed', this.toView(verified));
+      const text = `✅ Confirmed ${maskPhone(passIdentity.phone)} for ${orgName}. You can go back to them now.`;
+      await this.pass.replaceRequest(found, text);
+      return { kind: 'verified', orgName, text };
+    }
+    const failed = await this.prisma.verification.update({ where: { id: verification.id }, data: { status: 'FAILED', reason: 'denied', method: 'pass' } });
+    await this.webhooks.emit(environment, 'verification.failed', this.toView(failed));
+    const text = `Okay, we told ${orgName} it wasn't you. If you get requests you didn't start, just tap No. Send /stop to leave Telenotify Pass.`;
+    await this.pass.replaceRequest(found, text);
+    return { kind: 'denied', orgName, text };
+  }
+
+  private passIdentityOf(verification: Verification) {
+    return verification.passIdentityId ? this.prisma.passIdentity.findUnique({ where: { id: verification.passIdentityId } }) : Promise.resolve(null);
   }
 
   // ---------- Hosted verify page and the embeddable button ----------
@@ -178,6 +220,9 @@ export class VerificationsService {
       origin: verification.origin,
       phone: verification.status === 'VERIFIED' ? verification.phone : null,
       token: final ? this.resultToken(verification, environment) : null,
+      // Shown whenever a number was given, member or not, so the page reveals nothing.
+      passAvailable: this.pass.enabled() && Boolean(verification.expectedPhone) && !final,
+      passJoinUrl: verification.status === 'VERIFIED' ? await this.pass.joinUrl(verification) : null,
     };
   }
 
@@ -199,6 +244,8 @@ export class VerificationsService {
       id: verification.id,
       status: verification.status,
       reason: verification.reason,
+      // "telegram" (shared their contact with your bot) or "pass" (one tap in Telenotify Pass).
+      method: verification.method,
       externalId: verification.externalId,
       // The verified number, once VERIFIED (or the mismatching one, on phone_mismatch).
       phone: verification.phone,

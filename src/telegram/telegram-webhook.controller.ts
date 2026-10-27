@@ -106,6 +106,11 @@ export class TelegramWebhookController {
       }
       if (outcome.kind === 'verified') {
         await bot.removeKeyboardMessage(chat.chatId, `✅ Your phone number is verified. You can go back to ${outcome.orgName} now.`);
+        if (outcome.passJoinUrl) {
+          await bot.sendMessage(chat.chatId, '⚡ Next time, verify with one tap: Telenotify Pass keeps your verified number, and you confirm each request with Yes or No.', {
+            buttons: [[{ text: 'Use Telenotify Pass', url: outcome.passJoinUrl }]],
+          });
+        }
         return;
       }
       if (outcome.kind === 'mismatch') {

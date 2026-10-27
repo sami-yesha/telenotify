@@ -286,7 +286,7 @@ export default function DocsPage() {
                 ['PENDING', 'Link created, not opened yet.'],
                 ['AWAITING_CONTACT', 'Opened in Telegram; waiting for the person to share their number.'],
                 ['VERIFIED', 'Done. phone holds the verified number. With externalId, the customer is also linked for notifications.'],
-                ['FAILED', 'reason phone_mismatch: the Telegram number differs from the phone you passed.'],
+                ['FAILED', 'reason phone_mismatch: the Telegram number differs from the phone you passed. reason denied: a Telenotify Pass member tapped "No".'],
                 ['EXPIRED', 'Not completed in time (default 10 minutes; set expiresInMinutes up to 60).'],
               ]}
               mono
@@ -294,6 +294,15 @@ export default function DocsPage() {
             <p>
               Poll <code className="font-mono text-ink">GET /v1/verifications/:id</code> or listen for <code className="font-mono text-ink">verification.completed</code> and{' '}
               <code className="font-mono text-ink">verification.failed</code>. People without Telegram can still use your SMS flow.
+            </p>
+            <h3 className="pt-2 font-semibold text-ink">Telenotify Pass: one tap for returning people</h3>
+            <p>
+              When you pass the <code className="font-mono text-ink">phone</code>, people who have joined Telenotify Pass also get a Yes/No message from our Pass bot at the same time, so
+              they can confirm without opening your bot. Nothing changes for you: the same verification completes, with{' '}
+              <code className="font-mono text-ink">&quot;method&quot;: &quot;pass&quot;</code> instead of <code className="font-mono text-ink">&quot;telegram&quot;</code>. People join after
+              verifying anywhere on Telenotify, and leave with /stop. To protect them, we never tell you whether a number is in Pass, and a business they decline twice can&apos;t ask again
+              for a day. With Pass, the verified number is confirmed by the person but your bot isn&apos;t opened, so <code className="font-mono text-ink">externalId</code> isn&apos;t
+              linked for notifications that time.
             </p>
           </Section>
         </div>
