@@ -1,6 +1,6 @@
 import { VerificationsService } from './verifications.service';
 
-const environment = { id: 'env-1', type: 'LIVE', org: { name: 'Abebe Pharmacy' } };
+const environment = { id: 'env-1', type: 'LIVE', passInvite: true, org: { name: 'Abebe Pharmacy' } };
 
 function setup(open: object | null) {
   const prisma = {
@@ -46,6 +46,12 @@ describe('VerificationsService', () => {
     expect(outcome).toEqual({ kind: 'verified', orgName: 'Abebe Pharmacy', passJoinUrl: 'https://t.me/pass_bot?start=j_x' });
     expect(customers.linkVerified).toHaveBeenCalledWith(environment, 'cust_1', '251911223344', chat);
     expect(events()).toEqual(['customer.linked', 'verification.completed']);
+  });
+
+  it('leaves out the Telenotify Pass invite when the business turned it off for its bot', async () => {
+    const { service } = setup(awaiting({ environment: { ...environment, passInvite: false } }));
+    const outcome = await service.completeWithContact({ environmentId: 'env-1' }, chat, { phone_number: '+251911223344', user_id: 42 }, 42);
+    expect(outcome).toMatchObject({ kind: 'verified', passJoinUrl: null });
   });
 
   it('rejects a forwarded contact that is not the sender', async () => {

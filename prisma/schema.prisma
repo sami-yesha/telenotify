@@ -178,6 +178,9 @@ model Environment {
   // Most fallback SMS in any 24 hours; null = no cap. Set by the organization so
   // a bug or a misuse of its token can only ever cost this much.
   smsDailyLimit      Int?
+  // Live bots belong to the business: it decides whether its bot invites people to
+  // Telenotify Pass after they verify. (The sandbox bot and hosted page are ours.)
+  passInvite         Boolean         @default(true)
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
 

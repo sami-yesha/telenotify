@@ -94,6 +94,8 @@ export interface EnvironmentInfo {
   eventSigningSecret: string;
   publishableKey: string | null;
   allowedOrigins: string[];
+  /** Live: whether this bot invites people to Telenotify Pass after they verify. */
+  passInvite: boolean;
   usage: { messagesToday: number; linkedCustomers: number; dailyMessageLimit?: number; linkedCustomerLimit?: number };
   testCustomers: string[];
 }

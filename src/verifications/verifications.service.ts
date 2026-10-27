@@ -138,7 +138,8 @@ export class VerificationsService {
       }
     }
     await this.webhooks.emit(environment, 'verification.completed', this.toView(verified));
-    return { kind: 'verified', orgName, passJoinUrl: await this.pass.joinUrl(verified) };
+    const invite = environment.type === 'SANDBOX' || environment.passInvite;
+    return { kind: 'verified', orgName, passJoinUrl: invite ? await this.pass.joinUrl(verified) : null };
   }
 
   // ---------- Telenotify Pass ----------

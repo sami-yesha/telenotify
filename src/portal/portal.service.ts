@@ -101,6 +101,7 @@ export class PortalService {
       eventSigningSecret: environment.eventSigningSecret,
       publishableKey: environment.publishableKey,
       allowedOrigins: environment.allowedOrigins,
+      passInvite: environment.passInvite,
       usage: {
         messagesToday,
         linkedCustomers,
@@ -121,6 +122,12 @@ export class PortalService {
     if (eventWebhookUrl !== environment.eventWebhookUrl) {
       await this.audit.record(environment.orgId, actor, 'webhook.updated', eventWebhookUrl ?? 'removed', { environment: environment.type.toLowerCase() });
     }
+    return this.environmentView(updated);
+  }
+
+  async setPassInvite(environment: Environment, enabled: boolean, actor: User) {
+    const updated = await this.prisma.environment.update({ where: { id: environment.id }, data: { passInvite: enabled } });
+    await this.audit.record(environment.orgId, actor, 'pass_invite.updated', enabled ? 'on' : 'off', { environment: environment.type.toLowerCase() });
     return this.environmentView(updated);
   }
 

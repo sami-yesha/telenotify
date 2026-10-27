@@ -1,6 +1,6 @@
 'use client';
 
-import { Bot, CheckCircle2, Plug, Sparkles } from 'lucide-react';
+import { Bot, CheckCircle2, Fingerprint, Plug, Sparkles } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import { Alert, Button, Card, Input, PageHeader, Spinner } from '@/components/ui';
 import { api, ApiError } from '@/lib/api';
@@ -84,6 +84,7 @@ export default function BotPage() {
           </p>
         </Card>
         <BrandingChecklist username={environment.botUsername} />
+        <PassInviteCard environment={environment} onSaved={(next) => mutate(next, false)} />
         </>
       ) : (
         <Card icon={Plug} title="Connect your bot">
@@ -113,6 +114,58 @@ export default function BotPage() {
         </Card>
       )}
     </>
+  );
+}
+
+// The business decides whether its bot invites customers to Telenotify Pass.
+function PassInviteCard({ environment, onSaved }: { environment: EnvironmentInfo; onSaved: (env: EnvironmentInfo) => void }) {
+  const { orgId, env } = useOrgParams();
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function toggle() {
+    setSaving(true);
+    setError(null);
+    try {
+      onSaved(await api<EnvironmentInfo>(`${envPath(orgId, env)}/pass-invite`, { method: 'PUT', body: { enabled: !environment.passInvite } }));
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Something went wrong');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Card
+      className="mt-6"
+      icon={Fingerprint}
+      title="Invite customers to Telenotify Pass"
+      description="After a customer verifies their phone with your bot, it can offer Telenotify Pass, so next time they verify with one tap. Your customers benefit too: returning ones confirm faster."
+      actions={
+        <button
+          type="button"
+          role="switch"
+          aria-checked={environment.passInvite}
+          aria-label="Invite customers to Telenotify Pass"
+          disabled={saving}
+          onClick={toggle}
+          className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${environment.passInvite ? 'bg-brand' : 'bg-line'}`}
+        >
+          <span className={`inline-block size-5 rounded-full bg-white shadow transition-transform ${environment.passInvite ? 'translate-x-5' : 'translate-x-0.5'}`} />
+        </button>
+      }
+    >
+      <p className="text-sm text-muted">
+        {environment.passInvite
+          ? `On: after verifying, @${environment.botUsername} sends one short message with a "Use Telenotify Pass" button.`
+          : `Off: @${environment.botUsername} only confirms the verification. Customers can still join Pass from the Telenotify verify page.`}
+      </p>
+      {error && (
+        <div className="mt-3">
+          <Alert>{error}</Alert>
+        </div>
+      )}
+    </Card>
   );
 }
 
