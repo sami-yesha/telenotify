@@ -1,7 +1,7 @@
 name: Deploy
 
 # Every push to main is tested, then deployed to the hosted service. GitHub's runner
-# connects to the server, so nobody needs a good connection to it. Setup: docs/DEPLOY.md.
+# connects to the server, so nobody needs a good connection to it. Setup: docs/AUTO-DEPLOY.md.
 on:
   push:
     branches: [main]
@@ -54,7 +54,7 @@ jobs:
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
         run: |
-          if [ -z "$DEPLOY_SSH_KEY" ]; then echo "::error::Add the DEPLOY_SSH_KEY secret (see docs/DEPLOY.md)"; exit 1; fi
+          if [ -z "$DEPLOY_SSH_KEY" ]; then echo "::error::Add the DEPLOY_SSH_KEY secret (see docs/AUTO-DEPLOY.md)"; exit 1; fi
           install -m 700 -d ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy
           chmod 600 ~/.ssh/deploy

@@ -160,7 +160,7 @@ Back up the database and `ENCRYPTION_KEY`: see [docs/BACKUPS.md](docs/BACKUPS.md
 
 Test environment on Vercel (portal) + Render free (API): see [docs/DEPLOY.md](docs/DEPLOY.md) and `render.yaml`.
 
-Pushes to `main` deploy the hosted service automatically through GitHub Actions: see [docs/DEPLOY.md](docs/DEPLOY.md).
+Pushes to `main` deploy the hosted service automatically through GitHub Actions: see [docs/AUTO-DEPLOY.md](docs/AUTO-DEPLOY.md).
 
 ### Single server, Docker
 
