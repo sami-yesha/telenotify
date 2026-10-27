@@ -170,6 +170,9 @@ export class VerificationsService {
       expiresAt: view.expiresAt,
       environment: environment.type === 'LIVE' ? 'live' : 'sandbox',
       orgName: environment.org.name,
+      // The "Verified business" badge (live only: the sandbox is for testing).
+      verifiedBusiness:
+        environment.type === 'LIVE' && environment.org.businessStatus === 'VERIFIED' && environment.org.status === 'ACTIVE' ? { legalName: environment.org.legalName } : null,
       botUsername: this.telegram.botUsernameFor(environment) ?? null,
       returnUrl: verification.returnUrl,
       origin: verification.origin,

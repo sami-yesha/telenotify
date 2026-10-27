@@ -15,6 +15,6 @@ import { OperatorNotifier } from './operator-notifier.service';
   imports: [TelegramModule, BullModule.registerQueue({ name: MESSAGES_QUEUE }, { name: WEBHOOKS_QUEUE }, { name: SMS_FALLBACK_QUEUE })],
   controllers: [AdminController, AdminInsightsController],
   providers: [AdminService, AdminInsightsService, OperatorNotifier],
-  exports: [AdminService],
+  exports: [AdminService, OperatorNotifier],
 })
 export class AdminModule {}

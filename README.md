@@ -116,6 +116,7 @@ The portal includes:
 - **Live bot:** connect your own bot.
 - **Logs:** messages and customers.
 - **Integration guide.**
+- **Verified business badge:** owners send their legal name, TIN and trade license from Organization settings; an operator checks them and approves in `/admin`. The badge shows on the hosted verify page, at the public `/check` page ("Is this bot real?") and, optionally, on the bot's Telegram profile. Only the hosted service can grant it (see [TRADEMARK.md](TRADEMARK.md)).
 
 ## Security
 
@@ -204,3 +205,5 @@ Telenotify is free software under the [GNU Affero General Public License v3.0](L
 The Node.js SDK in [`sdk/node`](sdk/node) is MIT licensed, so it can go into any application.
 
 Need Telenotify under different terms (for example on-premise without the AGPL obligations)? Commercial licenses are available: open an issue or contact the maintainer. Contributors sign a short [CLA](CLA.md) so this stays possible.
+
+The license covers the code, not the name. "Telenotify", the logo and the **Verified business** badge belong to the official project: see the [trademark policy](TRADEMARK.md). In short, say "built on Telenotify" freely, but give a modified hosted copy its own name, and never show the badge unless the official service granted it.

@@ -11,6 +11,7 @@ export default function PrivacyPage() {
         <ul>
           <li><b>Account data:</b> name, email, password (stored only as a secure hash), and Google account ID if you sign in with Google.</li>
           <li><b>Organization data:</b> organization names, teammates, API key names, webhook URLs, plan and usage, and an audit log of changes.</li>
+          <li><b>Business verification (optional):</b> if you ask for the Verified business badge, your registered business name, TIN, trade license number and website. We use them only to check your registration; the public check page shows only the business name, website and verification date.</li>
           <li><b>Technical data:</b> IP addresses and request logs, used for security, rate limiting and debugging.</li>
         </ul>
       </section>

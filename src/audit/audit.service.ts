@@ -26,7 +26,12 @@ export type AuditAction =
   | 'org.unsuspended'
   | 'live.approved'
   | 'live.review_requested'
-  | 'verify_widget.updated';
+  | 'verify_widget.updated'
+  | 'business.verification_requested'
+  | 'business.verified'
+  | 'business.rejected'
+  | 'business.revoked'
+  | 'business.badge_on_bot';
 
 export type Actor = Pick<User, 'id' | 'email'> | null;
 

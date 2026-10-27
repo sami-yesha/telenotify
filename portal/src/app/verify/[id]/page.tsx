@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertTriangle, ArrowRight, Check, Clock, Smartphone } from 'lucide-react';
+import { AlertTriangle, ArrowRight, BadgeCheck, Check, Clock, Smartphone } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useParams } from 'next/navigation';
 import QRCode from 'qrcode';
@@ -19,6 +19,8 @@ interface HostedVerification {
   expiresAt: string;
   environment: 'sandbox' | 'live';
   orgName: string;
+  /** Set when Telenotify checked the business's legal details. */
+  verifiedBusiness: { legalName: string | null } | null;
   botUsername: string | null;
   returnUrl: string | null;
   origin: string | null;
@@ -91,11 +93,28 @@ export default function HostedVerifyPage() {
             {data.orgName.charAt(0).toUpperCase()}
           </span>
           <div className="min-w-0">
-            <p className="truncate font-semibold text-ink">{data.orgName}</p>
+            <p className="flex items-center gap-1.5 font-semibold text-ink">
+              <span className="truncate">{data.orgName}</span>
+              {data.verifiedBusiness && <BadgeCheck className="size-4 shrink-0 text-emerald-500" aria-label="Verified business" />}
+            </p>
             <p className="text-xs text-muted">wants to confirm your phone number</p>
           </div>
           {data.environment === 'sandbox' && <span className="ml-auto rounded-full bg-amber-400/15 px-2 py-0.5 text-[11px] font-medium text-amber-600 ring-1 ring-inset ring-amber-400/30 dark:text-amber-300">Test mode</span>}
         </header>
+        {data.verifiedBusiness && (
+          <a
+            href={data.botUsername ? `/check?bot=${data.botUsername}` : '/check'}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-4 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 hover:bg-emerald-500/10 dark:text-emerald-300"
+          >
+            <BadgeCheck className="size-4 shrink-0" />
+            <span>
+              <b>Verified business</b>
+              {data.verifiedBusiness.legalName ? `: ${data.verifiedBusiness.legalName}` : ''}. Telenotify checked their registration.
+            </span>
+          </a>
+        )}
 
         <AnimatePresence mode="wait">
           <motion.div key={data.status} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="mt-7">

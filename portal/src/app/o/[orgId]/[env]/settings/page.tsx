@@ -4,6 +4,7 @@ import { Building2, DoorOpen, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import { useSWRConfig } from 'swr';
+import { BusinessVerificationCard } from '@/components/business-verification';
 import { Alert, Button, Card, Dialog, Input, PageHeader, Spinner } from '@/components/ui';
 import { api, ApiError } from '@/lib/api';
 import { useOrg, useOrgParams } from '@/lib/hooks';
@@ -73,6 +74,8 @@ export default function OrgSettingsPage() {
             </div>
           )}
         </Card>
+
+        <BusinessVerificationCard />
 
         <Card icon={DoorOpen} title="Leave organization" description="You'll lose access to its keys, logs and settings.">
           <Button

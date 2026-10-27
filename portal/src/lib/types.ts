@@ -27,6 +27,30 @@ export interface Org extends OrgSummary {
   liveApproved: boolean;
   liveReviewRequestedAt: string | null;
   unapprovedDailyLimit: number;
+  businessStatus: BusinessStatus;
+}
+
+export type BusinessStatus = 'none' | 'pending' | 'verified' | 'rejected';
+
+export interface BusinessVerification {
+  status: BusinessStatus;
+  legalName: string | null;
+  tin: string | null;
+  tradeLicense: string | null;
+  website: string | null;
+  requestedAt: string | null;
+  verifiedAt: string | null;
+  rejectReason: string | null;
+}
+
+/** GET /v1/public/businesses/:botUsername */
+export interface BusinessLookup {
+  botUsername: string;
+  onTelenotify: boolean;
+  verified: boolean;
+  legalName?: string | null;
+  website?: string | null;
+  verifiedSince?: string | null;
 }
 
 export interface AdminOrg {
@@ -44,6 +68,15 @@ export interface AdminOrg {
   liveReviewRequestedAt: string | null;
   liveUseCase: string | null;
   website: string | null;
+  business: {
+    status: 'NONE' | 'PENDING' | 'VERIFIED' | 'REJECTED';
+    legalName: string | null;
+    tin: string | null;
+    tradeLicense: string | null;
+    requestedAt: string | null;
+    verifiedAt: string | null;
+    rejectReason: string | null;
+  };
   liveBotUsername: string | null;
   usedThisMonth: number;
   blocked24h: number;

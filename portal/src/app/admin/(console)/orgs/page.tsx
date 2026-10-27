@@ -1,6 +1,6 @@
 'use client';
 
-import { Ban, Bot, Building2, CheckCircle2, Globe, Search, ShieldCheck, Undo2, UserRound } from 'lucide-react';
+import { BadgeCheck, Ban, Bot, Building2, CheckCircle2, ExternalLink, Globe, Search, ShieldCheck, Undo2, UserRound, XCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { FormEvent, useMemo, useState } from 'react';
 import useSWR from 'swr';
@@ -115,6 +115,8 @@ export default function AdminPage() {
                 onUnsuspend={() => act(() => api(`/admin/orgs/${org.id}/unsuspend`, { method: 'POST' }))}
                 onSuspend={() => setSuspending(org)}
                 onPlan={(plan) => act(() => api(`/admin/orgs/${org.id}/plan`, { method: 'PUT', body: { plan } }))}
+                onVerifyBusiness={() => act(() => api(`/admin/orgs/${org.id}/business/approve`, { method: 'POST' }))}
+                onRejectBusiness={(reason) => act(() => api(`/admin/orgs/${org.id}/business/reject`, { method: 'POST', body: { reason } }))}
               />
             ))
           )}
@@ -133,7 +135,8 @@ export default function AdminPage() {
   );
 }
 
-const needsReview = (o: AdminOrg) => o.status === 'ACTIVE' && !o.liveApprovedAt && (Boolean(o.liveReviewRequestedAt) || Boolean(o.liveBotUsername));
+const needsReview = (o: AdminOrg) =>
+  o.status === 'ACTIVE' && ((!o.liveApprovedAt && (Boolean(o.liveReviewRequestedAt) || Boolean(o.liveBotUsername))) || o.business.status === 'PENDING');
 
 function OrgRow({
   org,
@@ -141,12 +144,16 @@ function OrgRow({
   onSuspend,
   onUnsuspend,
   onPlan,
+  onVerifyBusiness,
+  onRejectBusiness,
 }: {
   org: AdminOrg;
   onApprove: () => void;
   onSuspend: () => void;
   onUnsuspend: () => void;
   onPlan: (plan: string) => void;
+  onVerifyBusiness: () => void;
+  onRejectBusiness: (reason: string) => void;
 }) {
   const blockRate = org.reached24h ? org.blocked24h / org.reached24h : 0;
   const suspended = org.status === 'SUSPENDED';
@@ -178,6 +185,11 @@ function OrgRow({
               <Badge dot>Not approved</Badge>
             )}
             <Badge tone="blue">{org.planName}</Badge>
+            {org.business.status === 'VERIFIED' && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500 px-2 py-0.5 text-xs font-semibold text-white">
+                <BadgeCheck className="size-3.5" /> Verified business
+              </span>
+            )}
           </div>
           <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
             <span className="inline-flex items-center gap-1">
@@ -216,6 +228,54 @@ function OrgRow({
 
       {org.liveUseCase && <p className="mt-4 rounded-xl bg-subtle px-3.5 py-2.5 text-sm text-ink">“{org.liveUseCase}”</p>}
       {suspended && org.suspendedReason && <p className="mt-3 text-sm text-red-600 dark:text-red-400">Reason: {org.suspendedReason}</p>}
+
+      {org.business.status !== 'NONE' && (
+        <div className={cn('mt-4 rounded-xl border p-4', org.business.status === 'PENDING' ? 'border-amber-500/40 bg-amber-500/5' : 'border-line')}>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-sm font-semibold text-ink">Business verification</p>
+            <Badge tone={org.business.status === 'VERIFIED' ? 'green' : org.business.status === 'PENDING' ? 'amber' : 'red'} dot>
+              {org.business.status === 'PENDING' && org.business.requestedAt ? `Requested ${timeAgo(org.business.requestedAt)}` : org.business.status.toLowerCase()}
+            </Badge>
+            <a href="https://etrade.gov.et" target="_blank" rel="noreferrer" className="ml-auto inline-flex items-center gap-1 text-xs text-brand hover:underline">
+              Check on etrade.gov.et <ExternalLink className="size-3" />
+            </a>
+          </div>
+          <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
+            {(
+              [
+                ['Legal name', org.business.legalName],
+                ['TIN', org.business.tin],
+                ['Trade license', org.business.tradeLicense],
+              ] as const
+            ).map(([label, value]) => (
+              <div key={label} className="rounded-lg bg-subtle px-3 py-2">
+                <dt className="text-xs text-muted">{label}</dt>
+                <dd className="select-all font-medium text-ink">{value ?? '—'}</dd>
+              </div>
+            ))}
+          </dl>
+          {org.business.status === 'REJECTED' && org.business.rejectReason && <p className="mt-2 text-xs text-muted">Last reason: {org.business.rejectReason}</p>}
+          <div className="mt-3 flex flex-wrap gap-2">
+            {org.business.status === 'PENDING' && (
+              <Button onClick={onVerifyBusiness} className="py-1.5">
+                <BadgeCheck className="size-4" /> Verify business
+              </Button>
+            )}
+            {(org.business.status === 'PENDING' || org.business.status === 'VERIFIED') && (
+              <Button
+                variant="secondary"
+                className="py-1.5"
+                onClick={() => {
+                  const reason = prompt(org.business.status === 'VERIFIED' ? 'Why remove the badge? (emailed to the owners)' : 'Why not approved? (emailed to the owners)');
+                  if (reason?.trim()) onRejectBusiness(reason.trim());
+                }}
+              >
+                <XCircle className="size-4" /> {org.business.status === 'VERIFIED' ? 'Remove badge' : 'Reject'}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="mt-4 grid gap-3 border-t border-line/70 pt-4 text-sm sm:grid-cols-3">
         <Metric label="Live used this month" value={`${n(org.usedThisMonth)} / ${org.monthlyQuota === null ? '∞' : n(org.monthlyQuota)}`} />

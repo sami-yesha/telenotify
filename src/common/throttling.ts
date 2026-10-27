@@ -32,4 +32,5 @@ export const AUTH_LIMITS = {
   testSms: { ip: { limit: 5, ttl: 10 * MINUTE } },
   // Verify widget: anyone can start a session with a publishable key.
   publicVerification: { ip: { limit: 10, ttl: MINUTE } },
+  businessLookup: { ip: { limit: 30, ttl: MINUTE } },
 };

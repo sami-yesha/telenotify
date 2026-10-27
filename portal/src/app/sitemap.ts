@@ -6,6 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ['', 1],
     ['/signup', 0.8],
     ['/login', 0.5],
+    ['/check', 0.6],
     ['/terms', 0.3],
     ['/privacy', 0.3],
   ];

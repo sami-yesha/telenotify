@@ -84,6 +84,15 @@ model Organization {
   // What the organization told us when asking for review.
   liveUseCase String?
   website     String?
+  // "Verified business" badge: an operator checked the legal details below. Only
+  // the hosted service can grant it, so customers can trust it.
+  businessStatus       BusinessStatus @default(NONE)
+  legalName            String?
+  tin                  String?
+  tradeLicense         String?
+  businessRequestedAt  DateTime?
+  businessVerifiedAt   DateTime?
+  businessRejectReason String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -93,6 +102,13 @@ model Organization {
   auditEvents  AuditEvent[]
   usageAlerts  UsageAlert[]
   templates    MessageTemplate[]
+}
+
+enum BusinessStatus {
+  NONE
+  PENDING
+  VERIFIED
+  REJECTED
 }
 
 enum Role {

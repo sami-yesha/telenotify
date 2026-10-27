@@ -38,6 +38,15 @@ export class TelegramApiClient {
     return this.call('getMe', {});
   }
 
+  /** The line shown on the bot's profile and before a chat starts (max 120 characters). */
+  getMyShortDescription(): Promise<{ short_description: string }> {
+    return this.call('getMyShortDescription', {});
+  }
+
+  setMyShortDescription(shortDescription: string): Promise<boolean> {
+    return this.call('setMyShortDescription', { short_description: shortDescription });
+  }
+
   setWebhook(url: string, secretToken: string): Promise<boolean> {
     return this.call('setWebhook', {
       url,

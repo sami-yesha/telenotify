@@ -76,6 +76,7 @@ export class PortalService {
       status: org.status.toLowerCase(),
       suspendedReason: org.suspendedReason,
       liveApproved: Boolean(org.liveApprovedAt),
+      businessStatus: org.businessStatus.toLowerCase(),
       liveReviewRequestedAt: org.liveReviewRequestedAt,
       unapprovedDailyLimit: this.admin.unapprovedDailyLimit(),
     };
