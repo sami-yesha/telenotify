@@ -40,6 +40,7 @@ Agreed order (2026-10-22). Tick items as they ship; keep this file current.
 
 ## Operations
 - [x] Nightly encrypted database backups with a Telegram copy (docs/BACKUPS.md); needs a one-time setup on the server
+- [x] Automatic deploys: every push to main is tested and deployed by GitHub Actions (docs/DEPLOY.md); needs a one-time key setup
 
 ## Proposed: payment-gateway readiness (from the 2026-10-22 scenario, not yet agreed)
 - [x] Per-bot send rate limits and a priority lane so OTP/transaction messages jump ahead of bulk sends
