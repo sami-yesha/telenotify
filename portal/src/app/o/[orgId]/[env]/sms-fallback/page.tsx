@@ -223,6 +223,9 @@ export default function SmsFallbackPage() {
                           <Input name="identifierId" label="Identifier ID" defaultValue={settings.identifierId ?? ''} hint="System identifier (UUID or shortcode). Leave blank to use default." placeholder="e.g. e80ad9d8-..." />
                           <Input name="senderName" label="Sender name" defaultValue={settings.senderName ?? ''} maxLength={11} hint="Your approved sender ID. Leave blank for default." placeholder="e.g. Pitron Tech" />
                         </div>
+                        <div className="rounded-lg border border-line bg-surface-2/50 p-3 text-xs text-muted">
+                          <span className="font-semibold text-ink">Beta accounts:</span> If your AfroMessage account is in beta, recipient numbers must be verified under <strong>Contacts</strong> in your AfroMessage dashboard before SMS can be sent.
+                        </div>
                         <div className="flex flex-wrap gap-2">
                           <Button type="submit" loading={saving}>
                             Save
@@ -500,8 +503,24 @@ function TestSms({ path, simulated, configured }: { path: string; simulated: boo
         </Button>
       </form>
       {result && (
-        <div className="mt-3">
-          <Alert tone={result.tone}>{result.text}</Alert>
+        <div className="mt-3 space-y-2">
+          <Alert tone={result.tone}>
+            {result.text}
+            {result.tone === 'red' && (result.text.toLowerCase().includes('unverified contact') || result.text.toLowerCase().includes('beta')) ? (
+              <span className="mt-2 block text-xs">
+                👉 Open your{' '}
+                <a
+                  href="https://afromessage.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium underline hover:text-brand"
+                >
+                  AfroMessage Dashboard
+                </a>
+                , go to <strong>Contacts</strong>, and click <strong>Verify</strong> for this number.
+              </span>
+            ) : null}
+          </Alert>
         </div>
       )}
     </Card>

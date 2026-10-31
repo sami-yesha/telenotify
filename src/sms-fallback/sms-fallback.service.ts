@@ -124,7 +124,14 @@ export class SmsFallbackService {
       const { messageId } = await sendAfroMessage(this.credentials(environment), toAfroMessageNumber(to), `Telenotify test: SMS fallback for ${environment.org.name} works.`);
       return { ok: true, simulated: false, to, providerMessageId: messageId };
     } catch (error) {
-      if (error instanceof AfroMessageError) throw new BadRequestException(error.message);
+      if (error instanceof AfroMessageError) {
+        if (/unverified contact/i.test(error.message)) {
+          throw new BadRequestException(
+            `AfroMessage beta account: ${toAfroMessageNumber(to)} is not verified yet. Add and verify this number under "Contacts" in your AfroMessage dashboard, or contact AfroMessage to activate live sending.`
+          );
+        }
+        throw new BadRequestException(error.message);
+      }
       throw error;
     }
   }
@@ -210,7 +217,11 @@ export class SmsFallbackService {
       const retryable = !(error instanceof AfroMessageError) || error.retryable;
       if (retryable && !isFinalAttempt) throw error;
       this.logger.warn(`SMS fallback failed for message ${message.id}: ${(error as Error).message}`);
-      await this.markFailed(environment, message, (error as Error).message);
+      const errMsg = (error as Error).message;
+      const formattedErr = /unverified contact/i.test(errMsg)
+        ? 'AfroMessage beta account: recipient phone is not verified in your AfroMessage contacts'
+        : errMsg;
+      await this.markFailed(environment, message, formattedErr);
     }
   }
 
