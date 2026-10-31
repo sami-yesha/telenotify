@@ -32,6 +32,9 @@
       "/node_modules/",
       "/portal/",
       "/sdk/"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/sdk/"
     ]
   },
   "dependencies": {

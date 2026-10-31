@@ -14,6 +14,13 @@ export interface TelegramUpdate {
     text?: string;
     contact?: { phone_number: string; user_id?: number };
   };
+  // A tap on an inline button with callback_data (Telenotify Pass Yes/No).
+  callback_query?: {
+    id: string;
+    from: TelegramUser;
+    data?: string;
+    message?: { message_id: number; chat: { id: number; type: string } };
+  };
   my_chat_member?: {
     chat: { id: number; type: string };
     from: TelegramUser;

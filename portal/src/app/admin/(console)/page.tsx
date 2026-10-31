@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, Ban, Bot, Building2, ShieldCheck, Users } from 'lucide-react';
+import { ArrowRight, BadgeCheck, Ban, Bot, Building2, Fingerprint, ShieldCheck, Users } from 'lucide-react';
 import Link from 'next/link';
 import useSWR from 'swr';
 import { Badge, Card, Skeleton, timeAgo } from '@/components/ui';
@@ -9,7 +9,18 @@ import { cn } from '@/lib/cn';
 import type { AdminOrg } from '@/lib/types';
 
 interface Overview {
-  totals: { users: number; verifiedUsers: number; orgs: number; suspended: number; approved: number; liveBots: number; waitingReview: number };
+  totals: {
+    users: number;
+    verifiedUsers: number;
+    orgs: number;
+    suspended: number;
+    approved: number;
+    liveBots: number;
+    waitingReview: number;
+    /** People in Telenotify Pass: the network a self-hosted copy starts without. */
+    passMembers: number;
+    verifiedBusinesses: number;
+  };
   days: { date: string; signups: number; live: number; sandbox: number }[];
 }
 
@@ -46,6 +57,8 @@ export default function AdminOverview() {
         <Tile icon={Bot} label="Live bots" value={n(totals.liveBots)} />
         <Tile icon={ShieldCheck} label="Waiting for review" value={n(totals.waitingReview)} tone={totals.waitingReview ? 'amber' : undefined} href="/admin/orgs" />
         <Tile icon={Ban} label="Suspended" value={n(totals.suspended)} tone={totals.suspended ? 'red' : undefined} href="/admin/orgs" />
+        <Tile icon={Fingerprint} label="Telenotify Pass members" value={n(totals.passMembers)} sub="Verify with one tap anywhere" />
+        <Tile icon={BadgeCheck} label="Verified businesses" value={n(totals.verifiedBusinesses)} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">

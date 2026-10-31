@@ -71,7 +71,13 @@ export class SmsFallbackService {
       tokenCheck = await this.checkToken(dto.token.trim());
       data.afroTokenEncrypted = encrypt(dto.token.trim(), this.config.getOrThrow('ENCRYPTION_KEY'));
     }
-    if (dto.identifierId !== undefined) data.afroIdentifierId = dto.identifierId?.trim() || null;
+    if (dto.identifierId !== undefined) {
+      const val = dto.identifierId?.trim() || null;
+      if (val && val.includes('@')) {
+        throw new BadRequestException('Identifier ID should be an AfroMessage system shortcode ID, not an email address. Leave blank to use your default identifier.');
+      }
+      data.afroIdentifierId = val;
+    }
     if (dto.senderName !== undefined) data.afroSenderName = dto.senderName?.trim() || null;
     if (dto.dailyLimit !== undefined) data.smsDailyLimit = dto.dailyLimit;
     if (dto.enabled !== undefined && dto.token !== null) data.smsFallbackEnabled = dto.enabled;
@@ -118,7 +124,14 @@ export class SmsFallbackService {
       const { messageId } = await sendAfroMessage(this.credentials(environment), toAfroMessageNumber(to), `Telenotify test: SMS fallback for ${environment.org.name} works.`);
       return { ok: true, simulated: false, to, providerMessageId: messageId };
     } catch (error) {
-      if (error instanceof AfroMessageError) throw new BadRequestException(error.message);
+      if (error instanceof AfroMessageError) {
+        if (/unverified contact/i.test(error.message)) {
+          throw new BadRequestException(
+            `AfroMessage beta account: ${toAfroMessageNumber(to)} is not verified yet. Add and verify this number under "Contacts" in your AfroMessage dashboard, or contact AfroMessage to activate live sending.`
+          );
+        }
+        throw new BadRequestException(error.message);
+      }
       throw error;
     }
   }
@@ -204,7 +217,11 @@ export class SmsFallbackService {
       const retryable = !(error instanceof AfroMessageError) || error.retryable;
       if (retryable && !isFinalAttempt) throw error;
       this.logger.warn(`SMS fallback failed for message ${message.id}: ${(error as Error).message}`);
-      await this.markFailed(environment, message, (error as Error).message);
+      const errMsg = (error as Error).message;
+      const formattedErr = /unverified contact/i.test(errMsg)
+        ? 'AfroMessage beta account: recipient phone is not verified in your AfroMessage contacts'
+        : errMsg;
+      await this.markFailed(environment, message, formattedErr);
     }
   }
 

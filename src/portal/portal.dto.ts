@@ -18,6 +18,11 @@ export class UpdateEnvironmentDto {
   eventWebhookUrl!: string | null;
 }
 
+export class PassInviteDto {
+  @IsBoolean()
+  enabled!: boolean;
+}
+
 export class CreateApiKeyDto {
   @IsString()
   @IsNotEmpty()

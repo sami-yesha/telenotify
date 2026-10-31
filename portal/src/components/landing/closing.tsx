@@ -35,6 +35,10 @@ const faqs = [
     a: 'Every event carries an HMAC-SHA256 signature over the timestamp and body using your signing secret, plus a stable event id so retries can be de-duplicated.',
   },
   {
+    q: 'How do I test webhooks on localhost?',
+    a: 'Use the official CLI: npx telenotify listen --forward http://localhost:3000/webhooks. It securely forwards events to your local server with valid HMAC signatures, without ngrok, port forwarding, or tunnels. You can also trigger sample events anytime with npx telenotify trigger message.sent.',
+  },
+  {
     q: 'How fast can I add phone verification to my website?',
     a: 'Minutes. Add our script and the <telenotify-verify> button with your publishable key. Your users tap it, confirm in Telegram, and your page gets the verified number plus a signed token you check on your server. No OTP form and no backend endpoint to start the flow.',
   },

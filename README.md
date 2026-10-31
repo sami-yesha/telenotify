@@ -37,6 +37,8 @@ Businesses send order updates, OTPs, payment alerts and receipts through **their
 .             NestJS API (public /v1 API, portal API, auth, Telegram webhooks)
 portal/       Next.js developer portal (talks to the API through its /api proxy)
 sdk/node/     @telenotify/node: official Node.js/TypeScript SDK
+sdk/python/   telenotify: official Python SDK (Django, FastAPI, Flask)
+sdk/cli/      telenotify CLI: webhooks on localhost, sample events, test sends
 ```
 
 ## Run locally
@@ -116,6 +118,7 @@ The portal includes:
 - **Live bot:** connect your own bot.
 - **Logs:** messages and customers.
 - **Integration guide.**
+- **Telenotify Pass:** an optional network of people who verified their phone once. When a business passes `phone` to a verification, a member gets a Yes/No in our Pass bot (`PASS_BOT_TOKEN`) and confirms with one tap (`method: "pass"`). Opt-in, `/stop` deletes them, membership is never revealed to businesses, and requests are rate-limited.
 - **Verified business badge:** owners send their legal name, TIN and trade license from Organization settings; an operator checks them and approves in `/admin`. The badge shows on the hosted verify page, at the public `/check` page ("Is this bot real?") and, optionally, on the bot's Telegram profile. Only the hosted service can grant it (see [TRADEMARK.md](TRADEMARK.md)).
 
 ## Security
@@ -160,6 +163,8 @@ Back up the database and `ENCRYPTION_KEY`: see [docs/BACKUPS.md](docs/BACKUPS.md
 
 Test environment on Vercel (portal) + Render free (API): see [docs/DEPLOY.md](docs/DEPLOY.md) and `render.yaml`.
 
+Pushes to `main` deploy the hosted service automatically through GitHub Actions: see [docs/AUTO-DEPLOY.md](docs/AUTO-DEPLOY.md).
+
 ### Single server, Docker
 
 ```bash
@@ -176,7 +181,9 @@ docker compose --env-file .env.production up -d --build
 
 ## Developer tools
 
-- **Node SDK** (`sdk/node`, `@telenotify/node`): typed client for messages, customers and verifications; safe retries; `webhooks.constructEvent()`. Build and test with `npm test` in that folder. Not published to npm yet.
+- **Node SDK** (`sdk/node`, `@telenotify/node`): typed client for messages, customers and verifications; safe retries; `webhooks.constructEvent()`. Build and test with `npm test` in that folder.
+- **Python SDK** (`sdk/python`, `telenotify`): typed, zero-dependency client with webhook verification and auto-retries for Django, FastAPI, and Flask. Test with `python3 -m unittest discover tests`.
+- **CLI** (`sdk/cli`, `telenotify`): forward webhook events to `localhost` with valid HMAC signatures (`npx telenotify listen --forward …`), trigger sample events (`npx telenotify trigger …`), and send test messages without setting up public tunnels.
 - **API reference** in the portal: every endpoint from the live OpenAPI spec, with "Send request" using your key, curl, and a Postman collection download.
 - **Request log** (API keys page): each `/v1` call with status, timing, key and error message, kept 30 days.
 - **Webhook delivery log** and **message detail** pages for debugging delivery.

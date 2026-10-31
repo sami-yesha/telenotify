@@ -14,7 +14,7 @@ import { BillingService } from '../billing/billing.service';
 import { MessagesService } from '../messages/messages.service';
 import { WebhooksService } from '../webhooks/webhooks.service';
 import { VerificationsService } from '../verifications/verifications.service';
-import { ConnectBotDto, CreateApiKeyDto, CreateOrgDto, CustomerMessageDto, PlaygroundLinkDto, PlaygroundSendDto, PlaygroundVerifyDto, TestSmsDto, AllowedOriginsDto, UpdateEnvironmentDto, UpdateSmsFallbackDto } from './portal.dto';
+import { ConnectBotDto, CreateApiKeyDto, CreateOrgDto, CustomerMessageDto, PlaygroundLinkDto, PlaygroundSendDto, PlaygroundVerifyDto, TestSmsDto, AllowedOriginsDto, PassInviteDto, UpdateEnvironmentDto, UpdateSmsFallbackDto } from './portal.dto';
 import { PortalService } from './portal.service';
 import { AdminService } from '../admin/admin.service';
 import { LiveReviewDto } from '../admin/admin.dto';
@@ -78,6 +78,12 @@ export class PortalController {
   @Patch(':orgId/envs/:env')
   updateEnvironment(@CurrentEnvironment() environment: EnvironmentWithOrg, @CurrentUser() user: User, @Body() dto: UpdateEnvironmentDto) {
     return this.portal.updateEnvironment(environment, dto.eventWebhookUrl?.trim() || null, user);
+  }
+
+  // Whether this environment's bot invites people to Telenotify Pass after they verify.
+  @Put(':orgId/envs/:env/pass-invite')
+  setPassInvite(@CurrentEnvironment() environment: EnvironmentWithOrg, @CurrentUser() user: User, @Body() dto: PassInviteDto) {
+    return this.portal.setPassInvite(environment, dto.enabled, user);
   }
 
   @Post(':orgId/envs/:env/signing-secret/rotate')

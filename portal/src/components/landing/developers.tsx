@@ -9,41 +9,43 @@ import { highlight } from '@/lib/highlight';
 import { Reveal, SectionHeading } from './reveal';
 
 const samples = {
-  'Node.js': `const text = \`Order #\${order.id} is out for delivery 🚚\`;
+  'Node.js': `import { Telenotify } from '@telenotify/node';
 
-const res = await fetch('https://api.telenotify.dev/v1/messages', {
-  method: 'POST',
-  headers: {
-    'x-api-key': process.env.TELENOTIFY_KEY,
-    'content-type': 'application/json',
-  },
-  body: JSON.stringify({
-    to: order.customerId,
-    text,
-    buttons: [[{ text: 'Track order', url: order.trackingUrl }]],
-    idempotencyKey: \`order-\${order.id}-shipped\`,
-  }),
+const client = new Telenotify({ apiKey: process.env.TELENOTIFY_KEY });
+
+const message = await client.messages.send({
+  to: order.customerId,
+  text: \`Order #\${order.id} is out for delivery 🚚\`,
+  format: 'markdown',
+  buttons: [[{ text: 'Track order', url: order.trackingUrl }]],
+  idempotencyKey: \`order-\${order.id}-shipped\`,
 });
 
-const message = await res.json();
 // Not on Telegram? With SMS fallback on, we text them for you:
 // message.fallback → { channel: 'sms', status: 'queued' }`,
-  Python: `import os, requests
+  Python: `import os
+from telenotify import Telenotify
 
-text = f"Order #{order.id} is out for delivery 🚚"
-res = requests.post(
-    "https://api.telenotify.dev/v1/messages",
-    headers={"x-api-key": os.environ["TELENOTIFY_KEY"]},
-    json={
-        "to": order.customer_id,
-        "text": text,
-        "idempotencyKey": f"order-{order.id}-shipped",
-    },
+client = Telenotify(api_key=os.environ["TELENOTIFY_KEY"])
+
+message = client.messages.send(
+    to=order.customer_id,
+    text=f"Order #{order.id} is out for delivery 🚚",
+    format="markdown",
+    buttons=[[{"text": "Track order", "url": order.tracking_url}]],
+    idempotency_key=f"order-{order.id}-shipped",
 )
 
-message = res.json()
 # Not on Telegram? With SMS fallback on, we text them for you:
 # message["fallback"] → {"channel": "sms", "status": "queued"}`,
+  CLI: `# 1. Forward events to localhost with valid signatures (no tunnels)
+npx telenotify listen --forward http://localhost:3000/webhooks
+
+# 2. In another terminal, trigger a sample event
+npx telenotify trigger message.sent
+
+# 3. Send a test message directly from your terminal
+npx telenotify send test_linked "Order #1042 is out for delivery 🚚"`,
   cURL: `curl -X POST https://api.telenotify.dev/v1/messages \\
   -H "x-api-key: tn_test_…" \\
   -H "content-type: application/json" \\

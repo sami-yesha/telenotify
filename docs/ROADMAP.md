@@ -40,6 +40,7 @@ Agreed order (2026-10-22). Tick items as they ship; keep this file current.
 
 ## Operations
 - [x] Nightly encrypted database backups with a Telegram copy (docs/BACKUPS.md); needs a one-time setup on the server
+- [x] Automatic deploys: every push to main is tested and deployed by GitHub Actions (docs/AUTO-DEPLOY.md); needs a one-time key setup
 
 ## Proposed: payment-gateway readiness (from the 2026-10-22 scenario, not yet agreed)
 - [x] Per-bot send rate limits and a priority lane so OTP/transaction messages jump ahead of bulk sends
@@ -56,11 +57,12 @@ Decided 2026-10-24: Telenotify is **free and open source** (AGPL-3.0) for now. C
 ## Batch 6: Why use the official service, and less stress for developers (agreed 2026-10-27)
 Goal: things a copy of the open-source code can't bring with it, plus removing developer stress and cost.
 - [x] Trademark policy (TRADEMARK.md) and the "Verified business" badge: request in Organization settings, operator review in /admin, shown on the verify page, the public /check page and optionally the bot profile
-- [ ] Verify-once network: with the person's consent, a phone verified with one business verifies with the next in one tap; "is this number on Telegram / verified?" lookup
-- [ ] CLI: `npx telenotify listen --forward …` (webhooks to localhost, signed) and `trigger <event>`
+- [x] Verify-once network (Telenotify Pass): opt-in members confirm any business's verification with one tap in our Pass bot. The public "is this number on Telegram?" lookup was dropped on purpose: it would let anyone probe whose number is in the network
+- [x] CLI: `npx telenotify listen --forward …` (webhooks to localhost, signed) and `trigger <event>`
 - [ ] Guided live-bot setup wizard (BotFather steps, token check, sets the bot's name and description)
 - [ ] Alerts to developers: failing webhooks, many blocked customers, near message or SMS limits
-- [ ] Laravel/PHP and Python SDKs
+- [x] Python SDK (sdk/python: zero-dependency, Django/FastAPI/Flask-ready)
+- [ ] Laravel/PHP SDK
 - [ ] Reply buttons (customer taps come back as webhooks) and messages that update in place
 - [ ] AI-ready docs: llms.txt, "copy prompt for your AI assistant", MCP server
 

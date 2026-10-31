@@ -1,0 +1,72 @@
+name: Deploy
+
+# Every push to main is tested, then deployed to the hosted service. GitHub's runner
+# connects to the server, so nobody needs a good connection to it. Setup: docs/AUTO-DEPLOY.md.
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', 'docs/**', 'sdk/**', 'CLA.md', 'LICENSE']
+  workflow_dispatch:
+
+# One deploy at a time, in order; a newer push waits instead of cancelling a running one.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  SERVER: 76.13.159.7
+  # The server's SSH host key, so the runner only talks to the real server.
+  SERVER_HOST_KEY: 76.13.159.7 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICWHm2CgJRra6ek92PEHPTGmebGjW2BZRJCvEyRCqLzw
+  HEALTH_URL: https://telenotify-api.duckdns.org/health
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            portal/package-lock.json
+      - name: API tests
+        run: |
+          npm ci
+          npx prisma generate
+          npx tsc --noEmit -p tsconfig.json
+          npx jest --ci
+      - name: Portal type check
+        run: |
+          npm ci --prefix portal
+          npx --prefix portal tsc --noEmit -p portal
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Deploy over SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          if [ -z "$DEPLOY_SSH_KEY" ]; then echo "::error::Add the DEPLOY_SSH_KEY secret (see docs/AUTO-DEPLOY.md)"; exit 1; fi
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy
+          chmod 600 ~/.ssh/deploy
+          echo "$SERVER_HOST_KEY" > ~/.ssh/known_hosts
+          # The key only runs the deploy (a forced command on the server), so no command is sent.
+          ssh -i ~/.ssh/deploy -o StrictHostKeyChecking=yes -o ConnectTimeout=30 -o ServerAliveInterval=30 "root@$SERVER"
+
+      - name: Check the API answers
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS --max-time 10 "$HEALTH_URL"; then echo; echo "Live"; exit 0; fi
+            sleep 10
+          done
+          echo "::error::The API did not answer after the deploy"
+          exit 1

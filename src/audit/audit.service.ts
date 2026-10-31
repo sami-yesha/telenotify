@@ -31,7 +31,8 @@ export type AuditAction =
   | 'business.verified'
   | 'business.rejected'
   | 'business.revoked'
-  | 'business.badge_on_bot';
+  | 'business.badge_on_bot'
+  | 'pass_invite.updated';
 
 export type Actor = Pick<User, 'id' | 'email'> | null;
 

@@ -27,6 +27,19 @@ export default function PrivacyPage() {
         <p>You can stop receiving messages at any time by blocking the bot in Telegram. For other requests about this data, contact the business, or us at {LEGAL.email}.</p>
       </section>
       <section>
+        <h2>2a. Telenotify Pass (only if you join)</h2>
+        <p>
+          Telenotify Pass is optional. If you join, we keep your Telegram-verified phone number, your Telegram user ID and your chat with the Pass bot, so that when a business on
+          Telenotify asks to confirm that number, we can send you a Yes/No request.
+        </p>
+        <ul>
+          <li>Nothing is shared with a business unless you tap Yes on its request. If you tap No, the business only learns that the request was declined.</li>
+          <li>Businesses can&apos;t look up whether a number is in Telenotify Pass.</li>
+          <li>We limit how often you can be asked, and stop requests from a business you decline twice in a day.</li>
+          <li>Send /stop to the Pass bot, or block it, and we delete your number and Telegram IDs right away.</li>
+        </ul>
+      </section>
+      <section>
         <h2>3. How we use data</h2>
         <p>To provide and secure the service, deliver messages and webhook events, prevent abuse, send account emails (verification, password reset, usage alerts), and comply with the law. We don&apos;t sell personal data or use customer messages for advertising.</p>
       </section>

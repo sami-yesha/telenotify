@@ -30,14 +30,16 @@ export class AdminInsightsService {
     since.setUTCHours(0, 0, 0, 0);
     since.setUTCDate(since.getUTCDate() - (DAYS - 1));
 
-    const [users, verifiedUsers, orgs, suspended, approved, liveBots, waitingReview, signups, live, sandbox] = await Promise.all([
+    const [users, verifiedUsers, orgs, suspended, approved, liveBots, waitingReview, passMembers, verifiedBusinesses, signups, live, sandbox] = await Promise.all([
       this.prisma.user.count(),
       this.prisma.user.count({ where: { emailVerifiedAt: { not: null } } }),
       this.prisma.organization.count(),
       this.prisma.organization.count({ where: { status: 'SUSPENDED' } }),
       this.prisma.organization.count({ where: { liveApprovedAt: { not: null } } }),
       this.prisma.environment.count({ where: { type: 'LIVE', botTokenEncrypted: { not: null } } }),
-      this.prisma.organization.count({ where: { status: 'ACTIVE', liveApprovedAt: null, liveReviewRequestedAt: { not: null } } }),
+      this.prisma.organization.count({ where: { status: 'ACTIVE', OR: [{ liveApprovedAt: null, liveReviewRequestedAt: { not: null } }, { businessStatus: 'PENDING' }] } }),
+      this.prisma.passIdentity.count(),
+      this.prisma.organization.count({ where: { businessStatus: 'VERIFIED' } }),
       this.daily(Prisma.sql`SELECT date_trunc('day', "createdAt") AS day, count(*)::int AS n FROM "User" WHERE "createdAt" >= ${since} GROUP BY 1`),
       this.daily(
         Prisma.sql`SELECT date_trunc('day', m."createdAt") AS day, count(*)::int AS n FROM "Message" m JOIN "Environment" e ON e.id = m."environmentId"
@@ -57,7 +59,7 @@ export class AdminInsightsService {
     });
 
     return {
-      totals: { users, verifiedUsers, orgs, suspended, approved, liveBots, waitingReview },
+      totals: { users, verifiedUsers, orgs, suspended, approved, liveBots, waitingReview, passMembers, verifiedBusinesses },
       days,
     };
   }

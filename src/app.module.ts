@@ -8,6 +8,7 @@ import { AuditModule } from './audit/audit.service';
 import { AuthModule } from './auth/auth.module';
 import { BillingModule } from './billing/billing.module';
 import { BusinessModule } from './business/business.module';
+import { CliModule } from './cli/cli.module';
 import { CustomersModule } from './customers/customers.module';
 import { HealthController } from './health.controller';
 import { MailModule } from './mail/mail.module';
@@ -44,6 +45,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     AuthModule,
     PortalModule,
     BusinessModule,
+    CliModule,
     TeamModule,
     CustomersModule,
     TemplatesModule,
