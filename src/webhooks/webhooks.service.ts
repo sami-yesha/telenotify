@@ -58,8 +58,10 @@ export class WebhooksService {
   ) {}
 
   // Records the event in the delivery log, then queues it for delivery with retries.
-  async emit(environment: Environment, event: EnvironmentEvent, data: Record<string, unknown>): Promise<void> {
-    if (!environment.eventWebhookUrl) return;
+  // While `telenotify listen` runs, events are recorded for it even without a URL.
+  async emit(environment: Environment, event: EnvironmentEvent, data: Record<string, unknown>): Promise<{ id: string } | null> {
+    const listening = Boolean(environment.cliListenUntil && environment.cliListenUntil > new Date());
+    if (!environment.eventWebhookUrl && !listening) return null;
     const payload = this.buildPayload(environment, event, data);
     await this.prisma.webhookDelivery.create({
       data: {
@@ -68,9 +70,18 @@ export class WebhooksService {
         event,
         payload: payload as unknown as Prisma.InputJsonValue,
         messageId: event.startsWith('message.') && typeof data.id === 'string' ? data.id : null,
+        ...(environment.eventWebhookUrl ? {} : { status: 'CLI_ONLY' as const }),
       },
     });
-    await this.queue.add('deliver', { environmentId: environment.id, payload }, { jobId: payload.id, ...JOB_OPTIONS });
+    if (environment.eventWebhookUrl) await this.queue.add('deliver', { environmentId: environment.id, payload }, { jobId: payload.id, ...JOB_OPTIONS });
+    return { id: payload.id };
+  }
+
+  /** The exact body and x-telenotify-signature header a delivery uses, signed now. */
+  sign(environment: Pick<Environment, 'eventSigningSecret'>, payload: EventPayload, now = Date.now()): { body: string; signature: string } {
+    const body = JSON.stringify(payload);
+    const timestamp = Math.floor(now / 1000).toString();
+    return { body, signature: `t=${timestamp},v1=${hmacSha256(environment.eventSigningSecret, `${timestamp}.${body}`)}` };
   }
 
   // Queues a logged event again (same event id, so receivers can still de-duplicate).
@@ -158,10 +169,8 @@ export class WebhooksService {
   // One delivery attempt. Never throws; the caller decides whether to retry.
   async deliver(environment: Environment, payload: EventPayload): Promise<DeliveryResult> {
     if (!environment.eventWebhookUrl) return { delivered: false, error: 'No webhook URL configured' };
-    const body = JSON.stringify(payload);
     const started = Date.now();
-    const timestamp = Math.floor(started / 1000).toString();
-    const signature = hmacSha256(environment.eventSigningSecret, `${timestamp}.${body}`);
+    const { body, signature } = this.sign(environment, payload, started);
     try {
       const url = new URL(environment.eventWebhookUrl);
       const guard = !this.allowPrivate();
@@ -171,7 +180,7 @@ export class WebhooksService {
         headers: {
           'content-type': 'application/json',
           'user-agent': 'Telenotify-Webhooks/1.0',
-          'x-telenotify-signature': `t=${timestamp},v1=${signature}`,
+          'x-telenotify-signature': signature,
           'x-telenotify-event-id': payload.id,
         },
         body,

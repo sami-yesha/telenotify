@@ -1,0 +1,49 @@
+{
+  "name": "telenotify",
+  "version": "0.1.0",
+  "description": "Telenotify CLI: receive webhook events on localhost (no public URL, no tunnel), trigger sample events and send test messages.",
+  "license": "MIT",
+  "author": "sami-yesha",
+  "homepage": "https://telenotify.duckdns.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sami-yesha/telenotify.git",
+    "directory": "sdk/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/sami-yesha/telenotify/issues"
+  },
+  "type": "commonjs",
+  "bin": {
+    "telenotify": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && chmod +x dist/cli.js",
+    "test": "npm run build && node --test test/*.test.js",
+    "prepublishOnly": "npm test"
+  },
+  "keywords": [
+    "cli",
+    "ethiopia",
+    "localhost",
+    "notifications",
+    "telegram",
+    "telenotify",
+    "webhooks"
+  ],
+  "devDependencies": {
+    "typescript": "~5.8.0",
+    "@types/node": "^22.0.0"
+  }
+}

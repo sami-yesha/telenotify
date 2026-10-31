@@ -181,6 +181,9 @@ model Environment {
   // Live bots belong to the business: it decides whether its bot invites people to
   // Telenotify Pass after they verify. (The sandbox bot and hosted page are ours.)
   passInvite         Boolean         @default(true)
+  // Set while `telenotify listen` runs (renewed every 30s): events are recorded for
+  // the CLI even without a webhook URL.
+  cliListenUntil     DateTime?
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
 
@@ -424,6 +427,8 @@ enum DeliveryStatus {
   PENDING
   DELIVERED
   FAILED
+  // No webhook URL: recorded only for `telenotify listen`.
+  CLI_ONLY
 }
 
 // One row per event sent to an organization's webhook URL. Its id is the event id

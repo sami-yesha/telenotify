@@ -7,8 +7,8 @@ import { api, ApiError } from '@/lib/api';
 import type { DeliveryStatus, WebhookDelivery } from '@/lib/types';
 import { Alert, Badge, Button, CodeBlock, Dialog, formatDate } from './ui';
 
-const tones: Record<DeliveryStatus, 'green' | 'amber' | 'red'> = { DELIVERED: 'green', PENDING: 'amber', FAILED: 'red' };
-const labels: Record<DeliveryStatus, string> = { DELIVERED: 'delivered', PENDING: 'retrying', FAILED: 'failed' };
+const tones: Record<DeliveryStatus, 'green' | 'amber' | 'red' | 'blue'> = { DELIVERED: 'green', PENDING: 'amber', FAILED: 'red', CLI_ONLY: 'blue' };
+const labels: Record<DeliveryStatus, string> = { DELIVERED: 'delivered', PENDING: 'retrying', FAILED: 'failed', CLI_ONLY: 'CLI only' };
 
 export function DeliveryStatusBadge({ status }: { status: DeliveryStatus }) {
   return (

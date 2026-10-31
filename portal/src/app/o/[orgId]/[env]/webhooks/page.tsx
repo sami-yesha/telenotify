@@ -1,6 +1,6 @@
 'use client';
 
-import { KeyRound, List, Webhook as WebhookIcon } from 'lucide-react';
+import { KeyRound, List, Terminal, Webhook as WebhookIcon } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import { DeliveryLog } from '@/components/delivery-log';
 import { Alert, Button, Card, CodeBlock, Input, PageHeader, Secret, Spinner } from '@/components/ui';
@@ -127,6 +127,29 @@ export default function WebhooksPage() {
           <Secret value={environment.eventSigningSecret} />
           <div className="mt-4">
             <CodeBlock language="javascript" code={verifySnippet} />
+          </div>
+        </Card>
+
+        <Card
+          icon={Terminal}
+          title="Test on localhost (CLI)"
+          description="Forward events to your local development server with real HMAC signatures, without ngrok or public URLs."
+        >
+          <div className="space-y-3 text-sm">
+            <p className="text-muted">
+              Use the official <code className="font-mono text-xs bg-surface-2 px-1.5 py-0.5 rounded text-ink">telenotify</code> CLI to listen for events in this environment:
+            </p>
+            <CodeBlock
+              language="bash"
+              code={`# 1. Save your API key (if you haven't already)
+npx telenotify login
+
+# 2. Forward events to your local server
+npx telenotify listen --forward http://localhost:3000/webhooks/telenotify
+
+# 3. In another terminal, trigger a sample event
+npx telenotify trigger message.sent`}
+            />
           </div>
         </Card>
 

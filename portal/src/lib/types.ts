@@ -184,7 +184,8 @@ export interface InvitationPreview {
   invitedBy: string | null;
 }
 
-export type DeliveryStatus = 'PENDING' | 'DELIVERED' | 'FAILED';
+/** CLI_ONLY: no webhook URL, recorded only for `telenotify listen`. */
+export type DeliveryStatus = 'PENDING' | 'DELIVERED' | 'FAILED' | 'CLI_ONLY';
 
 export interface WebhookDelivery {
   id: string;

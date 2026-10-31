@@ -58,7 +58,7 @@ Decided 2026-10-24: Telenotify is **free and open source** (AGPL-3.0) for now. C
 Goal: things a copy of the open-source code can't bring with it, plus removing developer stress and cost.
 - [x] Trademark policy (TRADEMARK.md) and the "Verified business" badge: request in Organization settings, operator review in /admin, shown on the verify page, the public /check page and optionally the bot profile
 - [x] Verify-once network (Telenotify Pass): opt-in members confirm any business's verification with one tap in our Pass bot. The public "is this number on Telegram?" lookup was dropped on purpose: it would let anyone probe whose number is in the network
-- [ ] CLI: `npx telenotify listen --forward …` (webhooks to localhost, signed) and `trigger <event>`
+- [x] CLI: `npx telenotify listen --forward …` (webhooks to localhost, signed) and `trigger <event>`
 - [ ] Guided live-bot setup wizard (BotFather steps, token check, sets the bot's name and description)
 - [ ] Alerts to developers: failing webhooks, many blocked customers, near message or SMS limits
 - [ ] Laravel/PHP and Python SDKs

@@ -14,6 +14,7 @@ const filters: { label: string; value: '' | DeliveryStatus }[] = [
   { label: 'Delivered', value: 'DELIVERED' },
   { label: 'Retrying', value: 'PENDING' },
   { label: 'Failed', value: 'FAILED' },
+  { label: 'CLI only', value: 'CLI_ONLY' },
 ];
 
 export function DeliveryLog({ basePath, messageHref }: { basePath: string; messageHref: (id: string) => string }) {
