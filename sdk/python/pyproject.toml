@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "telenotify"
+name = "telenotify-python"
 version = "0.1.0"
 description = "Official Python client for Telenotify: Telegram-first customer notifications and phone verification"
 readme = "README.md"

@@ -10,7 +10,7 @@ Official Python client for **[Telenotify](https://telenotify.duckdns.org)**: cus
 ## Installation
 
 ```bash
-pip install telenotify
+pip install telenotify-python
 ```
 
 ## Quick start

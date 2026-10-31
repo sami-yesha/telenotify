@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="telenotify",
+    name="telenotify-python",
     version="0.1.0",
     author="sami-yesha",
     description="Official Python client for Telenotify: Telegram-first customer notifications and phone verification",
