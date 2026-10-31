@@ -49,10 +49,15 @@ export async function sendAfroMessage(
   } catch {
     // Not JSON; reported below.
   }
-  if (response.status >= 500) throw new AfroMessageError(`AfroMessage error (HTTP ${response.status})`, true);
+  if (response.status >= 500) {
+    const detail = data?.response?.errors ?? data?.response ?? (raw && raw.length < 200 ? raw.trim() : null);
+    const detailStr = detail ? `: ${typeof detail === 'string' ? detail : JSON.stringify(detail)}` : '';
+    throw new AfroMessageError(`AfroMessage error (HTTP ${response.status})${detailStr}`, true);
+  }
   if (!response.ok || data?.acknowledge !== 'success') {
-    const detail = data?.response?.errors ?? data?.response ?? raw.slice(0, 200);
-    throw new AfroMessageError(`AfroMessage rejected the SMS (HTTP ${response.status}): ${typeof detail === 'string' ? detail : JSON.stringify(detail)}`, false);
+    const rawDetail = data?.response?.errors ?? data?.response ?? raw.slice(0, 200);
+    const detail = Array.isArray(rawDetail) ? rawDetail.join(', ') : typeof rawDetail === 'string' ? rawDetail : JSON.stringify(rawDetail);
+    throw new AfroMessageError(`AfroMessage: ${detail}`, false);
   }
   return { messageId: data.response?.message_id ?? null };
 }

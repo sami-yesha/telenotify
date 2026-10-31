@@ -71,7 +71,13 @@ export class SmsFallbackService {
       tokenCheck = await this.checkToken(dto.token.trim());
       data.afroTokenEncrypted = encrypt(dto.token.trim(), this.config.getOrThrow('ENCRYPTION_KEY'));
     }
-    if (dto.identifierId !== undefined) data.afroIdentifierId = dto.identifierId?.trim() || null;
+    if (dto.identifierId !== undefined) {
+      const val = dto.identifierId?.trim() || null;
+      if (val && val.includes('@')) {
+        throw new BadRequestException('Identifier ID should be an AfroMessage system shortcode ID, not an email address. Leave blank to use your default identifier.');
+      }
+      data.afroIdentifierId = val;
+    }
     if (dto.senderName !== undefined) data.afroSenderName = dto.senderName?.trim() || null;
     if (dto.dailyLimit !== undefined) data.smsDailyLimit = dto.dailyLimit;
     if (dto.enabled !== undefined && dto.token !== null) data.smsFallbackEnabled = dto.enabled;

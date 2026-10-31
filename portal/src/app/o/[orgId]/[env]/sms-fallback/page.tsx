@@ -220,8 +220,8 @@ export default function SmsFallbackPage() {
                           placeholder={settings.tokenHint ? `Saved (${settings.tokenHint}). Paste a new one to replace it.` : 'eyJhbGciOi…'}
                         />
                         <div className="grid gap-4 sm:grid-cols-2">
-                          <Input name="identifierId" label="Identifier ID" defaultValue={settings.identifierId ?? ''} hint="Optional on beta accounts." />
-                          <Input name="senderName" label="Sender name" defaultValue={settings.senderName ?? ''} maxLength={11} hint="Your approved sender ID." />
+                          <Input name="identifierId" label="Identifier ID" defaultValue={settings.identifierId ?? ''} hint="System identifier (UUID or shortcode). Leave blank to use default." placeholder="e.g. e80ad9d8-..." />
+                          <Input name="senderName" label="Sender name" defaultValue={settings.senderName ?? ''} maxLength={11} hint="Your approved sender ID. Leave blank for default." placeholder="e.g. Pitron Tech" />
                         </div>
                         <div className="flex flex-wrap gap-2">
                           <Button type="submit" loading={saving}>
