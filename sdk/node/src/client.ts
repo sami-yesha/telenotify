@@ -74,7 +74,7 @@ export class Telenotify {
           method,
           headers: {
             'x-api-key': this.apiKey,
-            'user-agent': 'telenotify-node/0.1.0',
+            'user-agent': 'telenotify-node/0.3.1',
             ...(options.body !== undefined ? { 'content-type': 'application/json' } : {}),
           },
           body: options.body !== undefined ? JSON.stringify(options.body) : undefined,

@@ -1,6 +1,6 @@
 {
   "name": "@telenotify/node",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Official Node.js and TypeScript client for the Telenotify API: Telegram notifications and phone verification with an instant fallback signal.",
   "license": "MIT",
   "author": "sami-yesha",
