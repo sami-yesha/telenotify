@@ -3,305 +3,457 @@
 <head>
 <meta charset="utf-8" />
 <title>Telenotify promo</title>
+<!-- Same system as the landing page ("Telegram night"): portal/src/app/globals.css and landing/hero.css. -->
 <style>
-  @font-face { font-family: 'Geist'; src: url('../../../portal/src/fonts/Geist-Variable.woff2') format('woff2'); font-weight: 100 900; }
-  @font-face { font-family: 'Bricolage'; src: url('../../../portal/src/fonts/BricolageGrotesque-Variable.woff2') format('woff2'); font-weight: 200 800; }
+  @font-face { font-family: 'Google Sans'; src: url('../../../portal/src/fonts/GoogleSansFlex-Latin.woff2') format('woff2'); font-weight: 400 700; }
   @font-face { font-family: 'GeistMono'; src: url('../../../portal/src/fonts/GeistMono-Variable.woff2') format('woff2'); font-weight: 100 900; }
+  :root {
+    --tg-doodles: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' fill='none' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 44l40-16-10 38-10-12-8 10v-14z'/%3E%3Cpath d='M42 54l20-26'/%3E%3Crect x='150' y='22' width='46' height='30' rx='12'/%3E%3Cpath d='M160 52l-4 10 12-10'/%3E%3Cpath d='M98 112c0-8 12-10 14 0 2-10 14-8 14 0 0 10-14 18-14 18s-14-8-14-18z'/%3E%3Cpath d='M190 120l4 9 10 1-8 6 3 10-9-6-9 6 3-10-8-6 10-1z'/%3E%3Cpath d='M30 150a14 14 0 0 1 28 0v10l4 6H26l4-6z'/%3E%3Cpath d='M40 172a4 4 0 0 0 8 0'/%3E%3Crect x='136' y='186' width='26' height='22' rx='4'/%3E%3Cpath d='M141 186v-6a8 8 0 0 1 16 0v6'/%3E%3Cpath d='M80 200l8 8 16-18'/%3E%3Ccircle cx='214' cy='204' r='3'/%3E%3Ccircle cx='110' cy='40' r='2.5'/%3E%3Cpath d='M200 70c8 4 14 12 14 22'/%3E%3C/svg%3E");
+    --page: #01061a; --surface: #071029; --subtle: #0e1834; --line: rgba(255,255,255,.11);
+    --muted: rgba(226,233,255,.64); --sub: rgba(226,233,255,.74); --brand: #2aabee; --accent: #5fc4f5; --brand-soft: rgba(42,171,238,.14);
+    --sans: 'Google Sans', 'Kefa', 'Noto Sans Ethiopic', -apple-system, sans-serif;
+  }
   * { box-sizing: border-box; margin: 0; }
-  html, body { width: 1080px; height: 1350px; overflow: hidden; background: #070b14; }
-  body { font-family: 'Geist', -apple-system, sans-serif; color: #e5e9f0; -webkit-font-smoothing: antialiased; }
-  #stage { position: relative; width: 1080px; height: 1350px; overflow: hidden; background: radial-gradient(120% 80% at 50% 0%, #0f1a33 0%, #070b14 60%); }
-  .grid { position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.045) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); }
-  .orb { position: absolute; border-radius: 50%; filter: blur(90px); }
-  .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 120px 80px 80px; text-align: center; }
-  h1 { font-family: 'Bricolage', sans-serif; font-weight: 800; font-size: 82px; line-height: 1.02; letter-spacing: -2px; color: #fff; }
-  h2 { font-family: 'Bricolage', sans-serif; font-weight: 800; font-size: 70px; line-height: 1.04; letter-spacing: -1.5px; color: #fff; }
-  .sub { margin-top: 26px; font-size: 34px; line-height: 1.35; color: #a7b0c2; max-width: 880px; }
-  .grad { background: linear-gradient(100deg, #38bdf8 10%, #818cf8 60%, #f472b6 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .eyebrow { font-size: 26px; font-weight: 600; letter-spacing: 6px; text-transform: uppercase; color: #38bdf8; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; background: var(--page); }
+  body { font-family: var(--sans); color: #fff; -webkit-font-smoothing: antialiased; font-kerning: normal; text-rendering: geometricPrecision; }
+  #stage { position: relative; width: 1080px; height: 1350px; overflow: hidden; isolation: isolate; background: #01061a linear-gradient(90deg, #00061a 0%, #01071b 22%, #01071a 45%, #010718 62%, #010614 80%, #020511 100%); }
+  svg.i { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
-  /* SMS cards */
-  .sms { width: 860px; display: flex; align-items: center; gap: 22px; padding: 26px 30px; border-radius: 28px; background: #121a2b; border: 1px solid rgba(255,255,255,.08); text-align: left; box-shadow: 0 20px 50px -20px rgba(0,0,0,.6); }
-  .sms .icon { width: 64px; height: 64px; flex: none; border-radius: 18px; display: grid; place-items: center; background: #1f2a40; font-size: 34px; }
-  .sms .body { flex: 1; min-width: 0; }
-  .sms .from { font-size: 22px; color: #8b95a7; }
-  .sms .text { margin-top: 4px; font-size: 29px; color: #e5e9f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sms .cost { flex: none; font-family: 'GeistMono', monospace; font-weight: 700; font-size: 30px; color: #f87171; background: rgba(248,113,113,.12); border: 1px solid rgba(248,113,113,.3); padding: 10px 16px; border-radius: 14px; }
+  /* The landing page's planet: its top edge is the horizon. */
+  #air { position: absolute; left: -200px; right: -200px; height: 900px; background: radial-gradient(38% 30% at 50% 50%, rgba(42,171,238,.42), transparent 70%), radial-gradient(70% 42% at 50% 50%, rgba(34,158,217,.18), transparent 75%); }
+  #planet { position: absolute; left: -1110px; width: 3300px; height: 3300px; border-radius: 50%; overflow: hidden; background: radial-gradient(60% 12% at 50% 0%, #10345a 0%, #071733 55%, #030b20 100%); box-shadow: 0 -1.6px 0 0 rgba(200,238,255,.85), 0 -4px 22px 0 rgba(42,171,238,.85), 0 -30px 140px 0 rgba(42,171,238,.38); }
+  #planet .d { position: absolute; inset: 0; opacity: .07; background-image: var(--tg-doodles); background-size: 330px 330px; -webkit-mask-image: radial-gradient(30% 12% at 50% 0%, #000, transparent); mask-image: radial-gradient(30% 12% at 50% 0%, #000, transparent); }
+  #plane { position: absolute; width: 36px; height: 36px; color: #bfe9ff; }
 
-  /* Phone */
-  .phone { position: relative; width: 560px; height: 860px; border-radius: 64px; background: #0b111c; border: 10px solid #1e2636; box-shadow: 0 40px 100px -30px rgba(56,189,248,.35), 0 0 0 2px rgba(255,255,255,.06); overflow: hidden; text-align: left; }
-  .phone .top { display: flex; align-items: center; gap: 16px; padding: 46px 28px 20px; background: #17212b; border-bottom: 1px solid rgba(255,255,255,.05); }
-  .avatar { width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 24px; color: #fff; background: linear-gradient(135deg, #10b981, #0ea5e9); }
-  .phone .name { font-size: 27px; font-weight: 600; color: #fff; }
-  .phone .meta { font-size: 20px; color: #6d7f8f; }
-  .chat { position: absolute; left: 0; right: 0; top: 130px; bottom: 0; padding: 26px 22px; display: flex; flex-direction: column; gap: 16px; background: #0e1621; }
-  .bubble { max-width: 86%; padding: 18px 22px; border-radius: 26px; border-bottom-left-radius: 8px; background: #182533; color: #fff; font-size: 26px; line-height: 1.35; }
-  .bubble.me { align-self: flex-end; border-bottom-left-radius: 26px; border-bottom-right-radius: 8px; background: #2b5278; }
-  .bubble .time { display: block; margin-top: 6px; text-align: right; font-size: 17px; color: #7d8b99; }
-  .btn { margin-top: 10px; padding: 14px; border-radius: 16px; text-align: center; font-size: 24px; color: #6ab3f3; background: rgba(255,255,255,.06); }
-  .kbd { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px; background: #17212b; }
-  .kbd .key { padding: 22px; border-radius: 18px; text-align: center; font-size: 27px; font-weight: 600; color: #fff; background: #2b5278; }
-  .finger { position: absolute; width: 90px; height: 90px; border-radius: 50%; background: rgba(255,255,255,.35); border: 4px solid rgba(255,255,255,.8); box-shadow: 0 0 40px rgba(255,255,255,.5); }
+  .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 96px 70px 0; text-align: center; }
+  .eyebrow { font-size: 25px; font-weight: 500; letter-spacing: -.005em; color: var(--brand); }
+  h1, h2 { font-weight: 400; color: #fff; }
+  h1 { font-size: 100px; line-height: .956; letter-spacing: -.028em; white-space: nowrap; }
+  h2 { margin-top: 16px; font-size: 68px; line-height: 1.04; letter-spacing: -.028em; }
+  .dim { color: rgba(255,255,255,.55); } /* .text-gradient: the second clause steps back */
+  .sub { margin-top: 24px; font-size: 32px; line-height: 1.3; letter-spacing: -.005em; color: var(--sub); }
+  .cta { display: inline-flex; align-items: center; justify-content: center; height: 74px; padding: 0 56px; border-radius: 7px; background: #fff; color: #0a0a0a; font-weight: 500; font-size: 29px; letter-spacing: -.0265em; }
+  .mono { font-family: 'GeistMono', monospace; }
 
-  /* Feature cards */
-  .cards { margin-top: 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; width: 920px; }
-  .card { padding: 30px; border-radius: 30px; background: #111a2c; border: 1px solid rgba(255,255,255,.08); text-align: left; }
-  .card .emoji { font-size: 44px; }
-  .card .t { margin-top: 12px; font-size: 31px; font-weight: 700; color: #fff; }
-  .card .d { margin-top: 6px; font-size: 23px; color: #8b95a7; line-height: 1.35; }
-  .code { margin-top: 30px; width: 920px; padding: 26px 30px; border-radius: 24px; background: #0b1020; border: 1px solid rgba(255,255,255,.08); font-family: 'GeistMono', monospace; font-size: 25px; text-align: left; color: #cbd5e1; line-height: 1.5; }
+  /* Masthead */
+  .mark { display: inline-flex; align-items: center; gap: 14px; font-size: 40px; font-weight: 500; letter-spacing: -.035em; line-height: 1; }
+  .rule { width: 460px; height: 1px; margin-top: 30px; background: rgba(255,255,255,.19); transform-origin: 50% 50%; }
+  .nav { display: flex; justify-content: space-between; width: 460px; padding: 0 14px; margin-top: 22px; font-size: 24px; letter-spacing: -.033em; color: rgba(238,242,255,.9); }
 
-  .pill { display: flex; align-items: center; gap: 16px; padding: 22px 32px; border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); font-size: 32px; color: #fff; }
-  .pill b { font-family: 'GeistMono', monospace; font-weight: 600; }
+  /* Phone (landing/hero.css) */
+  .phone { position: relative; width: 500px; padding: 14px 14px 0; border-radius: 68px 68px 0 0; background: linear-gradient(180deg, #2a3446, #121925 60%); box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 -18px 60px -14px rgba(42,171,238,.45); text-align: left; font-size: 24px; }
+  .screen { position: relative; height: 900px; border-radius: 56px 56px 0 0; overflow: hidden; background: #0e1621; }
+  .chat-head { display: flex; align-items: center; gap: 18px; padding: 44px 26px 20px; background: #17212b; }
+  .ava { display: grid; place-items: center; width: 66px; height: 66px; border-radius: 50%; background: linear-gradient(135deg, #34d399, #0d9488); font-weight: 600; font-size: 23px; }
+  .chat-name { display: block; font-weight: 500; font-size: 26px; letter-spacing: -.01em; }
+  .chat-meta { display: block; color: #6ab3f3; font-size: 21px; }
+  .chat-body { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 22px 20px; height: 100%; }
+  .chat-body > .wall { position: absolute; inset: 0; opacity: .05; background-image: var(--tg-doodles); background-size: 300px 300px; }
+  .chat-body > :not(.wall) { position: relative; }
+  .day { align-self: center; padding: 4px 18px; border-radius: 24px; background: rgba(0,0,0,.3); color: rgba(255,255,255,.7); font-size: 20px; }
+  .bubble { max-width: 86%; padding: 13px 19px 12px; border-radius: 26px; line-height: 1.32; color: #fff; }
+  .bubble time { float: right; margin: 11px 0 -5px 17px; font-size: 18px; color: rgba(255,255,255,.45); }
+  .in { align-self: flex-start; border-bottom-left-radius: 8px; background: #182533; }
+  .out { align-self: flex-end; border-bottom-right-radius: 8px; background: #2b5278; }
+  .out time { color: #7fc4ff; }
+  .bubble b { font-weight: 600; }
+  .bubble i { font-style: italic; color: rgba(255,255,255,.8); }
+  .bubble code { font-family: 'GeistMono', monospace; font-size: .86em; padding: 1px 8px; border-radius: 7px; background: rgba(255,255,255,.08); color: #8fd3ff; }
+  .bbtn { align-self: flex-start; width: 86%; margin-top: -6px; padding: 12px; border-radius: 18px; background: rgba(24,37,51,.8); text-align: center; font-size: 22px; font-weight: 500; }
+  .key { align-self: stretch; padding: 17px; border-radius: 19px; background: rgba(42,171,238,.16); color: #9fd8ff; font-weight: 500; text-align: center; }
+  .contact { display: flex; align-items: center; gap: 14px; }
+  .contact b { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: rgba(127,196,255,.3); font-weight: 500; }
+  .contact small { display: block; opacity: .7; font-size: 22px; }
+  .tap { position: absolute; width: 74px; height: 74px; border-radius: 50%; background: rgba(255,255,255,.28); border: 3px solid rgba(255,255,255,.75); box-shadow: 0 0 34px rgba(95,196,245,.6); }
+
+  /* Chips and cards */
+  .chip { position: absolute; display: flex; flex-direction: column; gap: 6px; padding: 18px 22px; border: 1px solid rgba(255,255,255,.12); border-radius: 20px; background: rgba(7,16,41,.8); text-align: left; font-size: 19px; letter-spacing: -.01em; color: rgba(226,233,255,.7); white-space: nowrap; }
+  .chip strong { font-weight: 500; font-size: 31px; letter-spacing: -.03em; color: #fff; }
+  .chip.sms strong { color: rgba(255,255,255,.5); text-decoration: line-through; text-decoration-color: #ff6b6b; text-decoration-thickness: 3px; }
+  .chip.tg { border-color: rgba(42,171,238,.4); }
+  .chip.tg strong { color: #7fd4ff; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; text-align: left; }
+  .tile { display: grid; place-items: center; flex: none; width: 66px; height: 66px; border-radius: 16px; background: var(--brand-soft); color: var(--brand); font-size: 33px; box-shadow: inset 0 0 0 1px rgba(42,171,238,.15); }
+  .smsrow { display: flex; align-items: center; gap: 22px; width: 900px; padding: 24px 28px; }
+  .smsrow .from { font-size: 21px; color: var(--muted); }
+  .smsrow .text { margin-top: 3px; font-size: 28px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 530px; }
+  .smsrow .cost { margin-left: auto; flex: none; font-weight: 500; font-size: 29px; letter-spacing: -.03em; color: rgba(255,255,255,.6); text-decoration: line-through; text-decoration-color: #ff6b6b; text-decoration-thickness: 3px; }
+
+  /* Code window */
+  .win { width: 940px; overflow: hidden; border: 1px solid rgba(255,255,255,.1); border-radius: 26px; background: #030a1c; text-align: left; }
+  .win-top { display: flex; align-items: center; gap: 10px; padding: 18px 24px; border-bottom: 1px solid rgba(255,255,255,.1); }
+  .dotr { width: 14px; height: 14px; border-radius: 50%; }
+  .win-name { margin-left: 12px; font-family: 'GeistMono', monospace; font-size: 20px; color: #94a3b8; }
+  .win pre { margin: 0; padding: 26px 28px; font-family: 'GeistMono', monospace; font-size: 25px; line-height: 1.55; color: #e2e8f0; white-space: pre; }
+  .k { color: #f0abfc; } .s { color: #86efac; } .f { color: #7dd3fc; } .c { color: #64748b; }
+  .tabs { display: flex; gap: 6px; padding: 6px; margin-left: auto; border-radius: 12px; background: rgba(255,255,255,.05); font-size: 21px; }
+  .tabs span { padding: 7px 18px; border-radius: 8px; color: #94a3b8; }
+  .tabs span.on { background: rgba(255,255,255,.1); color: #fff; }
+  .pane { position: absolute; left: 0; right: 0; top: 0; }
+
+  /* Fallback flow */
+  .flow { width: 900px; padding: 30px; }
+  .row { display: flex; align-items: center; gap: 24px; padding: 21px 24px; border: 1px solid var(--line); border-radius: 20px; }
+  .row .icon { display: grid; place-items: center; flex: none; width: 66px; height: 66px; border-radius: 16px; font-size: 33px; background: var(--subtle); color: var(--muted); }
+  .row .t { font-size: 29px; font-weight: 500; letter-spacing: -.01em; }
+  .row .d { margin-top: 2px; font-size: 24px; color: var(--muted); }
+  .link { width: 1px; height: 26px; margin-left: 57px; background: rgba(255,255,255,.2); }
+  .perk { display: inline-flex; align-items: center; gap: 9px; padding: 12px 18px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 21px; color: rgba(255,255,255,.88); white-space: nowrap; }
+  .perk svg { color: var(--brand); font-size: 22px; }
+
+  /* Closing panel (.tg-sky, like the landing page's final call to action) */
+  .sky { position: relative; width: 960px; padding: 76px 50px 66px; overflow: hidden; border-radius: 30px; background: radial-gradient(120% 90% at 15% 0%, rgba(42,171,238,.32), transparent 55%), radial-gradient(90% 80% at 100% 100%, rgba(84,108,230,.28), transparent 60%), linear-gradient(160deg, #0b2a4a 0%, #0a1a38 45%, #0b1430 100%); border: 1px solid rgba(255,255,255,.08); }
+  .sky .wall { position: absolute; inset: 0; opacity: .07; background-image: var(--tg-doodles); background-size: 300px 300px; }
+  .sky > :not(.wall) { position: relative; }
+  .url { margin-top: 26px; font-size: 34px; letter-spacing: -.02em; color: #fff; }
+  .install { display: inline-block; padding: 12px 18px; border: 1px solid rgba(255,255,255,.14); border-radius: 12px; background: rgba(1,6,26,.5); font-family: 'GeistMono', monospace; font-size: 21px; color: #e2e8f0; }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="g" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse"><stop stop-color="#0ea5e9"/><stop offset="1" stop-color="#6366f1"/></linearGradient></defs></svg>
 <div id="stage">
-  <div class="grid"></div>
-  <div class="orb" id="orb1" style="width:700px;height:700px;background:rgba(14,165,233,.28)"></div>
-  <div class="orb" id="orb2" style="width:620px;height:620px;background:rgba(99,102,241,.26)"></div>
-  <div class="orb" id="orb3" style="width:480px;height:480px;background:rgba(244,114,182,.16)"></div>
+  <div id="air"></div>
+  <div id="planet"><div class="d"></div></div>
+  <svg id="plane" viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 3.1 2.9 10.3c-1 .4-1 1.8.1 2.1l4.6 1.4 1.8 5.6c.3.9 1.4 1.1 2 .4l2.6-2.7 4.6 3.4c.8.6 1.9.2 2.1-.8l3-15c.2-1.1-.9-2-2.1-1.6ZM9.5 14.2l8.6-7.4-6.8 8.6-.4 3-1.4-4.2Z"/></svg>
 
-  <!-- 1. Logo -->
-  <div class="scene" id="s1" style="justify-content:center;padding-top:0">
-    <svg id="mark" viewBox="0 0 32 32" width="260" height="260" style="filter:drop-shadow(0 30px 60px rgba(14,165,233,.45))">
-      <defs><linearGradient id="g" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse"><stop stop-color="#0ea5e9"/><stop offset="1" stop-color="#6366f1"/></linearGradient></defs>
-      <rect width="32" height="32" rx="9" fill="url(#g)"/>
-      <path id="bubble" fill="#fff" stroke="#fff" stroke-width=".6" d="M11.5 8.5H20.5A5 5 0 0 1 25.5 13.5V17A5 5 0 0 1 20.5 22H14.9L10.6 25.1C10 25.55 9.2 25 9.4 24.3L10.1 21.6A5 5 0 0 1 6.5 17V13.5A5 5 0 0 1 11.5 8.5Z"/>
-      <rect id="tbar" x="11" y="11.6" width="10" height="2.6" rx="1.3" fill="url(#g)" style="transform-box:fill-box;transform-origin:50% 50%"/>
-      <rect id="tstem" x="14.7" y="11.6" width="2.6" height="7.6" rx="1.3" fill="url(#g)" style="transform-box:fill-box;transform-origin:50% 0%"/>
-      <circle id="dot" cx="25" cy="8.5" r="3.6" fill="#f472b6" stroke="url(#g)" stroke-width="2" style="transform-box:fill-box;transform-origin:50% 50%"/>
-    </svg>
-    <h1 id="s1title" style="margin-top:56px;font-size:110px">Telenotify</h1>
-    <p class="sub" id="s1sub" style="font-size:38px">Customer messages on Telegram,<br/>with one API call</p>
-    <p class="sub" id="s1flag" style="margin-top:34px;font-size:30px;color:#cbd5e1">Built in Ethiopia 🇪🇹</p>
+  <!-- 1. The landing page's hero -->
+  <div class="scene" id="s1" style="padding-top:64px">
+    <div class="mark" id="s1mark" data-logo="46"><span>Telenotify</span></div>
+    <div class="rule" id="s1rule"></div>
+    <div class="nav" id="s1nav"><span>Verify</span><span>Developers</span><span>SDKs</span></div>
+    <h1 id="s1l1" style="margin-top:84px">No more OTP bills.</h1>
+    <h1 id="s1l2">Verify on Telegram.</h1>
+    <p class="sub" id="s1sub">No codes, no resends, no SMS fees.<br/>Customers confirm in one tap, free.</p>
+    <div class="cta" id="s1cta" style="margin-top:34px">Start free, no card</div>
+    <div class="phone" id="s1phone" style="position:absolute;left:290px;top:798px">
+      <div class="screen">
+        <div class="chat-head"><span class="ava">AP</span><span><span class="chat-name">Abebe Pharmacy</span><span class="chat-meta">bot</span></span></div>
+        <div class="chat-body"><div class="wall"></div><span class="day">Today</span>
+          <div class="bubble in">Abebe Pharmacy wants to confirm your phone number. No code needed, just tap below.<time>9:41</time></div>
+          <div class="key">📱 Share my phone number</div>
+        </div>
+      </div>
+    </div>
+    <div class="chip sms" id="s1c1" style="left:26px;top:900px">SMS OTP, plus every resend<strong>0.20 ETB each</strong></div>
+    <div class="chip tg" id="s1c2" style="right:40px;top:990px">Telegram verification<strong>0 ETB</strong></div>
   </div>
 
-  <!-- 2. Problem -->
-  <div class="scene" id="s2">
+  <!-- 2. The cost -->
+  <div class="scene" id="s2" style="padding-top:120px">
     <p class="eyebrow" id="s2eye">The problem</p>
-    <h2 id="s2title" style="margin-top:22px">Every OTP sent by SMS<br/>costs you money.</h2>
-    <div id="s2cards" style="margin-top:64px;display:flex;flex-direction:column;gap:22px">
-      <div class="sms" id="c1"><div class="icon">💬</div><div class="body"><div class="from">SMS · Your app</div><div class="text">Your code is 589869</div></div><div class="cost">−0.20 ETB</div></div>
-      <div class="sms" id="c2"><div class="icon">🔁</div><div class="body"><div class="from">SMS · "Resend code"</div><div class="text">Your new code is 112233</div></div><div class="cost">−0.20 ETB</div></div>
-      <div class="sms" id="c3"><div class="icon">💬</div><div class="body"><div class="from">SMS · in Amharic, 3 parts</div><div class="text">የእርስዎ የማረጋገጫ ኮድ 589869 ነው። ለማንም አያጋሩ…</div></div><div class="cost">−0.60 ETB</div></div>
-      <div class="sms" id="c4"><div class="icon">📦</div><div class="body"><div class="from">SMS · Order update</div><div class="text">Order #1042 is out for delivery</div></div><div class="cost">−0.20 ETB</div></div>
+    <h2 id="s2title">Every SMS code costs you.<br/><span class="dim">Every resend costs again.</span></h2>
+    <div style="margin-top:58px;display:flex;flex-direction:column;gap:18px">
+      <div class="card smsrow" id="c1"><span class="tile" data-i="message-square"></span><div><div class="from">SMS · Your app</div><div class="text">Your code is 589869</div></div><div class="cost">0.20 ETB</div></div>
+      <div class="card smsrow" id="c2"><span class="tile" data-i="repeat"></span><div><div class="from">SMS · “Resend code”</div><div class="text">Your new code is 112233</div></div><div class="cost">0.20 ETB</div></div>
+      <div class="card smsrow" id="c3"><span class="tile" data-i="message-square"></span><div><div class="from">SMS · In Amharic, split into parts</div><div class="text">የእርስዎ የማረጋገጫ ኮድ 589869 ነው። ለማንም አያጋሩ…</div></div><div class="cost">0.60 ETB</div></div>
+      <div class="card smsrow" id="c4"><span class="tile" data-i="package"></span><div><div class="from">SMS · Order update</div><div class="text">Order #1042 is out for delivery</div></div><div class="cost">0.20 ETB</div></div>
     </div>
-    <p class="sub" id="s2foot" style="margin-top:50px">…for every customer, every day.</p>
+    <p class="sub" id="s2foot" style="margin-top:44px">…for every customer, every day.</p>
   </div>
 
-  <!-- 3. Telegram chat -->
+  <!-- 3. Verify -->
   <div class="scene" id="s3">
-    <p class="eyebrow" id="s3eye">The answer</p>
-    <h2 id="s3title" style="margin-top:22px">Send it on Telegram.<br/><span class="grad">Your customers are there.</span></h2>
-    <div class="phone" id="phone3" style="margin-top:56px">
-      <div class="top"><div class="avatar">AP</div><div><div class="name">Abebe Pharmacy ✓</div><div class="meta">bot</div></div></div>
-      <div class="chat">
-        <div class="bubble" id="m1">✅ ከAbebe 1,250 ብር ተቀብለዋል። ማጣቀሻ TX-88።<span class="time">9:41</span></div>
-        <div class="bubble" id="m2">Your order #1042 is out for delivery 🚚<span class="time">9:42</span><div class="btn">Track order ↗</div></div>
-        <div class="bubble" id="m3">Your prescription is ready for pickup today. 💊<span class="time">9:44</span></div>
+    <p class="eyebrow" id="s3eye">Verify with Telegram</p>
+    <h2 id="s3title">Verify phone numbers<br/><span class="dim">without sending a single SMS.</span></h2>
+    <div class="phone" id="s3phone" style="position:absolute;left:290px;top:352px">
+      <div class="screen">
+        <div class="chat-head"><span class="ava" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">ML</span><span><span class="chat-name">Mela Loans</span><span class="chat-meta">bot</span></span></div>
+        <div class="chat-body"><div class="wall"></div><span class="day">Today</span>
+          <div class="bubble in" id="v1">Mela Loans wants to confirm your phone number. No code needed, just tap below.<time>10:02</time></div>
+          <div class="bubble out" id="v2"><span class="contact"><b>H</b><span>Hana Tesfaye<small>+251 9•• ••• 344</small></span></span><time>10:02 ✓✓</time></div>
+          <div class="bubble in" id="v3">✅ Verified. That cost you nothing.<time>10:02</time></div>
+          <div class="key" id="vkey">📱 Share my phone number</div>
+        </div>
+        <div class="tap" id="vtap"></div>
       </div>
     </div>
+    <div class="chip tg" id="s3c" style="right:44px;top:840px">This verification<strong>0 ETB</strong></div>
   </div>
 
-  <!-- 4. Verify -->
+  <!-- 4. Messages -->
   <div class="scene" id="s4">
-    <p class="eyebrow" id="s4eye">Verify with Telegram</p>
-    <h2 id="s4title" style="margin-top:22px">Verify phone numbers.<br/><span class="grad">No OTP. No SMS.</span></h2>
-    <div class="phone" id="phone4" style="margin-top:56px">
-      <div class="top"><div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">ML</div><div><div class="name">Mela Loans ✓</div><div class="meta">bot</div></div></div>
-      <div class="chat">
-        <div class="bubble" id="v1">Mela Loans wants to confirm your phone number. Tap the button below.<span class="time">10:02</span></div>
-        <div class="bubble me" id="v2">📞 +251 9•• ••• •44<span class="time">10:02</span></div>
-        <div class="bubble" id="v3">✅ Your phone number is verified. You can go back to Mela Loans now.<span class="time">10:02</span></div>
-      </div>
-      <div class="kbd" id="kbd"><div class="key" id="key">📱 Share my phone number</div></div>
-      <div class="finger" id="finger"></div>
-    </div>
-  </div>
-
-  <!-- 4b. One-line widget -->
-  <div class="scene" id="s45">
-    <p class="eyebrow" id="s45eye">New · Verify widget</p>
-    <h2 id="s45title" style="margin-top:22px">Add it to your website.<br/><span class="grad">In one line.</span></h2>
-    <div id="s45code" style="margin-top:54px;width:920px;border-radius:28px;background:#0b1020;border:1px solid rgba(255,255,255,.1);text-align:left;overflow:hidden">
-      <div style="display:flex;gap:10px;padding:18px 24px;border-bottom:1px solid rgba(255,255,255,.08)"><span style="width:14px;height:14px;border-radius:50%;background:#f87171b3"></span><span style="width:14px;height:14px;border-radius:50%;background:#fbbf24b3"></span><span style="width:14px;height:14px;border-radius:50%;background:#34d399b3"></span><span style="margin-left:12px;font-family:GeistMono,monospace;font-size:20px;color:#8b95a7">signup.html</span></div>
-      <pre style="margin:0;padding:28px 30px;font-family:GeistMono,monospace;font-size:25px;line-height:1.6;color:#e2e8f0;white-space:pre"><span id="type1" style="color:#86efac"></span><span id="caret1" style="color:#38bdf8">▍</span>
-<span id="type2" style="color:#7dd3fc"></span></pre>
-    </div>
-    <div id="s45site" style="margin-top:34px;width:920px;border-radius:28px;background:#f8fafc;color:#0f172a;text-align:left;overflow:hidden;box-shadow:0 30px 80px -30px rgba(56,189,248,.35)">
-      <div style="display:flex;align-items:center;gap:10px;padding:16px 24px;background:#eef2f7;border-bottom:1px solid #e2e8f0"><span style="width:12px;height:12px;border-radius:50%;background:#cbd5e1"></span><span style="width:12px;height:12px;border-radius:50%;background:#cbd5e1"></span><span style="width:12px;height:12px;border-radius:50%;background:#cbd5e1"></span><span style="margin:0 auto;padding:6px 18px;border-radius:10px;background:#fff;font-size:20px;color:#64748b">🔒 yourshop.et/signup</span></div>
-      <div style="position:relative;padding:30px 36px 34px">
-        <div style="font-family:Bricolage,sans-serif;font-weight:800;font-size:34px">Create your account</div>
-        <div style="margin-top:6px;font-size:22px;color:#64748b">Confirm your phone number to continue.</div>
-        <div id="wbtn" style="margin-top:24px;display:inline-flex;align-items:center;gap:14px;padding:20px 32px;border-radius:18px;font-size:27px;font-weight:700;color:#fff;background:#2aabee;box-shadow:0 10px 26px -10px rgba(42,171,238,.7)"><span id="wlabel">🛡️ Verify with Telegram</span></div>
-        <div id="wresult" style="margin-top:18px;font-family:GeistMono,monospace;font-size:21px;color:#059669">verified → { phone: "2519••••••44", token: "eyJp…" }</div>
-        <div class="finger" id="wfinger" style="position:absolute;width:76px;height:76px"></div>
+    <p class="eyebrow" id="s4eye">Notifications</p>
+    <h2 id="s4title">Everything SMS does,<br/><span class="dim">with more room to talk.</span></h2>
+    <div class="phone" id="s4phone" style="position:absolute;left:290px;top:352px">
+      <div class="screen">
+        <div class="chat-head"><span class="ava">AP</span><span><span class="chat-name">Abebe Pharmacy</span><span class="chat-meta">bot</span></span></div>
+        <div class="chat-body"><div class="wall"></div>
+          <div class="bubble in" id="m1">✅ <b>Payment received</b><br/><br/>Amount: <b>1,250 ETB</b><br/>From: <b>Abebe Kebede</b><br/>Reference: <code>TX-88-4471</code><br/><br/><i>Abebe Pharmacy</i><time>9:41</time></div>
+          <div class="bubble in" id="m2">🚚 Your order <b>#1042</b> is out for delivery<time>9:42</time></div>
+          <div class="bbtn" id="m2b">Track order ↗</div>
+          <div class="bubble in" id="m3">💊 መድኃኒትዎ ዛሬ ዝግጁ ነው።<time>9:44</time></div>
+        </div>
       </div>
     </div>
+    <div class="chip" id="s4c1" style="left:24px;top:560px">Your own bot<strong>Your brand</strong></div>
+    <div class="chip" id="s4c2" style="right:24px;top:840px">Templates in<strong>አማርኛ, Oromo,<br/>ትግርኛ, English</strong></div>
   </div>
 
-  <!-- 5. Developers -->
+  <!-- 5. Widget -->
   <div class="scene" id="s5">
-    <p class="eyebrow" id="s5eye">For developers</p>
-    <h2 id="s5title" style="margin-top:22px">One API call.<br/><span class="grad">Everything else is handled.</span></h2>
-    <div class="cards">
-      <div class="card" id="f1"><div class="emoji">🇪🇹</div><div class="t">Amharic templates</div><div class="d">Also Afaan Oromo, Tigrinya and English</div></div>
-      <div class="card" id="f2"><div class="emoji">↩️</div><div class="t">Honest fallback</div><div class="d">Know instantly when to send SMS instead</div></div>
-      <div class="card" id="f3"><div class="emoji">🧪</div><div class="t">Free sandbox</div><div class="d">Test customers for every outcome</div></div>
-      <div class="card" id="f4"><div class="emoji">🔔</div><div class="t">Signed webhooks</div><div class="d">Delivery results pushed to your server</div></div>
+    <p class="eyebrow" id="s5eye">Verify widget</p>
+    <h2 id="s5title">Phone verification on your site,<br/><span class="dim">in one line.</span></h2>
+    <div class="win" id="s5code" style="margin-top:44px">
+      <div class="win-top"><span class="dotr" style="background:rgba(248,113,113,.7)"></span><span class="dotr" style="background:rgba(251,191,36,.7)"></span><span class="dotr" style="background:rgba(52,211,153,.7)"></span><span class="win-name">signup.html</span></div>
+      <pre style="height:176px"><span id="type1" class="s"></span>
+<span id="type2" class="f"></span></pre>
     </div>
-    <div class="code" id="code"><span style="color:#f472b6">await</span> telenotify.messages.<span style="color:#7dd3fc">send</span>({<br/>&nbsp;&nbsp;to: <span style="color:#86efac">'customer_123'</span>,<br/>&nbsp;&nbsp;template: <span style="color:#86efac">'payment_received'</span>,<br/>});</div>
+    <div class="card" id="s5site" style="margin-top:26px;width:940px;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:9px;padding:15px 24px;background:rgba(14,24,52,.6);border-bottom:1px solid var(--line)"><span class="dotr" style="background:var(--line)"></span><span class="dotr" style="background:var(--line)"></span><span class="dotr" style="background:var(--line)"></span><span style="margin:0 auto;padding:6px 20px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-size:20px;color:var(--muted)">🔒 yourshop.et/signup</span></div>
+      <div style="position:relative;padding:28px 36px 30px">
+        <div style="font-size:35px;font-weight:500;letter-spacing:-.02em">Create your account</div>
+        <div style="margin-top:4px;font-size:23px;color:var(--muted)">Confirm your phone number to continue.</div>
+        <div style="margin-top:20px;padding:15px 20px;border:1px solid var(--line);border-radius:14px;font-size:24px;color:var(--muted)">Hana Tesfaye</div>
+        <div id="wbtn" style="margin-top:18px;display:inline-flex;align-items:center;justify-content:center;min-width:420px;padding:19px 30px;border-radius:18px;font-size:27px;font-weight:600;background:#2aabee;box-shadow:0 8px 24px -8px rgba(42,171,238,.6)"><span id="wlabel"></span></div>
+        <div id="wresult" class="mono" style="margin-top:16px;font-size:21px;color:#34d399">verified → { phone: "2519••••••44", token: "eyJp…" }</div>
+        <div class="tap" id="wtap"></div>
+      </div>
+    </div>
   </div>
 
-  <!-- 6. Free & open source -->
-  <div class="scene" id="s6" style="justify-content:center;padding-top:0">
-    <svg viewBox="0 0 32 32" width="120" height="120" id="mark6">
-      <rect width="32" height="32" rx="9" fill="url(#g)"/>
-      <path fill="#fff" d="M11.5 8.5H20.5A5 5 0 0 1 25.5 13.5V17A5 5 0 0 1 20.5 22H14.9L10.6 25.1C10 25.55 9.2 25 9.4 24.3L10.1 21.6A5 5 0 0 1 6.5 17V13.5A5 5 0 0 1 11.5 8.5Z"/>
-      <rect x="11" y="11.6" width="10" height="2.6" rx="1.3" fill="url(#g)"/><rect x="14.7" y="11.6" width="2.6" height="7.6" rx="1.3" fill="url(#g)"/>
-      <circle cx="25" cy="8.5" r="3.6" fill="#f472b6" stroke="url(#g)" stroke-width="2"/>
-    </svg>
-    <h1 id="s6title" style="margin-top:44px;font-size:130px"><span class="grad">Free.</span><br/>Open source.</h1>
-    <p class="sub" id="s6sub">10,000 messages a month, free.<br/>Or run it on your own server, no limits.</p>
-    <div id="s6links" style="margin-top:60px;display:flex;flex-direction:column;align-items:center;gap:20px">
-      <div class="pill" id="l1">🌐 <b>telenotify.duckdns.org</b></div>
-      <div class="pill" id="l2">⭐ <b>github.com/sami-yesha/telenotify</b></div>
-      <div class="pill" id="l3">📦 <b>npm i @telenotify/node</b></div>
+  <!-- 6. SMS fallback -->
+  <div class="scene" id="s6" style="padding-top:140px">
+    <p class="eyebrow" id="s6eye">SMS fallback</p>
+    <h2 id="s6title">Not on Telegram?<br/><span class="dim">We send the SMS.</span></h2>
+    <div class="card flow" id="s6flow" style="margin-top:50px">
+      <div class="row"><span class="icon" style="background:var(--brand);color:#fff" data-i="server"></span><div><div class="t">Your server</div><div class="d mono" style="font-size:22px">POST /v1/messages</div></div></div>
+      <div class="link"></div>
+      <div class="row" id="r2"><span class="icon" id="r2i" data-i="send"></span><div><div class="t">Telegram</div><div class="d" id="r2d"></div></div></div>
+      <div class="link"></div>
+      <div class="row" id="r3"><span class="icon" id="r3i" data-i="message-square"></span><div><div class="t">SMS through your AfroMessage</div><div class="d" id="r3d"></div></div></div>
+    </div>
+    <div id="s6perks" style="margin-top:36px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;width:940px">
+      <span class="perk"><svg class="i" viewBox="0 0 24 24" data-p="check"></svg>One integration: ours</span>
+      <span class="perk"><svg class="i" viewBox="0 0 24 24" data-p="check"></svg>Your balance, no markup</span>
+      <span class="perk"><svg class="i" viewBox="0 0 24 24" data-p="check"></svg>A daily limit you set</span>
+    </div>
+  </div>
+
+  <!-- 7. SDKs and CLI -->
+  <div class="scene" id="s7" style="padding-top:130px">
+    <p class="eyebrow" id="s7eye">Official SDKs &amp; CLI</p>
+    <h2 id="s7title"><span class="mono" style="font-size:.86em;letter-spacing:-.04em">npm</span>, <span class="mono" style="font-size:.86em;letter-spacing:-.04em">pip</span> or <span class="mono" style="font-size:.86em;letter-spacing:-.04em">npx</span> to<br/><span class="dim">first message in 5 minutes.</span></h2>
+    <div class="win" id="s7win" style="margin-top:50px">
+      <div class="win-top"><span class="dotr" style="background:rgba(248,113,113,.7)"></span><span class="dotr" style="background:rgba(251,191,36,.7)"></span><span class="dotr" style="background:rgba(52,211,153,.7)"></span>
+        <div class="tabs"><span id="t1">Node.js</span><span id="t2">Python</span><span id="t3">CLI</span></div>
+      </div>
+      <div style="position:relative;height:368px">
+<pre class="pane" id="p1"><span class="c">// npm install @telenotify/node</span>
+<span class="k">import</span> { Telenotify } <span class="k">from</span> <span class="s">'@telenotify/node'</span>;
+
+<span class="k">await</span> telenotify.messages.<span class="f">send</span>({
+  to: <span class="s">'customer_123'</span>,
+  template: <span class="s">'payment_received'</span>,
+  params: { amount: <span class="s">'1,250'</span>, payer: <span class="s">'Abebe'</span> },
+});</pre>
+<pre class="pane" id="p2"><span class="c"># pip install telenotify-python</span>
+<span class="k">from</span> telenotify <span class="k">import</span> Telenotify
+
+telenotify.messages.<span class="f">send</span>(
+  to=<span class="s">'customer_123'</span>,
+  template=<span class="s">'payment_received'</span>,
+  params={<span class="s">'amount'</span>: <span class="s">'1,250'</span>, <span class="s">'payer'</span>: <span class="s">'Abebe'</span>},
+)</pre>
+<pre class="pane" id="p3"><span class="c"># Webhooks on localhost. No public URL, no tunnel.</span>
+<span class="s">$</span> npx telenotify listen \
+    --forward localhost:3000/webhooks
+
+<span class="k">Ready.</span> Listening for sandbox events.
+<span class="f">message.sent         </span> → <span class="s">200</span> <span class="c">34ms</span>
+<span class="f">verification.completed</span> → <span class="s">200</span> <span class="c">28ms</span></pre>
+      </div>
+    </div>
+    <div id="s7perks" style="margin-top:30px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;width:940px">
+      <span class="perk"><svg class="i" viewBox="0 0 24 24" data-p="check"></svg>Zero dependencies</span>
+      <span class="perk"><svg class="i" viewBox="0 0 24 24" data-p="check"></svg>Safe automatic retries</span>
+      <span class="perk"><svg class="i" viewBox="0 0 24 24" data-p="check"></svg>Signed webhooks</span>
+    </div>
+  </div>
+
+  <!-- 8. Close -->
+  <div class="scene" id="s8" style="justify-content:center;padding:0 60px 120px">
+    <div class="sky" id="s8sky">
+      <div class="wall"></div>
+      <div class="mark" id="s8mark" data-logo="52" style="font-size:44px"><span>Telenotify</span></div>
+      <h1 id="s8title" style="margin-top:46px;font-size:96px">No plans. No card.<br/><span class="dim">No catch.</span></h1>
+      <p class="sub" id="s8sub" style="color:rgba(224,242,254,.75)">Free and open source. 10,000 live messages<br/>and verifications a month. Built in Ethiopia 🇪🇹</p>
+      <div class="cta" id="s8cta" style="margin-top:40px">Start free</div>
+      <p class="url" id="s8url">telenotify.duckdns.org</p>
+    </div>
+    <div id="s8inst" style="margin-top:30px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px;width:960px">
+      <span class="install">npm i @telenotify/node</span>
+      <span class="install">pip install telenotify-python</span>
+      <span class="install">npx telenotify</span>
     </div>
   </div>
 </div>
 
 <script>
+  // Lucide icons, the same set the landing page uses (ISC license).
+  const ICONS = {"message-square":"<path d=\"M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z\"/>","repeat":"<path d=\"m17 2 4 4-4 4\"/><path d=\"M3 11v-1a4 4 0 0 1 4-4h14\"/><path d=\"m7 22-4-4 4-4\"/><path d=\"M21 13v1a4 4 0 0 1-4 4H3\"/>","package":"<path d=\"M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z\"/><path d=\"M12 22V12\"/><polyline points=\"3.29 7 12 12 20.71 7\"/><path d=\"m7.5 4.27 9 5.15\"/>","server":"<rect width=\"20\" height=\"8\" x=\"2\" y=\"2\" rx=\"2\" ry=\"2\"/><rect width=\"20\" height=\"8\" x=\"2\" y=\"14\" rx=\"2\" ry=\"2\"/><line x1=\"6\" x2=\"6.01\" y1=\"6\" y2=\"6\"/><line x1=\"6\" x2=\"6.01\" y1=\"18\" y2=\"18\"/>","send":"<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\"/><path d=\"m21.854 2.147-10.94 10.939\"/>","x":"<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>","check":"<path d=\"M20 6 9 17l-5-5\"/>","smartphone":"<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\" ry=\"2\"/><path d=\"M12 18h.01\"/>","webhook":"<path d=\"M18 16.98h-5.99c-1.1 0-1.95.94-2.48 1.9A4 4 0 0 1 2 17c.01-.7.2-1.4.57-2\"/><path d=\"m6 17 3.13-5.78c.53-.97.1-2.18-.5-3.1a4 4 0 1 1 6.89-4.06\"/><path d=\"m12 6 3.13 5.73C15.66 12.7 16.9 13 18 13a4 4 0 0 1 0 8\"/>","terminal":"<path d=\"M12 19h8\"/><path d=\"m4 17 6-6-6-6\"/>"};
+  const logo = (size) => `<svg viewBox="0 0 32 32" width="${size}" height="${size}" style="flex:none"><rect width="32" height="32" rx="9" fill="url(#g)"/><path fill="#fff" d="M11.5 8.5H20.5A5 5 0 0 1 25.5 13.5V17A5 5 0 0 1 20.5 22H14.9L10.6 25.1C10 25.55 9.2 25 9.4 24.3L10.1 21.6A5 5 0 0 1 6.5 17V13.5A5 5 0 0 1 11.5 8.5Z"/><rect x="11" y="11.6" width="10" height="2.6" rx="1.3" fill="url(#g)"/><rect x="14.7" y="11.6" width="2.6" height="7.6" rx="1.3" fill="url(#g)"/><circle cx="25" cy="8.5" r="3.6" fill="#f472b6" stroke="url(#g)" stroke-width="2"/></svg>`;
+  const icon = (name) => `<svg class="i" viewBox="0 0 24 24">${ICONS[name]}</svg>`;
+  document.querySelectorAll('[data-i]').forEach((el) => (el.innerHTML = icon(el.dataset.i)));
+  document.querySelectorAll('[data-p]').forEach((el) => (el.innerHTML = ICONS[el.dataset.p]));
+  document.querySelectorAll('[data-logo]').forEach((el) => el.insertAdjacentHTML('afterbegin', logo(el.dataset.logo)));
+
   // Every frame is a pure function of time, so capture is exact and repeatable.
-  const DURATION = 38;
+  const DURATION = 45;
   const $ = (id) => document.getElementById(id);
   const clamp = (v) => Math.max(0, Math.min(1, v));
   const p = (t, a, b) => clamp((t - a) / (b - a));
-  const easeOut = (x) => 1 - Math.pow(1 - x, 3);
+  // The landing page's two easing curves.
+  const quint = (x) => 1 - Math.pow(1 - x, 5);
+  const expo = (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x));
   const easeInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
-  const back = (x) => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
 
-  // Fade a scene in at `a`, out at `b`.
   function scene(el, t, a, b) {
-    const vin = easeOut(p(t, a, a + 0.5));
-    const vout = 1 - p(t, b - 0.45, b);
-    const v = Math.min(vin, vout);
+    const v = Math.min(quint(p(t, a, a + 0.6)), 1 - p(t, b - 0.4, b));
     el.style.opacity = v;
     el.style.visibility = v <= 0 ? 'hidden' : 'visible';
-    el.style.transform = `scale(${0.97 + 0.03 * vin}) translateY(${(1 - vout) * -30}px)`;
   }
-  // Rise and fade in an element at `a`.
-  function rise(el, t, a, d = 0.55, dist = 40) {
-    const x = easeOut(p(t, a, a + d));
+  function rise(el, t, a, d = 0.9, dist = 26) {
+    const x = quint(p(t, a, a + d));
     el.style.opacity = x;
     el.style.transform = `translateY(${(1 - x) * dist}px)`;
   }
-  function pop(el, t, a, d = 0.5) {
-    const x = p(t, a, a + d);
-    el.style.opacity = clamp(x * 2);
-    el.style.transform = `scale(${0.6 + 0.4 * back(x)})`;
+  function pop(el, t, a) {
+    const x = expo(p(t, a, a + 0.5));
+    el.style.opacity = x;
+    el.style.transform = `translateY(${(1 - x) * 16}px) scale(${0.96 + 0.04 * x})`;
+  }
+  const show = (el, on) => (el.style.display = on ? '' : 'none');
+
+  // Where the horizon sits over time: high behind the hero, low behind everything else.
+  const HORIZON = [[0, 708], [5.2, 708], [6.2, 1262], [38.4, 1262], [39.4, 1120], [45, 1120]];
+  function horizonAt(t) {
+    for (let i = 1; i < HORIZON.length; i++) {
+      const [a, ya] = HORIZON[i - 1], [b, yb] = HORIZON[i];
+      if (t <= b) return ya + (yb - ya) * easeInOut(p(t, a, b));
+    }
+    return HORIZON[HORIZON.length - 1][1];
   }
 
   window.render = function (t) {
-    // Drifting background glow.
-    $('orb1').style.transform = `translate(${-150 + Math.sin(t * 0.35) * 120}px, ${-180 + Math.cos(t * 0.3) * 80}px)`;
-    $('orb2').style.transform = `translate(${600 + Math.cos(t * 0.28) * 110}px, ${700 + Math.sin(t * 0.33) * 90}px)`;
-    $('orb3').style.transform = `translate(${300 + Math.sin(t * 0.5) * 160}px, ${300 + Math.cos(t * 0.4) * 140}px)`;
+    const y = horizonAt(t);
+    $('planet').style.top = `${y}px`;
+    $('air').style.top = `${y - 450}px`;
+    // Paper plane gliding along the horizon, as on the page.
+    const g = (t % 15) / 15;
+    const x = -60 + g * 1200;
+    const arc = Math.pow((x - 540) / 1650, 2) * 1650;
+    $('plane').style.transform = `translate(${x}px, ${y + arc - 58 - Math.sin(g * Math.PI) * 26}px) rotate(${-6 + g * 18}deg)`;
+    $('plane').style.opacity = 0.8 * Math.min(p(g, 0, 0.08), 1 - p(g, 0.92, 1));
 
-    // 1. Logo assembles (0–4.2)
-    scene($('s1'), t, 0, 4.2);
-    const m = back(p(t, 0.1, 0.9));
-    $('mark').style.transform = `scale(${0.4 + 0.6 * m}) rotate(${(1 - clamp(m)) * -12}deg)`;
-    $('mark').style.opacity = clamp(p(t, 0.1, 0.5));
-    const b = p(t, 0.4, 1.1);
-    $('bubble').style.strokeDasharray = 120; $('bubble').style.strokeDashoffset = 120 * (1 - b);
-    $('bubble').style.fillOpacity = p(t, 0.9, 1.2);
-    $('tbar').style.transform = `scaleX(${easeOut(p(t, 1.1, 1.4))})`;
-    $('tstem').style.transform = `scaleY(${easeOut(p(t, 1.25, 1.55))})`;
-    $('dot').style.transform = `scale(${back(p(t, 1.45, 1.9))})`;
-    rise($('s1title'), t, 1.4);
-    rise($('s1sub'), t, 1.8);
-    rise($('s1flag'), t, 2.2);
+    // 1. Hero (0–5.4), the page's own entrance order.
+    scene($('s1'), t, -1, 5.4);
+    rise($('s1mark'), t, 0.1, 0.9, -10);
+    const ruleX = easeInOut(p(t, 0.2, 1.2));
+    $('s1rule').style.transform = `scaleX(${ruleX})`;
+    rise($('s1nav'), t, 0.5, 0.7, -6);
+    rise($('s1l1'), t, 0.3, 1.1, 60);
+    rise($('s1l2'), t, 0.45, 1.1, 60);
+    rise($('s1sub'), t, 0.9);
+    rise($('s1cta'), t, 1.1);
+    rise($('s1phone'), t, 1.0, 1.3, 70);
+    rise($('s1c1'), t, 1.6);
+    rise($('s1c2'), t, 1.75);
 
-    // 2. Problem (4.0–10.4)
-    scene($('s2'), t, 4.0, 10.4);
-    rise($('s2eye'), t, 4.2); rise($('s2title'), t, 4.4);
-    ['c1', 'c2', 'c3', 'c4'].forEach((id, i) => {
-      const x = easeOut(p(t, 5.3 + i * 0.75, 5.85 + i * 0.75));
-      $(id).style.opacity = x;
-      $(id).style.transform = `translateX(${(1 - x) * (i % 2 ? 120 : -120)}px)`;
-      const cost = $(id).querySelector('.cost');
-      const flash = Math.max(0, 1 - Math.abs(t - (5.75 + i * 0.75)) * 3);
-      cost.style.transform = `scale(${1 + flash * 0.18})`;
-    });
-    rise($('s2foot'), t, 8.6);
+    // 2. Cost (5.2–10.2)
+    scene($('s2'), t, 5.2, 10.2);
+    rise($('s2eye'), t, 5.4); rise($('s2title'), t, 5.55);
+    ['c1', 'c2', 'c3', 'c4'].forEach((id, i) => rise($(id), t, 6.2 + i * 0.5, 0.8, 34));
+    rise($('s2foot'), t, 8.4);
 
-    // 3. Telegram chat (10.2–17.2)
-    scene($('s3'), t, 10.2, 17.2);
-    rise($('s3eye'), t, 10.4); rise($('s3title'), t, 10.6);
-    rise($('phone3'), t, 11.0, 0.8, 120);
-    rise($('m1'), t, 12.2, 0.45, 30);
-    rise($('m2'), t, 13.6, 0.45, 30);
-    rise($('m3'), t, 15.0, 0.45, 30);
+    // 3. Verify (10.0–16.2)
+    scene($('s3'), t, 10.0, 16.2);
+    rise($('s3eye'), t, 10.2); rise($('s3title'), t, 10.35);
+    rise($('s3phone'), t, 10.6, 1.1, 90);
+    pop($('v1'), t, 11.3);
+    const fx = easeInOut(p(t, 11.9, 12.6));
+    const tap = Math.max(0, 1 - Math.abs(t - 12.8) * 5);
+    const shared = t >= 12.95;
+    const vt = $('vtap');
+    vt.style.left = `${300 - 100 * fx}px`;
+    vt.style.top = `${560 - 235 * fx}px`;
+    vt.style.opacity = clamp(p(t, 11.8, 12.1)) * (1 - p(t, 13.0, 13.2));
+    vt.style.transform = `scale(${1 - tap * 0.25})`;
+    $('vkey').style.background = `rgba(42,171,238,${0.16 + tap * 0.2})`;
+    show($('v2'), shared);
+    pop($('v2'), t, 12.95);
+    show($('v3'), t >= 13.7);
+    pop($('v3'), t, 13.7);
+    $('vkey').style.opacity = shared ? 0.35 : 1;
+    rise($('s3c'), t, 13.9);
 
-    // 4. Verify (17.0–23.4)
-    scene($('s4'), t, 17.0, 23.4);
-    rise($('s4eye'), t, 17.2); rise($('s4title'), t, 17.4);
-    rise($('phone4'), t, 17.8, 0.8, 120);
-    rise($('v1'), t, 18.8, 0.45, 30);
-    // The finger moves to the button, taps, and the contact is shared.
-    const fx = easeInOut(p(t, 19.4, 20.3));
-    const finger = $('finger');
-    finger.style.left = `${380 - 145 * fx}px`;
-    finger.style.top = `${880 - 140 * fx}px`;
-    const tap = Math.max(0, 1 - Math.abs(t - 20.5) * 5);
-    finger.style.opacity = clamp(p(t, 19.3, 19.6)) * (1 - p(t, 20.8, 21.1));
-    finger.style.transform = `scale(${1 - tap * 0.25})`;
-    $('key').style.filter = `brightness(${1 + tap * 0.5})`;
-    $('kbd').style.opacity = 1 - p(t, 20.7, 21.0);
-    rise($('v2'), t, 20.8, 0.4, 30);
-    rise($('v3'), t, 21.6, 0.45, 30);
+    // 4. Messages (16.0–22.2)
+    scene($('s4'), t, 16.0, 22.2);
+    rise($('s4eye'), t, 16.2); rise($('s4title'), t, 16.35);
+    rise($('s4phone'), t, 16.6, 1.1, 90);
+    pop($('m1'), t, 17.4);
+    pop($('m2'), t, 18.7); pop($('m2b'), t, 18.85);
+    pop($('m3'), t, 19.8);
+    rise($('s4c1'), t, 18.1); rise($('s4c2'), t, 19.0);
 
-    // 4b. One-line widget (23.2–29.2)
-    scene($('s45'), t, 23.2, 29.2);
-    rise($('s45eye'), t, 23.4); rise($('s45title'), t, 23.6);
-    rise($('s45code'), t, 24.0, 0.6, 50);
-    const line1 = '<script src="telenotify.duckdns.org/verify.js"><\/script>';
-    const line2 = '<telenotify-verify key="tn_pk_live_…">\n</telenotify-verify>';
-    const typed = p(t, 24.4, 25.9);
-    const chars = Math.floor(typed * (line1.length + line2.length));
+    // 5. Widget (22.0–28.4)
+    scene($('s5'), t, 22.0, 28.4);
+    rise($('s5eye'), t, 22.2); rise($('s5title'), t, 22.35);
+    rise($('s5code'), t, 22.7);
+    const line1 = '<script src="telenotify.duckdns.org/verify.js"\n        defer><\/script>';
+    const line2 = '<telenotify-verify key="tn_pk_live_…">';
+    const chars = Math.floor(p(t, 23.1, 24.5) * (line1.length + line2.length));
     $('type1').textContent = line1.slice(0, chars);
     $('type2').textContent = line2.slice(0, Math.max(0, chars - line1.length));
-    $('caret1').style.opacity = typed < 1 && Math.floor(t * 4) % 2 === 0 ? 1 : 0;
-    rise($('s45site'), t, 25.6, 0.6, 50);
-    // The button: idle → tapped → waiting for Telegram → verified.
-    const fxw = easeInOut(p(t, 26.1, 26.6));
-    const wf = $('wfinger');
-    wf.style.left = `${520 - 330 * fxw}px`;
-    wf.style.top = `${300 - 140 * fxw}px`;
-    const wtap = Math.max(0, 1 - Math.abs(t - 26.75) * 5);
-    wf.style.opacity = clamp(p(t, 26.0, 26.2)) * (1 - p(t, 27.0, 27.3));
-    wf.style.transform = `scale(${1 - wtap * 0.25})`;
-    const waiting = t >= 26.8 && t < 27.9;
-    const verified = t >= 27.9;
-    $('wbtn').style.background = verified ? '#10b981' : '#2aabee';
-    $('wbtn').style.transform = `scale(${1 - wtap * 0.04})`;
-    $('wlabel').textContent = verified ? '✓ Phone verified' : waiting ? '⏳ Waiting for Telegram…' : '🛡️ Verify with Telegram';
-    rise($('wresult'), t, 28.0, 0.4, 16);
+    rise($('s5site'), t, 24.2);
+    const wx = easeInOut(p(t, 24.9, 25.5));
+    const wtap = Math.max(0, 1 - Math.abs(t - 25.7) * 5);
+    const wt = $('wtap');
+    wt.style.left = `${620 - 409 * wx}px`;
+    wt.style.top = `${300 - 89 * wx}px`;
+    wt.style.opacity = clamp(p(t, 24.8, 25.0)) * (1 - p(t, 25.9, 26.1));
+    wt.style.transform = `scale(${1 - wtap * 0.25})`;
+    const wWait = t >= 25.8 && t < 26.8, wDone = t >= 26.8;
+    $('wbtn').style.background = wDone ? '#10b981' : '#2aabee';
+    $('wbtn').style.transform = `scale(${1 - wtap * 0.03})`;
+    $('wlabel').textContent = wDone ? '✓ Phone verified' : wWait ? 'Waiting for Telegram…' : 'Verify with Telegram';
+    rise($('wresult'), t, 26.9, 0.5, 12);
 
-    // 5. Developers (29.2–34.0)
-    scene($('s5'), t, 29.2, 34.0);
-    rise($('s5eye'), t, 29.4); rise($('s5title'), t, 29.6);
-    ['f1', 'f2', 'f3', 'f4'].forEach((id, i) => pop($(id), t, 30.2 + i * 0.25));
-    rise($('code'), t, 31.6);
+    // 6. SMS fallback (28.2–33.4)
+    scene($('s6'), t, 28.2, 33.4);
+    rise($('s6eye'), t, 28.4); rise($('s6title'), t, 28.55);
+    rise($('s6flow'), t, 28.9);
+    const failed = t >= 29.9, smsSent = t >= 30.8;
+    $('r2d').textContent = failed ? 'Can’t reach this customer' : 'Trying Telegram first…';
+    $('r2i').innerHTML = icon(failed ? 'x' : 'send');
+    $('r2i').style.background = failed ? 'rgba(245,158,11,.15)' : 'var(--subtle)';
+    $('r2i').style.color = failed ? '#fbbf24' : 'var(--muted)';
+    $('r3d').textContent = smsSent ? 'Delivered by SMS, automatically' : 'Waiting…';
+    $('r3i').innerHTML = icon(smsSent ? 'check' : 'message-square');
+    $('r3i').style.background = smsSent ? '#10b981' : 'var(--subtle)';
+    $('r3i').style.color = smsSent ? '#fff' : 'var(--muted)';
+    $('r3').style.opacity = t >= 30.3 ? 1 : 0.55;
+    rise($('s6perks'), t, 31.3);
 
-    // 6. Free & open source (33.8–38)
-    scene($('s6'), t, 33.8, 99);
-    pop($('mark6'), t, 34.0, 0.6);
-    rise($('s6title'), t, 34.3);
-    rise($('s6sub'), t, 34.8);
-    ['l1', 'l2', 'l3'].forEach((id, i) => rise($(id), t, 35.3 + i * 0.25, 0.5, 30));
+    // 7. SDKs and CLI (33.2–39.6)
+    scene($('s7'), t, 33.2, 39.6);
+    rise($('s7eye'), t, 33.4); rise($('s7title'), t, 33.55);
+    rise($('s7win'), t, 33.9);
+    const tab = t < 35.6 ? 1 : t < 37.1 ? 2 : 3;
+    [1, 2, 3].forEach((n) => {
+      $(`t${n}`).className = n === tab ? 'on' : '';
+      $(`p${n}`).style.opacity = n === tab ? quint(p(t, [0, 34.0, 35.6, 37.1][n], [0, 34.4, 35.9, 37.4][n])) : 0;
+    });
+    rise($('s7perks'), t, 34.7);
+
+    // 8. Close (39.4–45)
+    scene($('s8'), t, 39.4, 99);
+    rise($('s8sky'), t, 39.6, 1.0, 50);
+    rise($('s8mark'), t, 39.9, 0.8, 16);
+    rise($('s8title'), t, 40.1, 1.0, 40);
+    rise($('s8sub'), t, 40.5);
+    rise($('s8cta'), t, 40.8);
+    rise($('s8url'), t, 41.0);
+    rise($('s8inst'), t, 41.4);
   };
   window.DURATION = DURATION;
   render(0);
