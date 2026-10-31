@@ -15,6 +15,8 @@ export default function KeysPage() {
   const { data: keys, mutate } = useSWR<ApiKey[]>(path, fetcher);
   const [creating, setCreating] = useState(false);
   const [created, setCreated] = useState<ApiKey | null>(null);
+  const [revokingKey, setRevokingKey] = useState<ApiKey | null>(null);
+  const [revokingLoading, setRevokingLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const prefix = env === 'sandbox' ? 'tn_test_' : 'tn_live_';
@@ -34,10 +36,18 @@ export default function KeysPage() {
     }
   }
 
-  async function revoke(key: ApiKey) {
-    if (!confirm(`Revoke "${key.name}"? Requests using it will fail immediately.`)) return;
-    await api(`${path}/${key.id}`, { method: 'DELETE' });
-    mutate();
+  async function confirmRevoke() {
+    if (!revokingKey) return;
+    setRevokingLoading(true);
+    try {
+      await api(`${path}/${revokingKey.id}`, { method: 'DELETE' });
+      setRevokingKey(null);
+      mutate();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Failed to revoke key');
+    } finally {
+      setRevokingLoading(false);
+    }
   }
 
   return (
@@ -81,7 +91,7 @@ export default function KeysPage() {
                   {key.revokedAt ? (
                     <Badge>revoked</Badge>
                   ) : (
-                    <Button variant="danger" className="px-3 py-1.5 text-xs" onClick={() => revoke(key)}>
+                    <Button variant="danger" className="px-3 py-1.5 text-xs" onClick={() => setRevokingKey(key)}>
                       Revoke
                     </Button>
                   )}
@@ -119,6 +129,22 @@ export default function KeysPage() {
         </div>
         <div className="mt-5 flex justify-end">
           <Button onClick={() => setCreated(null)}>I&apos;ve saved it</Button>
+        </div>
+      </Dialog>
+
+      <Dialog
+        open={Boolean(revokingKey)}
+        onClose={() => setRevokingKey(null)}
+        title="Revoke API key"
+        description={`Revoke "${revokingKey?.name}"? Requests using this key will fail immediately.`}
+      >
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="ghost" onClick={() => setRevokingKey(null)}>
+            Cancel
+          </Button>
+          <Button variant="danger" loading={revokingLoading} onClick={confirmRevoke}>
+            Revoke key
+          </Button>
         </div>
       </Dialog>
     </>
