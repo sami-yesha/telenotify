@@ -83,8 +83,10 @@ if (message.status === 'UNDELIVERABLE') {
 }
 // QUEUED: the final result arrives as a webhook event
 // (message.sent / message.undeliverable / message.failed).`,
-  python: `message = requests.post(f"{BASE_URL}/v1/messages", headers=HEADERS,
-                        json={"to": customer.id, "text": text}, timeout=10).json()
+  python: `from telenotify import Telenotify
+
+client = Telenotify(api_key=os.environ["TELENOTIFY_API_KEY"])
+message = client.messages.send(to=customer.id, text=text)
 
 if message["status"] == "UNDELIVERABLE":
     send_sms(customer.phone, text)  # your own provider

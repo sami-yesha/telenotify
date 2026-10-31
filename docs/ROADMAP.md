@@ -61,7 +61,8 @@ Goal: things a copy of the open-source code can't bring with it, plus removing d
 - [x] CLI: `npx telenotify listen --forward …` (webhooks to localhost, signed) and `trigger <event>`
 - [ ] Guided live-bot setup wizard (BotFather steps, token check, sets the bot's name and description)
 - [ ] Alerts to developers: failing webhooks, many blocked customers, near message or SMS limits
-- [ ] Laravel/PHP and Python SDKs
+- [x] Python SDK (sdk/python: zero-dependency, Django/FastAPI/Flask-ready)
+- [ ] Laravel/PHP SDK
 - [ ] Reply buttons (customer taps come back as webhooks) and messages that update in place
 - [ ] AI-ready docs: llms.txt, "copy prompt for your AI assistant", MCP server
 

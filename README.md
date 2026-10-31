@@ -37,6 +37,7 @@ Businesses send order updates, OTPs, payment alerts and receipts through **their
 .             NestJS API (public /v1 API, portal API, auth, Telegram webhooks)
 portal/       Next.js developer portal (talks to the API through its /api proxy)
 sdk/node/     @telenotify/node: official Node.js/TypeScript SDK
+sdk/python/   telenotify: official Python SDK (Django, FastAPI, Flask)
 sdk/cli/      telenotify CLI: webhooks on localhost, sample events, test sends
 ```
 
@@ -180,7 +181,8 @@ docker compose --env-file .env.production up -d --build
 
 ## Developer tools
 
-- **Node SDK** (`sdk/node`, `@telenotify/node`): typed client for messages, customers and verifications; safe retries; `webhooks.constructEvent()`. Build and test with `npm test` in that folder. Not published to npm yet.
+- **Node SDK** (`sdk/node`, `@telenotify/node`): typed client for messages, customers and verifications; safe retries; `webhooks.constructEvent()`. Build and test with `npm test` in that folder.
+- **Python SDK** (`sdk/python`, `telenotify`): typed, zero-dependency client with webhook verification and auto-retries for Django, FastAPI, and Flask. Test with `python3 -m unittest discover tests`.
 - **CLI** (`sdk/cli`, `telenotify`): forward webhook events to `localhost` with valid HMAC signatures (`npx telenotify listen --forward …`), trigger sample events (`npx telenotify trigger …`), and send test messages without setting up public tunnels.
 - **API reference** in the portal: every endpoint from the live OpenAPI spec, with "Send request" using your key, curl, and a Postman collection download.
 - **Request log** (API keys page): each `/v1` call with status, timing, key and error message, kept 30 days.
