@@ -8,35 +8,54 @@ import { cn } from '@/lib/cn';
 import { highlight } from '@/lib/highlight';
 import { Reveal, SectionHeading } from './reveal';
 
-const INSTALL = 'npm install @telenotify/node';
+const PACKAGES = [
+  { id: 'node', label: 'Node.js', cmd: 'npm install @telenotify/node' },
+  { id: 'python', label: 'Python', cmd: 'pip install telenotify' },
+  { id: 'cli', label: 'CLI', cmd: 'npx telenotify listen --forward http://localhost:3000/webhooks' },
+] as const;
 
 const STEPS = [
   {
     icon: Package,
     title: 'Install and create a client',
-    body: 'Zero dependencies and full TypeScript types. Works in Node 18+, Bun and serverless functions.',
-    code: `import { Telenotify } from '@telenotify/node';
+    body: 'Zero dependencies and fully typed. Works in Node 18+, Bun, Python 3.8+ (Django, FastAPI, Flask).',
+    code: {
+      node: `import { Telenotify } from '@telenotify/node';
 
 const telenotify = new Telenotify({
   apiKey: process.env.TELENOTIFY_API_KEY, // tn_test_… or tn_live_…
   baseUrl: process.env.TELENOTIFY_API_URL,
 });`,
+      python: `import os
+from telenotify import Telenotify
+
+telenotify = Telenotify(
+  api_key=os.environ.get("TELENOTIFY_API_KEY"), # tn_test_… or tn_live_…
+  base_url=os.environ.get("TELENOTIFY_API_URL"),
+)`,
+    },
   },
   {
     icon: Smartphone,
     title: 'Connect a customer',
     body: 'Show the one-time link as a button or QR code. One tap on Start and they get your updates on Telegram.',
-    code: `const { url } = await telenotify.customers.createLink('customer_123', {
+    code: {
+      node: `const { url } = await telenotify.customers.createLink('customer_123', {
   phone: '0911223344',
 });
 
 // Render \`url\` as "Get updates on Telegram"`,
+      python: `link = telenotify.customers.create_link('customer_123', phone='0911223344')
+
+# Render link['url'] as "Get updates on Telegram"`,
+    },
   },
   {
     icon: Send,
     title: 'Send in their language',
     body: 'Plain text or a template in English, Amharic, Afaan Oromo or Tigrinya. Retries never double-send.',
-    code: `const message = await telenotify.messages.send({
+    code: {
+      node: `const message = await telenotify.messages.send({
   to: 'customer_123',
   template: 'payment_received',
   params: { amount: '1,250', payer: 'Abebe' },
@@ -47,12 +66,25 @@ const telenotify = new Telenotify({
 if (message.status === 'UNDELIVERABLE') {
   // Not on Telegram: we send it by SMS through your AfroMessage account
 }`,
+      python: `message = telenotify.messages.send(
+  to='customer_123',
+  template='payment_received',
+  params={'amount': '1,250', 'payer': 'Abebe'},
+  priority='high',
+  idempotency_key='tx-88-received',
+)
+
+if message['status'] == 'UNDELIVERABLE':
+  # Not on Telegram: we send it by SMS through your AfroMessage account
+  pass`,
+    },
   },
   {
     icon: Webhook,
     title: 'Know what happened',
     body: 'Signed webhooks for every outcome. The SDK verifies the signature for you.',
-    code: `import { webhooks } from '@telenotify/node';
+    code: {
+      node: `import { webhooks } from '@telenotify/node';
 
 app.post('/telenotify', express.raw({ type: 'application/json' }), (req, res) => {
   const event = webhooks.constructEvent(
@@ -63,6 +95,16 @@ app.post('/telenotify', express.raw({ type: 'application/json' }), (req, res) =>
   if (event.event === 'message.sent') markDelivered(event.data.id);
   res.sendStatus(200);
 });`,
+      python: `from telenotify import construct_event
+
+@app.post('/telenotify')
+async def webhook(request: Request, x_telenotify_signature: str = Header(None)):
+  raw_body = await request.body()
+  event = construct_event(raw_body, x_telenotify_signature, SIGNING_SECRET)
+  if event['event'] == 'message.sent':
+    mark_delivered(event['data']['id'])
+  return {'status': 'ok'}`,
+    },
   },
 ];
 
@@ -78,13 +120,13 @@ export function Sdk() {
     <section id="sdk" className="relative scroll-mt-20 overflow-hidden py-24 sm:py-32">
       <div className="relative mx-auto max-w-6xl px-5">
         <SectionHeading
-          eyebrow="Official SDK"
+          eyebrow="Official SDKs & CLI"
           title={
             <>
-              From <code className="font-mono">npm install</code> to <span className="text-gradient">first message in 5 minutes.</span>
+              From <code className="font-mono">npm</code>, <code className="font-mono">pip</code> or <code className="font-mono">npx</code> to <span className="text-gradient">first message in 5 minutes.</span>
             </>
           }
-          body="The Node.js SDK wraps the whole flow: connect customers, send in their language, verify phone numbers and check webhook signatures. Python, Go, PHP and Java samples are in the docs."
+          body="Zero-dependency SDKs for Node.js and Python, plus the telenotify CLI to listen for webhooks on localhost and trigger test events right from your terminal without public tunnels."
         />
 
         <Reveal className="mt-10 flex flex-col items-center gap-5">
@@ -111,23 +153,42 @@ export function Sdk() {
 }
 
 function InstallPill() {
+  const [selected, setSelected] = useState<number>(0);
   const [copied, setCopied] = useState(false);
+  const active = PACKAGES[selected];
+
   return (
-    <button
-      onClick={async () => {
-        await navigator.clipboard.writeText(INSTALL);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
-      }}
-      className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-[#030a1c] px-5 py-3.5 font-mono text-sm text-slate-200 transition-colors hover:border-white/25"
-      aria-label="Copy install command"
-    >
-      <span className="text-emerald-400">$</span>
-      {INSTALL}
-      <span className="ml-2 grid size-7 place-items-center rounded-lg bg-white/5 text-slate-400 transition-colors group-hover:text-white">
-        {copied ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
-      </span>
-    </button>
+    <div className="flex flex-col items-center gap-3">
+      <div className="flex rounded-xl border border-line bg-surface/80 p-1 text-xs">
+        {PACKAGES.map((pkg, i) => (
+          <button
+            key={pkg.id}
+            onClick={() => setSelected(i)}
+            className={cn(
+              'rounded-lg px-3 py-1.5 font-medium transition-colors',
+              selected === i ? 'bg-brand text-white shadow-soft' : 'text-muted hover:text-ink',
+            )}
+          >
+            {pkg.label}
+          </button>
+        ))}
+      </div>
+      <button
+        onClick={async () => {
+          await navigator.clipboard.writeText(active.cmd);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        }}
+        className="group flex max-w-full items-center gap-3 overflow-x-auto rounded-2xl border border-white/10 bg-[#030a1c] px-5 py-3.5 font-mono text-sm text-slate-200 transition-colors hover:border-white/25"
+        aria-label="Copy install command"
+      >
+        <span className="text-emerald-400">$</span>
+        <span className="truncate">{active.cmd}</span>
+        <span className="ml-2 grid size-7 shrink-0 place-items-center rounded-lg bg-white/5 text-slate-400 transition-colors group-hover:text-white">
+          {copied ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
+        </span>
+      </button>
+    </div>
   );
 }
 
@@ -256,6 +317,7 @@ function TravelDot({ active, reverse, color, className }: { active: boolean; rev
 
 function Walkthrough() {
   const [step, setStep] = useState(0);
+  const [codeLang, setCodeLang] = useState<'node' | 'python'>('node');
   const [paused, setPaused] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { margin: '-120px' });
@@ -331,19 +393,42 @@ function Walkthrough() {
             <span className="size-2.5 rounded-full bg-amber-400/70" />
             <span className="size-2.5 rounded-full bg-emerald-400/70" />
           </span>
-          <span className="ml-2 font-mono text-xs text-slate-400">{['client.ts', 'connect.ts', 'notify.ts', 'webhooks.ts'][step]}</span>
-          <span className="ml-auto rounded-md bg-emerald-400/10 px-2 py-0.5 font-mono text-[11px] text-emerald-300">@telenotify/node</span>
+          <span className="ml-2 font-mono text-xs text-slate-400">
+            {codeLang === 'node'
+              ? ['client.ts', 'connect.ts', 'notify.ts', 'webhooks.ts'][step]
+              : ['client.py', 'connect.py', 'notify.py', 'webhooks.py'][step]}
+          </span>
+          <div className="ml-auto flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 p-0.5">
+            <button
+              onClick={() => setCodeLang('node')}
+              className={cn(
+                'rounded px-2 py-0.5 font-mono text-[11px] transition-colors',
+                codeLang === 'node' ? 'bg-brand text-white font-semibold shadow-soft' : 'text-slate-400 hover:text-slate-200',
+              )}
+            >
+              Node.js
+            </button>
+            <button
+              onClick={() => setCodeLang('python')}
+              className={cn(
+                'rounded px-2 py-0.5 font-mono text-[11px] transition-colors',
+                codeLang === 'python' ? 'bg-brand text-white font-semibold shadow-soft' : 'text-slate-400 hover:text-slate-200',
+              )}
+            >
+              Python
+            </button>
+          </div>
         </div>
         <AnimatePresence mode="wait">
           <motion.pre
-            key={step}
+            key={`${step}-${codeLang}`}
             initial={{ opacity: 0, y: 8, filter: 'blur(4px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             exit={{ opacity: 0, y: -8, filter: 'blur(4px)' }}
             transition={{ duration: 0.25 }}
             className="min-h-[340px] overflow-x-auto p-5 font-mono text-[13px] leading-relaxed text-slate-200"
           >
-            <code>{highlight(current.code, 'javascript')}</code>
+            <code>{highlight(current.code[codeLang], codeLang === 'python' ? 'python' : 'javascript')}</code>
           </motion.pre>
         </AnimatePresence>
       </div>

@@ -5,7 +5,7 @@ import { Fragment, ReactNode } from 'react';
 
 const KEYWORDS: Record<string, string[]> = {
   javascript: ['import', 'from', 'const', 'let', 'await', 'async', 'function', 'return', 'if', 'else', 'new', 'export', 'true', 'false', 'null', 'undefined'],
-  python: ['import', 'from', 'def', 'return', 'if', 'else', 'elif', 'True', 'False', 'None', 'as', 'with'],
+  python: ['import', 'from', 'def', 'return', 'if', 'else', 'elif', 'True', 'False', 'None', 'as', 'with', 'pass', 'async'],
   go: ['package', 'import', 'func', 'return', 'if', 'else', 'nil', 'defer', 'var', 'err'],
   php: ['echo', 'return', 'if', 'else', 'true', 'false', 'null', 'new'],
   java: ['import', 'var', 'new', 'return', 'if', 'else', 'true', 'false', 'null', 'public', 'class', 'static', 'void'],
