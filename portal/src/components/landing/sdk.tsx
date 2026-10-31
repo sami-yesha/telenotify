@@ -10,7 +10,7 @@ import { Reveal, SectionHeading } from './reveal';
 
 const PACKAGES = [
   { id: 'node', label: 'Node.js', cmd: 'npm install @telenotify/node' },
-  { id: 'python', label: 'Python', cmd: 'pip install telenotify' },
+  { id: 'python', label: 'Python', cmd: 'pip install telenotify-python' },
   { id: 'cli', label: 'CLI', cmd: 'npx telenotify listen --forward http://localhost:3000/webhooks' },
 ] as const;
 
