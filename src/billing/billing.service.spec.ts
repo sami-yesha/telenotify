@@ -13,7 +13,7 @@ function setup(plan: string, messages: number, verifications: number, org: objec
   };
   const mail = { send: jest.fn() };
   const config = { getOrThrow: () => 'http://portal.test', get: (_key: string, fallback: unknown) => fallback };
-  return { billing: new BillingService(prisma as any, mail as any, config as any), prisma, mail, env: { id: 'live-1', type: 'LIVE', orgId: 'org-1', org: { id: 'org-1', name: 'Mela', plan, status: 'ACTIVE', liveApprovedAt: new Date(), ...org } } as any };
+  return { billing: new BillingService(prisma as any, mail as any, config as any), prisma, mail, env: { id: 'live-1', type: 'LIVE', orgId: 'org-1', org: { id: 'org-1', name: 'Mela', plan, customMonthlyQuota: null, status: 'ACTIVE', liveApprovedAt: new Date(), ...org } } as any };
 }
 
 describe('BillingService', () => {
@@ -23,8 +23,15 @@ describe('BillingService', () => {
   });
 
   it('blocks live sends once messages + verifications reach the quota', async () => {
-    const { billing, env } = setup('FREE', 6000, 4000);
+    const { billing, env } = setup('FREE', 600, 400);
     await expect(billing.assertWithinQuota(env)).rejects.toBeInstanceOf(HttpException);
+  });
+
+  it('lets a custom limit win over the plan', async () => {
+    const raised = setup('FREE', 4_999, 0, { customMonthlyQuota: 5_000 });
+    await expect(raised.billing.assertWithinQuota(raised.env)).resolves.toBeUndefined();
+    const reached = setup('FREE', 5_000, 0, { customMonthlyQuota: 5_000 });
+    await expect(reached.billing.assertWithinQuota(reached.env)).rejects.toMatchObject({ response: { code: 'quota_exceeded', message: expect.stringContaining('5,000') } });
   });
 
   it('never limits the Business plan or the sandbox', async () => {

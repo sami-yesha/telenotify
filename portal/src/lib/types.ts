@@ -64,6 +64,8 @@ export interface AdminOrg {
   plan: PlanId;
   planName: string;
   monthlyQuota: number | null;
+  customMonthlyQuota: number | null;
+  limitRequest: { status: 'NONE' | 'PENDING' | 'APPROVED' | 'DECLINED'; requested: number | null; reason: string | null; requestedAt: string | null; declineReason: string | null };
   liveApprovedAt: string | null;
   liveReviewRequestedAt: string | null;
   liveUseCase: string | null;
@@ -169,6 +171,7 @@ export interface Verification {
 export interface BillingOverview {
   plan: PlanId;
   usage: { used: number; messages: number; verifications: number; quota: number | null; start: string; end: string };
+  limitRequest: { status: 'none' | 'pending' | 'approved' | 'declined'; requested: number | null; reason: string | null; requestedAt: string | null; declineReason: string | null };
   plans: { id: PlanId; name: string; priceEtb: number | null; monthlyQuota: number | null; blurb: string }[];
 }
 

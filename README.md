@@ -31,7 +31,7 @@ Businesses send order updates, OTPs, payment alerts and receipts through **their
 - **An honest fallback signal:** when a customer can't be reached on Telegram, the API says so immediately (`UNDELIVERABLE` + reason), so your SMS or email provider takes over. It can also send that SMS for you through your own AfroMessage account.
 - **Developer portal:** sandbox with test customers, API keys, signed webhooks with retries and a delivery log, request log, analytics, team, audit log, and an interactive API reference with code in six languages.
 
-**Use it hosted for free** (fair use: 10,000 live messages and verifications per organization per month) or **run it yourself with no limits**.
+**Use it hosted for free** (fair use: 1,000 live messages and verifications per organization per month, more on approved request) or **run it yourself with no limits**.
 
 ```
 .             NestJS API (public /v1 API, portal API, auth, Telegram webhooks)
@@ -197,7 +197,7 @@ docker compose --env-file .env.production up -d --build
 
 ## Not done yet
 
-- Online plan payment (Chapa); plans are changed by an operator with `npm run plan:set` today.
+- Online plan payment (Chapa); owners request a higher limit in the portal and an operator approves it in `/admin`.
 - Approval or KYC before an organization goes live.
 - Data-residency and compliance notes (hosting location, DPA, subprocessors) for regulated customers.
 - Rate-limit counters are per instance (in memory); use Redis storage before running more than one API instance.

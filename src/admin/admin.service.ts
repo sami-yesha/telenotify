@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Organization, Plan, User } from '@prisma/client';
 import { AuditService } from '../audit/audit.service';
 import { BillingService } from '../billing/billing.service';
-import { PLANS } from '../billing/plans';
+import { monthlyQuota, PLANS } from '../billing/plans';
 import { PrismaService } from '../prisma/prisma.service';
 import { OperatorNotifier } from './operator-notifier.service';
 
@@ -47,7 +47,15 @@ export class AdminService {
           suspendedReason: org.suspendedReason,
           plan: org.plan,
           planName: PLANS[org.plan].name,
-          monthlyQuota: PLANS[org.plan].monthlyQuota,
+          monthlyQuota: monthlyQuota(org),
+          customMonthlyQuota: org.customMonthlyQuota,
+          limitRequest: {
+            status: org.limitRequestStatus,
+            requested: org.limitRequested,
+            reason: org.limitRequestReason,
+            requestedAt: org.limitRequestedAt,
+            declineReason: org.limitDeclineReason,
+          },
           liveApprovedAt: org.liveApprovedAt,
           liveReviewRequestedAt: org.liveReviewRequestedAt,
           liveUseCase: org.liveUseCase,
@@ -95,9 +103,10 @@ export class AdminService {
     return updated;
   }
 
+  // Picking a plan replaces any custom limit, so the choice takes effect.
   async setPlan(orgId: string, plan: Plan, actor: User) {
     const org = await this.find(orgId);
-    const updated = await this.prisma.organization.update({ where: { id: org.id }, data: { plan } });
+    const updated = await this.prisma.organization.update({ where: { id: org.id }, data: { plan, customMonthlyQuota: null } });
     await this.audit.record(org.id, actor, 'plan.changed', PLANS[plan].name, { from: org.plan, to: plan });
     return updated;
   }

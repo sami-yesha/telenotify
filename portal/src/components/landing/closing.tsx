@@ -44,7 +44,7 @@ const faqs = [
   },
   {
     q: 'Is Telenotify really free?',
-    a: 'Yes. The hosted service is free with a fair-use limit of 10,000 live messages and verifications a month per organization (ask us if you need more), and the code is open source under AGPL-3.0, so you can also run it yourself with no limit.',
+    a: 'Yes. The hosted service is free with a fair-use limit of 1,000 live messages and verifications a month per organization (request more in the portal, and we review it), and the code is open source under AGPL-3.0, so you can also run it yourself with no limit.',
   },
   {
     q: 'Can I run Telenotify on my own server?',

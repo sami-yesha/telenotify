@@ -1,20 +1,20 @@
 'use client';
 
-import { Gauge, Heart, Mail, Server } from 'lucide-react';
+import { Clock, Gauge, Heart, Server, TrendingUp } from 'lucide-react';
 import { motion } from 'motion/react';
+import { FormEvent, useState } from 'react';
 import useSWR from 'swr';
-import { Card, cn, PageHeader, Skeleton } from '@/components/ui';
-import { fetcher } from '@/lib/api';
-import { useOrgParams } from '@/lib/hooks';
+import { Alert, Button, Card, cn, Input, PageHeader, Skeleton, timeAgo } from '@/components/ui';
+import { api, ApiError, fetcher } from '@/lib/api';
+import { useOrg, useOrgParams } from '@/lib/hooks';
 import { GITHUB_URL } from '@/lib/site';
 import type { BillingOverview } from '@/lib/types';
 
 const n = (v: number) => v.toLocaleString('en-US');
-const SALES_EMAIL = process.env.NEXT_PUBLIC_SALES_EMAIL;
 
 export default function BillingPage() {
   const { orgId } = useOrgParams();
-  const { data } = useSWR<BillingOverview>(`/portal/orgs/${orgId}/billing`, fetcher);
+  const { data, mutate } = useSWR<BillingOverview>(`/portal/orgs/${orgId}/billing`, fetcher);
 
   if (!data) {
     return (
@@ -54,24 +54,18 @@ export default function BillingPage() {
             />
           </div>
         )}
-        {usage.quota !== null && pct >= 100 && <p className="mt-3 text-sm font-medium text-red-600 dark:text-red-400">Limit reached: live sends are paused until the month resets. Ask us to raise it, or self-host for no limit.</p>}
+        {usage.quota !== null && pct >= 100 && <p className="mt-3 text-sm font-medium text-red-600 dark:text-red-400">Limit reached: live sends are paused until the month resets. Request a higher limit below, or self-host for no limit.</p>}
       </Card>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-3">
+      {usage.quota !== null && (
+        <div className="mt-6">
+          <LimitRequestCard orgId={orgId} overview={data} onSent={() => mutate()} />
+        </div>
+      )}
+
+      <div className="mt-6 grid gap-4 md:grid-cols-2">
         <InfoCard icon={Heart} title={`${current?.name ?? 'Free'} plan`} tone="brand">
           Telenotify is free and open source. {usage.quota === null ? 'Your organization has no monthly limit.' : `Your organization can send ${n(usage.quota)} live messages and verifications each month.`}
-        </InfoCard>
-        <InfoCard icon={Mail} title="Need a higher limit?">
-          {SALES_EMAIL ? (
-            <>
-              <a className="font-medium text-brand hover:underline" href={`mailto:${SALES_EMAIL}?subject=${encodeURIComponent('Telenotify: raise our monthly limit')}`}>
-                Email us
-              </a>{' '}
-              with your organization name and expected volume, and we&apos;ll raise it.
-            </>
-          ) : (
-            'Contact us with your organization name and expected volume, and we’ll raise it.'
-          )}
         </InfoCard>
         <InfoCard icon={Server} title="Self-host for no limit">
           Run Telenotify on your own server with Docker Compose.{' '}
@@ -82,6 +76,66 @@ export default function BillingPage() {
         </InfoCard>
       </div>
     </>
+  );
+}
+
+// Owners ask for a higher monthly limit here; an operator approves or declines in /admin.
+function LimitRequestCard({ orgId, overview, onSent }: { orgId: string; overview: BillingOverview; onSent: () => void }) {
+  const { data: org } = useOrg();
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const { limitRequest: request, usage } = overview;
+
+  if (request.status === 'pending') {
+    return (
+      <Card icon={Clock} title="Higher limit in review" description={`You asked for ${n(request.requested ?? 0)} a month ${timeAgo(request.requestedAt)}. We'll email the owners when it's decided.`}>
+        <p className="rounded-xl bg-subtle px-3.5 py-2.5 text-sm text-ink">“{request.reason}”</p>
+      </Card>
+    );
+  }
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    setBusy(true);
+    setError(null);
+    try {
+      await api(`/portal/orgs/${orgId}/limit-request`, { method: 'POST', body: { monthlyLimit: Number(form.get('monthlyLimit')), reason: form.get('reason') } });
+      onSent();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Something went wrong');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card icon={TrendingUp} title="Need a higher limit?" description="It's still free. Tell us how much you need and what for, and we'll review it.">
+      {request.status === 'declined' && (
+        <div className="mb-4">
+          <Alert tone="amber">Your last request was declined: {request.declineReason}. You can send a new one.</Alert>
+        </div>
+      )}
+      {request.status === 'approved' && (
+        <div className="mb-4">
+          <Alert tone="green">Your last request was approved. Your limit is now {n(usage.quota ?? 0)} a month.</Alert>
+        </div>
+      )}
+      {org?.role === 'OWNER' ? (
+        <form onSubmit={submit} className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-[12rem_1fr]">
+            <Input name="monthlyLimit" type="number" label="Messages a month" min={(usage.quota ?? 0) + 1} max={100_000_000} step={1} placeholder={String((usage.quota ?? 0) * 5)} required />
+            <Input name="reason" label="What are they for?" placeholder="e.g. Order receipts for about 300 customers a day" required maxLength={500} />
+          </div>
+          {error && <Alert>{error}</Alert>}
+          <Button type="submit" loading={busy}>
+            Request a higher limit
+          </Button>
+        </form>
+      ) : (
+        <p className="text-sm text-muted">Ask an owner of this organization to request a higher limit.</p>
+      )}
+    </Card>
   );
 }
 

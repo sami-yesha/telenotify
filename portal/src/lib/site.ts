@@ -7,4 +7,4 @@ export const SITE_DESCRIPTION =
   'Send order updates, OTPs and receipts on Telegram from your own branded bot. One API call, a free sandbox, and an instant signal when you should fall back to SMS.';
 
 export const GITHUB_URL = 'https://github.com/sami-yesha/telenotify';
-export const FREE_MONTHLY_LIMIT = 10_000;
+export const FREE_MONTHLY_LIMIT = 1_000;

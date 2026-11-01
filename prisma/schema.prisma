@@ -74,6 +74,14 @@ model Organization {
   name      String
   // Monthly live quota (messages + verifications); see src/billing/plans.ts.
   plan      Plan     @default(FREE)
+  // A limit an operator set for this organization; wins over the plan's quota.
+  customMonthlyQuota Int?
+  // Asking for a higher limit: the owner sends a number and a reason, an operator decides.
+  limitRequestStatus LimitRequestStatus @default(NONE)
+  limitRequested     Int?
+  limitRequestReason String?
+  limitRequestedAt   DateTime?
+  limitDeclineReason String?
   status          OrgStatus @default(ACTIVE)
   suspendedAt     DateTime?
   suspendedReason String?
@@ -102,6 +110,13 @@ model Organization {
   auditEvents  AuditEvent[]
   usageAlerts  UsageAlert[]
   templates    MessageTemplate[]
+}
+
+enum LimitRequestStatus {
+  NONE
+  PENDING
+  APPROVED
+  DECLINED
 }
 
 enum BusinessStatus {

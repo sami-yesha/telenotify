@@ -1,6 +1,6 @@
 'use client';
 
-import { BadgeCheck, Ban, Bot, Building2, CheckCircle2, ExternalLink, Globe, Search, ShieldCheck, Undo2, UserRound, XCircle } from 'lucide-react';
+import { BadgeCheck, Ban, Bot, Building2, CheckCircle2, ExternalLink, Globe, Pencil, Search, ShieldCheck, TrendingUp, Undo2, UserRound, XCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { FormEvent, useMemo, useState } from 'react';
 import useSWR from 'swr';
@@ -20,6 +20,7 @@ export default function AdminPage() {
   const [filter, setFilter] = useState<Filter>('review');
   const [query, setQuery] = useState('');
   const [suspending, setSuspending] = useState<AdminOrg | null>(null);
+  const [limitAction, setLimitAction] = useState<LimitAction | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
 
   const counts = useMemo(() => {
@@ -117,6 +118,7 @@ export default function AdminPage() {
                 onPlan={(plan) => act(() => api(`/admin/orgs/${org.id}/plan`, { method: 'PUT', body: { plan } }))}
                 onVerifyBusiness={() => act(() => api(`/admin/orgs/${org.id}/business/approve`, { method: 'POST' }))}
                 onRejectBusiness={(reason) => act(() => api(`/admin/orgs/${org.id}/business/reject`, { method: 'POST', body: { reason } }))}
+                onLimit={(mode) => setLimitAction({ org, mode })}
               />
             ))
           )}
@@ -131,12 +133,22 @@ export default function AdminPage() {
           await mutate();
         }}
       />
+      <LimitDialog
+        action={limitAction}
+        onClose={() => setLimitAction(null)}
+        onDone={async () => {
+          setLimitAction(null);
+          await mutate();
+        }}
+      />
     </>
   );
 }
 
+type LimitAction = { org: AdminOrg; mode: 'approve' | 'decline' | 'set' };
+
 const needsReview = (o: AdminOrg) =>
-  o.status === 'ACTIVE' && ((!o.liveApprovedAt && (Boolean(o.liveReviewRequestedAt) || Boolean(o.liveBotUsername))) || o.business.status === 'PENDING');
+  o.status === 'ACTIVE' && ((!o.liveApprovedAt && (Boolean(o.liveReviewRequestedAt) || Boolean(o.liveBotUsername))) || o.business.status === 'PENDING' || o.limitRequest.status === 'PENDING');
 
 function OrgRow({
   org,
@@ -146,6 +158,7 @@ function OrgRow({
   onPlan,
   onVerifyBusiness,
   onRejectBusiness,
+  onLimit,
 }: {
   org: AdminOrg;
   onApprove: () => void;
@@ -154,6 +167,7 @@ function OrgRow({
   onPlan: (plan: string) => void;
   onVerifyBusiness: () => void;
   onRejectBusiness: (reason: string) => void;
+  onLimit: (mode: LimitAction['mode']) => void;
 }) {
   const blockRate = org.reached24h ? org.blocked24h / org.reached24h : 0;
   const suspended = org.status === 'SUSPENDED';
@@ -229,6 +243,29 @@ function OrgRow({
       {org.liveUseCase && <p className="mt-4 rounded-xl bg-subtle px-3.5 py-2.5 text-sm text-ink">“{org.liveUseCase}”</p>}
       {suspended && org.suspendedReason && <p className="mt-3 text-sm text-red-600 dark:text-red-400">Reason: {org.suspendedReason}</p>}
 
+      {org.limitRequest.status === 'PENDING' && (
+        <div className="mt-4 rounded-xl border border-amber-500/40 bg-amber-500/5 p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-sm font-semibold text-ink">Higher limit requested</p>
+            <Badge tone="amber" dot>
+              {timeAgo(org.limitRequest.requestedAt)}
+            </Badge>
+          </div>
+          <p className="mt-2 text-sm text-ink">
+            {org.monthlyQuota === null ? 'No limit' : n(org.monthlyQuota)} → <b className="font-semibold">{n(org.limitRequest.requested ?? 0)}</b> a month
+          </p>
+          <p className="mt-2 rounded-lg bg-subtle px-3 py-2 text-sm text-ink">“{org.limitRequest.reason}”</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Button onClick={() => onLimit('approve')} className="py-1.5">
+              <TrendingUp className="size-4" /> Approve
+            </Button>
+            <Button variant="secondary" onClick={() => onLimit('decline')} className="py-1.5">
+              <XCircle className="size-4" /> Decline
+            </Button>
+          </div>
+        </div>
+      )}
+
       {org.business.status !== 'NONE' && (
         <div className={cn('mt-4 rounded-xl border p-4', org.business.status === 'PENDING' ? 'border-amber-500/40 bg-amber-500/5' : 'border-line')}>
           <div className="flex flex-wrap items-center gap-2">
@@ -293,6 +330,9 @@ function OrgRow({
               </option>
             ))}
           </Select>
+          <button onClick={() => onLimit('set')} className="mt-1.5 inline-flex items-center gap-1 text-xs text-brand hover:underline">
+            <Pencil className="size-3" /> {org.customMonthlyQuota === null ? 'Set a custom limit' : `Custom: ${n(org.customMonthlyQuota)}/month. Change`}
+          </button>
         </div>
       </div>
     </motion.div>
@@ -353,6 +393,76 @@ function SuspendDialog({ org, onClose, onSubmit }: { org: AdminOrg | null; onClo
           </Button>
           <Button type="submit" variant="danger" loading={loading}>
             Suspend
+          </Button>
+        </div>
+      </form>
+    </Dialog>
+  );
+}
+
+// Approve or decline a request, or set a custom limit directly. Owners are emailed about
+// an approval or a decline; setting a limit directly is silent.
+function LimitDialog({ action, onClose, onDone }: { action: LimitAction | null; onClose: () => void; onDone: () => Promise<void> }) {
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const org = action?.org;
+  const mode = action?.mode;
+  const title = mode === 'approve' ? `Approve a higher limit for ${org?.name}?` : mode === 'decline' ? `Decline ${org?.name}'s request?` : `Custom limit for ${org?.name}`;
+  const description =
+    mode === 'approve'
+      ? 'It applies right away and the owners are emailed. You can approve a different number than they asked for.'
+      : mode === 'decline'
+        ? 'Their limit stays the same. The owners are emailed your reason and can ask again.'
+        : "Replaces the plan's limit. Leave it empty to go back to the plan's limit. The owners are not emailed.";
+
+  async function run(value: string) {
+    if (!org) return;
+    const limit = Number(value);
+    if (mode === 'approve') await api(`/admin/orgs/${org.id}/limit-request/approve`, { method: 'POST', body: { monthlyLimit: limit } });
+    else if (mode === 'decline') await api(`/admin/orgs/${org.id}/limit-request/decline`, { method: 'POST', body: { reason: value } });
+    else await api(`/admin/orgs/${org.id}/limit`, { method: 'PUT', body: { monthlyLimit: value ? limit : null } });
+  }
+
+  return (
+    <Dialog open={Boolean(action)} onClose={onClose} title={title} description={description}>
+      <form
+        key={`${org?.id}-${mode}`}
+        onSubmit={async (e: FormEvent<HTMLFormElement>) => {
+          e.preventDefault();
+          setLoading(true);
+          setError(null);
+          try {
+            await run(String(new FormData(e.currentTarget).get('value') ?? '').trim());
+            await onDone();
+          } catch (err) {
+            setError(err instanceof ApiError ? err.message : 'Something went wrong');
+          } finally {
+            setLoading(false);
+          }
+        }}
+        className="space-y-4"
+      >
+        {mode === 'decline' ? (
+          <Input name="value" label="Reason (emailed to the owners)" placeholder="e.g. Tell us more about what you send" required maxLength={500} />
+        ) : (
+          <Input
+            name="value"
+            type="number"
+            label="Messages a month"
+            min={1}
+            max={100_000_000}
+            step={1}
+            required={mode === 'approve'}
+            defaultValue={mode === 'approve' ? (org?.limitRequest.requested ?? '') : (org?.customMonthlyQuota ?? '')}
+          />
+        )}
+        {error && <Alert>{error}</Alert>}
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" variant={mode === 'decline' ? 'danger' : undefined} loading={loading}>
+            {mode === 'approve' ? 'Approve' : mode === 'decline' ? 'Decline' : 'Save'}
           </Button>
         </div>
       </form>
