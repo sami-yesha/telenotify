@@ -32,7 +32,7 @@ export default function TermsPage() {
       </section>
       <section>
         <h2>5. Price and limits</h2>
-        <p>Telenotify is free to use; we don&apos;t take payments. Each organization has a fair-use limit of live messages and verifications per month (currently 10,000); when it&apos;s reached, live messages are rejected until the next month begins. We may raise an organization&apos;s limit on request, and we may change the limit with at least 30 days&apos; notice. The source code is available under the GNU Affero General Public License v3.0, so you can also run Telenotify yourself.</p>
+        <p>Telenotify is free to use; we don&apos;t take payments. Each organization has a fair-use limit of live messages and verifications per month (currently 1,000 for new organizations); when it&apos;s reached, live messages are rejected until the next month begins. You can request a higher limit in the portal, and we may approve or decline it; and we may change the limit with at least 30 days&apos; notice. The source code is available under the GNU Affero General Public License v3.0, so you can also run Telenotify yourself.</p>
       </section>
       <section>
         <h2>6. Availability and changes</h2>

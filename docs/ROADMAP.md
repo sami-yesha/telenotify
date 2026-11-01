@@ -52,6 +52,7 @@ Agreed order (2026-10-22). Tick items as they ship; keep this file current.
 Decided 2026-10-24: Telenotify is **free and open source** (AGPL-3.0) for now. Chapa needs a registered business (TIN, trade license), so payments wait until there is one. Options explored: Telebirr + SMS matching, voucher codes, a partner's Chapa account.
 - [x] Make the hosted service free: 10,000 live messages and verifications per org per month, fair use; raised limits on request
 - [x] Open source: AGPL-3.0 license, contributing guide, security policy, self-host instructions
+- [x] Lower the free limit to 1,000 a month for new organizations (existing ones keep 10,000 until changed); owners request more on Plan & usage, an operator approves or declines in /admin
 - [ ] Online plan payment, once registered (Chapa)
 
 ## Batch 6: Why use the official service, and less stress for developers (agreed 2026-10-27)

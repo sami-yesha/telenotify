@@ -31,6 +31,10 @@ const labels: Record<string, string> = {
   'member.removed': 'Removed a member',
   'member.left': 'Left the organization',
   'plan.changed': 'Plan changed',
+  'limit.requested': 'Requested a higher limit',
+  'limit.approved': 'Higher limit approved',
+  'limit.declined': 'Higher limit declined',
+  'limit.changed': 'Monthly limit changed',
 };
 
 function details(entry: AuditEntry) {

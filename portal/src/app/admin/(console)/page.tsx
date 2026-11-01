@@ -29,7 +29,7 @@ const n = (v: number) => v.toLocaleString('en-US');
 export default function AdminOverview() {
   const { data } = useSWR<Overview>('/admin/overview', fetcher, { refreshInterval: 60_000 });
   const { data: orgs } = useSWR<AdminOrg[]>('/admin/orgs', fetcher);
-  const queue = (orgs ?? []).filter((o) => o.status === 'ACTIVE' && !o.liveApprovedAt && (o.liveReviewRequestedAt || o.liveBotUsername)).slice(0, 5);
+  const queue = (orgs ?? []).filter((o) => o.status === 'ACTIVE' && (o.limitRequest.status === 'PENDING' || (!o.liveApprovedAt && (o.liveReviewRequestedAt || o.liveBotUsername)))).slice(0, 5);
 
   if (!data) {
     return (
@@ -72,7 +72,7 @@ export default function AdminOverview() {
 
       <Card
         title="Review queue"
-        description="Organizations with a live bot or a review request, not yet approved."
+        description="Higher limit requests, and organizations with a live bot or a review request, not yet approved."
         actions={
           <Link href="/admin/orgs" className="inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline">
             All organizations <ArrowRight className="size-3.5" />
@@ -93,7 +93,7 @@ export default function AdminOverview() {
                     {org.liveBotUsername ? ` · @${org.liveBotUsername}` : ''}
                   </p>
                 </div>
-                {org.liveReviewRequestedAt ? <Badge tone="amber">requested {timeAgo(org.liveReviewRequestedAt)}</Badge> : <Badge>live bot, no request</Badge>}
+                {org.limitRequest.status === 'PENDING' ? <Badge tone="amber">higher limit {timeAgo(org.limitRequest.requestedAt)}</Badge> : org.liveReviewRequestedAt ? <Badge tone="amber">requested {timeAgo(org.liveReviewRequestedAt)}</Badge> : <Badge>live bot, no request</Badge>}
               </li>
             ))}
           </ul>

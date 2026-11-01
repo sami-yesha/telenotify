@@ -47,7 +47,7 @@ export function OpenSource() {
                 </li>
               ))}
             </ul>
-            <p className="mt-5 text-xs text-muted">Fair use: need more each month? Ask us and we&apos;ll raise your limit.</p>
+            <p className="mt-5 text-xs text-muted">Fair use: need more each month? Request a higher limit in the portal and we&apos;ll review it.</p>
             <div className="mt-auto pt-7">
               <Link href="/signup" className="block rounded-[4.5px] bg-ink px-5 py-3 text-center text-sm font-semibold text-page transition-colors hover:bg-[#e8eef7]">
                 Create a free account

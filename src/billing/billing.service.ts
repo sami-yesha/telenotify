@@ -4,7 +4,7 @@ import { Environment, Organization, Prisma } from '@prisma/client';
 import { suspendedMessage } from '../common/api-key.guard';
 import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { currentPeriod, PLANS } from './plans';
+import { currentPeriod, monthlyQuota, PLANS } from './plans';
 
 const ALERT_THRESHOLDS = [80, 100] as const;
 
@@ -41,17 +41,17 @@ export class BillingService {
     }
     if (environment.type !== 'LIVE') return;
     if (!org.liveApprovedAt) await this.assertUnapprovedDailyLimit(org);
-    const plan = PLANS[org.plan];
-    if (plan.monthlyQuota === null) return;
+    const quota = monthlyQuota(org);
+    if (quota === null) return;
     const { used } = await this.usage(org.id);
     // Counts the send being attempted now, so the 80% email arrives before the limit.
-    void this.sendUsageAlerts(org, used + 1, plan.monthlyQuota);
-    if (used >= plan.monthlyQuota) {
+    void this.sendUsageAlerts(org, used + 1, quota);
+    if (used >= quota) {
       throw new HttpException(
         {
           statusCode: HttpStatus.PAYMENT_REQUIRED,
           code: 'quota_exceeded',
-          message: `Monthly fair-use limit of ${plan.monthlyQuota.toLocaleString('en-US')} live messages and verifications is used up. It resets next month; ask us to raise it, or self-host Telenotify for no limit.`,
+          message: `Monthly fair-use limit of ${quota.toLocaleString('en-US')} live messages and verifications is used up. It resets next month. Request a higher limit in the portal (Plan & usage), or self-host Telenotify for no limit.`,
         },
         HttpStatus.PAYMENT_REQUIRED,
       );
@@ -101,7 +101,6 @@ export class BillingService {
 
   private async emailOwners(org: Organization, threshold: number, used: number, quota: number) {
     const owners = await this.prisma.membership.findMany({ where: { orgId: org.id, role: 'OWNER' }, include: { user: true } });
-    const plan = PLANS[org.plan];
     const portal = this.config.getOrThrow<string>('PORTAL_URL').replace(/\/$/, '');
     const link = `${portal}/o/${org.id}/live/billing`;
     const subject =
@@ -110,8 +109,8 @@ export class BillingService {
         : `${org.name}: ${threshold}% of your monthly Telenotify limit used`;
     const body =
       threshold >= 100
-        ? `Hi,\n\n${org.name} has used all ${quota.toLocaleString('en-US')} free live messages and verifications this month (${plan.name}). New live messages are rejected until the month resets, so customers may miss notifications.\n\nTelenotify is free; reply to this email if you need a higher limit, or self-host it for no limit.\n\nReview usage: ${link}`
-        : `Hi,\n\n${org.name} has used ${used.toLocaleString('en-US')} of ${quota.toLocaleString('en-US')} free live messages and verifications (${threshold}%) this month.\n\nTelenotify is free; if you'll need more, reply to this email and we'll raise your limit.\n\nReview usage: ${link}`;
+        ? `Hi,\n\n${org.name} has used all ${quota.toLocaleString('en-US')} free live messages and verifications this month. New live messages are rejected until the month resets, so customers may miss notifications.\n\nTelenotify is free; request a higher limit here, or self-host it for no limit: ${link}`
+        : `Hi,\n\n${org.name} has used ${used.toLocaleString('en-US')} of ${quota.toLocaleString('en-US')} free live messages and verifications (${threshold}%) this month.\n\nTelenotify is free; if you'll need more, request a higher limit here: ${link}`;
     for (const owner of owners) {
       await this.mail.send(owner.user.email, subject, body);
     }
@@ -121,7 +120,14 @@ export class BillingService {
     const usage = await this.usage(org.id);
     return {
       plan: org.plan,
-      usage: { ...usage, quota: PLANS[org.plan].monthlyQuota },
+      usage: { ...usage, quota: monthlyQuota(org) },
+      limitRequest: {
+        status: org.limitRequestStatus.toLowerCase(),
+        requested: org.limitRequested,
+        reason: org.limitRequestReason,
+        requestedAt: org.limitRequestedAt,
+        declineReason: org.limitDeclineReason,
+      },
       plans: Object.entries(PLANS).map(([id, plan]) => ({ id, ...plan })),
     };
   }

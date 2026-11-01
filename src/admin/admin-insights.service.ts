@@ -37,7 +37,7 @@ export class AdminInsightsService {
       this.prisma.organization.count({ where: { status: 'SUSPENDED' } }),
       this.prisma.organization.count({ where: { liveApprovedAt: { not: null } } }),
       this.prisma.environment.count({ where: { type: 'LIVE', botTokenEncrypted: { not: null } } }),
-      this.prisma.organization.count({ where: { status: 'ACTIVE', OR: [{ liveApprovedAt: null, liveReviewRequestedAt: { not: null } }, { businessStatus: 'PENDING' }] } }),
+      this.prisma.organization.count({ where: { status: 'ACTIVE', OR: [{ limitRequestStatus: 'PENDING' }, { liveApprovedAt: null, liveReviewRequestedAt: { not: null } }, { businessStatus: 'PENDING' }] } }),
       this.prisma.passIdentity.count(),
       this.prisma.organization.count({ where: { businessStatus: 'VERIFIED' } }),
       this.daily(Prisma.sql`SELECT date_trunc('day', "createdAt") AS day, count(*)::int AS n FROM "User" WHERE "createdAt" >= ${since} GROUP BY 1`),
