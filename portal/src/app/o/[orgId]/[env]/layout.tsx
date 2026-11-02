@@ -426,7 +426,7 @@ function UserMenu({ name, email, isOperator }: { name: string; email: string; is
   );
 }
 
-// Shown above every page: a suspended organization, or live sending still capped.
+// Shown above every page: a suspended organization, or live sending not approved yet.
 function OrgStatusBanner({ org, env, botHref, onBotPage }: { org: Org; env: EnvName; botHref: string; onBotPage: boolean }) {
   if (org.status === 'suspended') {
     return (
@@ -447,8 +447,8 @@ function OrgStatusBanner({ org, env, botHref, onBotPage }: { org: Org; env: EnvN
         <ShieldCheck className="size-5 shrink-0" />
         <p className="min-w-0 flex-1">
           {org.liveReviewRequestedAt
-            ? `Review requested. Until it's approved, you can send ${org.unapprovedDailyLimit} live messages a day.`
-            : `Live sending is limited to ${org.unapprovedDailyLimit} messages a day until your organization is approved.`}
+            ? "Review requested. Live sending starts once it's approved."
+            : 'Live sending is off until your organization is approved.'}
         </p>
         {!org.liveReviewRequestedAt && (
           <Link href={botHref} className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600">

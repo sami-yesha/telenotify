@@ -36,7 +36,7 @@ export function OpenSource() {
               <Cloud className="size-5" />
             </span>
             <p className="mt-4 font-display text-2xl font-medium text-ink">Hosted</p>
-            <p className="mt-1 text-sm text-muted">We run it for you. Sign up and send in minutes.</p>
+            <p className="mt-1 text-sm text-muted">We run it for you. Test in minutes, go live once we approve you.</p>
             <p className="mt-6 font-display text-5xl font-normal tracking-tight text-ink">
               0 <span className="text-lg font-semibold text-muted">ETB, forever</span>
             </p>

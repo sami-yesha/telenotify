@@ -85,8 +85,8 @@ model Organization {
   status          OrgStatus @default(ACTIVE)
   suspendedAt     DateTime?
   suspendedReason String?
-  // Until an operator approves live use, live sending is capped per day
-  // (UNAPPROVED_LIVE_DAILY_LIMIT) so a new account can test but not spam.
+  // Live messages and verifications are rejected until an operator approves the
+  // organization. The sandbox works from the start.
   liveApprovedAt     DateTime?
   liveReviewRequestedAt DateTime?
   // What the organization told us when asking for review.

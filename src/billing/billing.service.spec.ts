@@ -90,14 +90,14 @@ describe('BillingService', () => {
       }
     });
 
-    it('caps live sends per day until the organization is approved', async () => {
-      const under = setup('FREE', 60, 39, { liveApprovedAt: null });
-      await expect(under.billing.assertWithinQuota(under.env)).resolves.toBeUndefined();
-      const at = setup('FREE', 60, 40, { liveApprovedAt: null });
-      await expect(at.billing.assertWithinQuota(at.env)).rejects.toMatchObject({ response: { code: 'live_review_required' } });
+    it('rejects every live send until the organization is approved', async () => {
+      const waiting = setup('FREE', 0, 0, { liveApprovedAt: null });
+      await expect(waiting.billing.assertWithinQuota(waiting.env)).rejects.toMatchObject({ response: { statusCode: 403, code: 'live_review_required' } });
+      const approved = setup('FREE', 0, 0, { liveApprovedAt: new Date() });
+      await expect(approved.billing.assertWithinQuota(approved.env)).resolves.toBeUndefined();
     });
 
-    it('does not cap the sandbox of an unapproved organization', async () => {
+    it('does not limit the sandbox of an unapproved organization', async () => {
       const { billing, env } = setup('FREE', 5_000, 0, { liveApprovedAt: null });
       await expect(billing.assertWithinQuota({ ...env, type: 'SANDBOX' })).resolves.toBeUndefined();
     });

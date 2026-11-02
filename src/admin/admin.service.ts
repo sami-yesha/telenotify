@@ -4,6 +4,7 @@ import { Organization, Plan, User } from '@prisma/client';
 import { AuditService } from '../audit/audit.service';
 import { BillingService } from '../billing/billing.service';
 import { monthlyQuota, PLANS } from '../billing/plans';
+import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { OperatorNotifier } from './operator-notifier.service';
 
@@ -20,6 +21,7 @@ export class AdminService {
     private readonly audit: AuditService,
     private readonly billing: BillingService,
     private readonly notifier: OperatorNotifier,
+    private readonly mail: MailService,
   ) {}
 
   // ---------- Operator actions ----------
@@ -82,6 +84,8 @@ export class AdminService {
     const org = await this.find(orgId);
     const updated = await this.prisma.organization.update({ where: { id: org.id }, data: { liveApprovedAt: org.liveApprovedAt ?? new Date() } });
     await this.audit.record(org.id, actor, 'live.approved', org.name);
+    // Not awaited: a slow mail server shouldn't hold up the operator.
+    if (!org.liveApprovedAt) void this.emailLiveApproved(org);
     return updated;
   }
 
@@ -132,7 +136,7 @@ export class AdminService {
     if (org.liveApprovedAt) return;
     await this.notifier.notify(
       `New live bot: ${org.name}`,
-      `${org.name} connected @${botUsername} (${actor.email}). Live sending is capped at ${this.unapprovedDailyLimit()} messages a day until you approve it.`,
+      `${org.name} connected @${botUsername} (${actor.email}). Live sending stays off until you approve it.`,
     );
   }
 
@@ -157,16 +161,24 @@ export class AdminService {
     }
   }
 
-  unapprovedDailyLimit(): number {
-    return Number(this.config.get('UNAPPROVED_LIVE_DAILY_LIMIT', 100));
-  }
-
   private async blockStats(environmentId: string, since: Date) {
     const [blocked, reached] = await Promise.all([
       this.prisma.customer.count({ where: { environmentId, blockedAt: { gte: since } } }),
       this.prisma.message.findMany({ where: { environmentId, direction: 'OUTBOUND', createdAt: { gte: since } }, distinct: ['customerId'], select: { customerId: true } }),
     ]);
     return { blocked, reached: reached.length };
+  }
+
+  private async emailLiveApproved(org: Organization) {
+    try {
+      const owners = await this.prisma.membership.findMany({ where: { orgId: org.id, role: 'OWNER' }, include: { user: true } });
+      const link = `${this.config.get<string>('PORTAL_URL', '').replace(/\/$/, '')}/o/${org.id}/live/keys`;
+      for (const owner of owners) {
+        await this.mail.send(owner.user.email, `${org.name} is approved for live sending`, `Hi ${owner.user.name},\n\n${org.name} can now send live messages and verifications. Create a live API key here: ${link}`);
+      }
+    } catch (error) {
+      this.logger.warn(`Could not email the owners of org ${org.id}: ${(error as Error).message}`);
+    }
   }
 
   private async find(orgId: string) {

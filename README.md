@@ -141,7 +141,7 @@ The portal includes:
 
 Put your email in `OPERATOR_EMAILS` and open **/admin** in the portal (also in the account menu). From there you approve live sending, suspend or unsuspend organizations and raise limits; every action goes into the organization's audit log.
 
-- **New organizations** can send `UNAPPROVED_LIVE_DAILY_LIMIT` (100) live messages a day until approved. They request a review on the Live → Telegram bot page, and operators get an email (and a Telegram message when `OPERATOR_TELEGRAM_CHAT_ID` is set).
+- **New organizations** can't send live messages or verifications until approved; the sandbox works from the start. They request a review on the Live → Telegram bot page, operators get an email (and a Telegram message when `OPERATOR_TELEGRAM_CHAT_ID` is set), and the owners get an email once approved. On your own server, approve your organization the same way.
 - **Suspended organizations** get `403 org_suspended` on every API call and see the reason in their dashboard.
 - **Spam detection:** when at least `AUTO_SUSPEND_MIN_BLOCKS` (10) recipients, and `AUTO_SUSPEND_BLOCK_RATIO` (30%) of those messaged, block a live bot within 24 hours, the organization is suspended automatically and operators are alerted.
 
@@ -198,7 +198,6 @@ docker compose --env-file .env.production up -d --build
 ## Not done yet
 
 - Online plan payment (Chapa); owners request a higher limit in the portal and an operator approves it in `/admin`.
-- Approval or KYC before an organization goes live.
 - Data-residency and compliance notes (hosting location, DPA, subprocessors) for regulated customers.
 - Rate-limit counters are per instance (in memory); use Redis storage before running more than one API instance.
 - A retry can send a message twice if the database update fails right after Telegram accepts it.

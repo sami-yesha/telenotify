@@ -40,7 +40,13 @@ export class BillingService {
       throw new ForbiddenException({ statusCode: 403, code: 'org_suspended', message: suspendedMessage(org.suspendedReason) });
     }
     if (environment.type !== 'LIVE') return;
-    if (!org.liveApprovedAt) await this.assertUnapprovedDailyLimit(org);
+    if (!org.liveApprovedAt) {
+      throw new ForbiddenException({
+        statusCode: 403,
+        code: 'live_review_required',
+        message: 'Live sending needs approval. Request a review in the portal (Live → Telegram bot). Your sandbox keeps working in the meantime.',
+      });
+    }
     const quota = monthlyQuota(org);
     if (quota === null) return;
     const { used } = await this.usage(org.id);
@@ -55,27 +61,6 @@ export class BillingService {
         },
         HttpStatus.PAYMENT_REQUIRED,
       );
-    }
-  }
-
-  // Until an operator approves live use, an organization can send a small number of
-  // live messages per day: enough to test with real customers, too few to spam.
-  private async assertUnapprovedDailyLimit(org: Organization) {
-    const limit = Number(this.config.get('UNAPPROVED_LIVE_DAILY_LIMIT', 100));
-    const since = new Date();
-    since.setUTCHours(0, 0, 0, 0);
-    const live = await this.prisma.environment.findUnique({ where: { orgId_type: { orgId: org.id, type: 'LIVE' } } });
-    if (!live) return;
-    const [messages, verifications] = await Promise.all([
-      this.prisma.message.count({ where: { environmentId: live.id, direction: 'OUTBOUND', status: { in: ['QUEUED', 'SENT'] }, createdAt: { gte: since } } }),
-      this.prisma.verification.count({ where: { environmentId: live.id, status: 'VERIFIED', verifiedAt: { gte: since } } }),
-    ]);
-    if (messages + verifications >= limit) {
-      throw new ForbiddenException({
-        statusCode: 403,
-        code: 'live_review_required',
-        message: `New organizations can send ${limit} live messages a day until approved. Request a review in the portal (Live → Telegram bot); the limit lifts once approved.`,
-      });
     }
   }
 

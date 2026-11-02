@@ -11,13 +11,34 @@ function setup(opts: { blocked: number; reached: number; type?: string; status?:
       findUnique: jest.fn().mockResolvedValue(environment.org),
       update: jest.fn().mockImplementation(({ data }) => Promise.resolve({ ...environment.org, ...data })),
     },
+    membership: { findMany: jest.fn().mockResolvedValue([{ user: { email: 'owner@example.com', name: 'Abebe' } }]) },
   };
   const config = { get: (_key: string, fallback: unknown) => fallback };
   const audit = { record: jest.fn() };
   const notifier = { notify: jest.fn() };
-  const service = new AdminService(prisma as any, config as any, audit as any, {} as any, notifier as any);
-  return { service, prisma, audit, notifier };
+  const mail = { send: jest.fn() };
+  const service = new AdminService(prisma as any, config as any, audit as any, {} as any, notifier as any, mail as any);
+  return { service, prisma, audit, notifier, mail };
 }
+
+describe('AdminService live approval', () => {
+  const actor = { id: 'op-1', email: 'op@example.com' } as any;
+
+  it('approves the organization and emails its owners once', async () => {
+    const { service, prisma, audit, mail } = setup({ blocked: 0, reached: 0 });
+    await service.approveLive('org-1', actor);
+    await new Promise(setImmediate);
+    expect(prisma.organization.update.mock.calls[0][0].data.liveApprovedAt).toBeInstanceOf(Date);
+    expect(audit.record).toHaveBeenCalledWith('org-1', actor, 'live.approved', 'Shop');
+    expect(mail.send).toHaveBeenCalledWith('owner@example.com', expect.stringContaining('approved'), expect.stringContaining('/o/org-1/live/keys'));
+
+    mail.send.mockClear();
+    prisma.organization.findUnique.mockResolvedValue({ id: 'org-1', name: 'Shop', liveApprovedAt: new Date() });
+    await service.approveLive('org-1', actor);
+    await new Promise(setImmediate);
+    expect(mail.send).not.toHaveBeenCalled();
+  });
+});
 
 describe('AdminService spam detection', () => {
   it('suspends a live organization when many recipients block its bot', async () => {
