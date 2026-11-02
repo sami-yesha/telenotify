@@ -1,7 +1,7 @@
 name: Tests
 
 # Every push to main runs the API tests and type-checks the portal. Deploys are done
-# by hand for now: see "Deploying" in the README.
+# by hand for now: see "Deploy" in the README.
 on:
   push:
     branches: [main]
