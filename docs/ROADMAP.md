@@ -44,6 +44,7 @@ Agreed order (2026-10-22). Tick items as they ship; keep this file current.
 
 ## Proposed: payment-gateway readiness (from the 2026-10-22 scenario, not yet agreed)
 - [x] Per-bot send rate limits and a priority lane so OTP/transaction messages jump ahead of bulk sends
+- [x] Per-chat send limit (1 a second), and a whole-bot pause that honors Telegram's `retry_after` on a 429
 - [x] Message templates with Amharic/English variants
 - [x] Optional "bring your own SMS provider" fallback (e.g. AfroMessage credentials), so Telenotify sends the SMS itself when Telegram can't
 - [ ] Data-residency and compliance notes for regulated customers (hosting location, DPA)

@@ -6,6 +6,7 @@ function setup(overrides: { customer?: object; environment?: object; message?: o
   const message = {
     id: 'msg-1',
     status: 'QUEUED',
+    attempts: 0,
     priority: 'NORMAL',
     text: 'Order shipped',
     format: 'PLAIN',
@@ -79,10 +80,18 @@ describe('DeliveryService', () => {
     expect(finalUpdate()).toMatchObject({ status: 'UNDELIVERABLE', reason: 'chat_gone' });
   });
 
-  it('throws on rate limit so the queue retries', async () => {
+  it('throws on rate limit so the processor waits, even on the final attempt', async () => {
     const { service, bot } = setup();
     bot.sendMessage.mockRejectedValue(new TelegramApiError(429, 'Too Many Requests', 3));
     await expect(service.deliver('msg-1', false)).rejects.toBeInstanceOf(TelegramApiError);
+    await expect(service.deliver('msg-1', true)).rejects.toBeInstanceOf(TelegramApiError);
+  });
+
+  it('marks FAILED once a message has hit the rate limit too many times', async () => {
+    const { service, bot, finalUpdate } = setup({ message: { attempts: 19 } });
+    bot.sendMessage.mockRejectedValue(new TelegramApiError(429, 'Too Many Requests', 3));
+    await service.deliver('msg-1', false);
+    expect(finalUpdate()).toMatchObject({ status: 'FAILED', reason: 'telegram_unavailable' });
   });
 
   it('marks FAILED (telegram_unavailable) after the final attempt', async () => {

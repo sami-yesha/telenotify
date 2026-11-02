@@ -9,6 +9,7 @@ import { SmsFallbackService } from '../sms-fallback/sms-fallback.service';
 import { WebhooksService } from '../webhooks/webhooks.service';
 import { toMessageView } from './message-view';
 import { toPlainText, toTelegramHtml } from './rich-text';
+import { MAX_RATE_LIMITED_TRIES } from './messages.constants';
 
 type LoadedMessage = Message & { customer: Customer; environment: Environment & { org: Organization } };
 
@@ -88,7 +89,12 @@ export class DeliveryService {
         await this.prisma.customer.update({ where: { id: customer.id }, data: { telegramChatId: null, linkedAt: null } });
         return this.markUndeliverable(message, 'chat_gone');
       }
-      const retryable = error.errorCode === 429 || error.errorCode >= 500;
+      // The processor waits as long as Telegram asks and tries again.
+      if (error.errorCode === 429) {
+        if (message.attempts + 1 < MAX_RATE_LIMITED_TRIES) throw error;
+        return this.markFailed(message, 'telegram_unavailable', error.description);
+      }
+      const retryable = error.errorCode >= 500;
       if (retryable && !isFinalAttempt) throw error;
       return retryable
         ? this.markFailed(message, 'telegram_unavailable', error.description)
