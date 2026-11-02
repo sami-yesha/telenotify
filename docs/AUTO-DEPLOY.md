@@ -1,5 +1,7 @@
 # Automatic deploys (hosted service)
 
+> **Turned off for now.** The deploy job was removed, and pushes to `main` only run the tests (`.github/workflows/test.yml`). This page describes how it worked: to bring it back, restore the `deploy` job from `.github/workflows/deploy.yml` in git history (the last commit that has it is `e62f4a8`), then follow the setup below.
+
 Every push to `main` deploys the hosted service by itself (`.github/workflows/deploy.yml`):
 
 1. GitHub runs the API tests and type-checks the portal. If anything fails, nothing is deployed.

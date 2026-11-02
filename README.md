@@ -163,7 +163,7 @@ Back up the database and `ENCRYPTION_KEY`: see [docs/BACKUPS.md](docs/BACKUPS.md
 
 Test environment on Vercel (portal) + Render free (API): see [docs/DEPLOY.md](docs/DEPLOY.md) and `render.yaml`.
 
-Pushes to `main` deploy the hosted service automatically through GitHub Actions: see [docs/AUTO-DEPLOY.md](docs/AUTO-DEPLOY.md).
+Pushes to `main` run the tests but don't deploy. To deploy the hosted service, run this on the server: `cd /opt/telenotify && git pull --ff-only && bash deploy/auto-deploy.sh`. Automatic deploys are turned off for now; [docs/AUTO-DEPLOY.md](docs/AUTO-DEPLOY.md) explains how to bring them back.
 
 ### Single server, Docker
 
