@@ -49,7 +49,10 @@ ask_demo_settings() {
   read -r -s -p "  Paste the demo bot's token from @BotFather (hidden), or press Enter to skip: " token
   echo
   [ -n "$token" ] || { echo "Live demo: skipped. You'll be asked again next deploy."; return 1; }
-  docker compose -f docker-compose.vps.yml config --services | grep -qx api || { echo "Live demo: no 'api' service in docker-compose.vps.yml." >&2; return 1; }
+  # Read the list first: `… | grep -q` stops reading early, which pipefail counts as a failure.
+  local services
+  services=$(docker compose -f docker-compose.vps.yml config --services) || return 1
+  grep -qx api <<<"$services" || { echo "Live demo: no 'api' service in docker-compose.vps.yml." >&2; return 1; }
   local settings
   settings=$(printf '%s' "$token" | docker compose -f docker-compose.vps.yml exec -T -e DEMO_PUBLIC_URL="https://$DEMO_DOMAIN" api node dist/ops/setup-live-demo.js) || return 1
   # Readable only by root.
