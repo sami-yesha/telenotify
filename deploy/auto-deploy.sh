@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Rebuilds and restarts the hosted service. GitHub Actions runs this over SSH after
-# every push to main (.github/workflows/deploy.yml), always after `git pull`, so it
-# is the version from the commit being deployed. See docs/AUTO-DEPLOY.md.
+# Rebuilds and restarts the hosted service. Run it by hand on the server, after
+# `git pull`, so it is the version from the commit being deployed. See the README.
 set -euo pipefail
 
 main() {

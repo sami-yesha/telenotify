@@ -23,10 +23,9 @@ export interface Org extends OrgSummary {
   liveBotUsername: string | null;
   status: 'active' | 'suspended';
   suspendedReason: string | null;
-  /** Until approved, live sending is capped at unapprovedDailyLimit per day. */
+  /** Live messages and verifications are rejected until this is true. */
   liveApproved: boolean;
   liveReviewRequestedAt: string | null;
-  unapprovedDailyLimit: number;
   businessStatus: BusinessStatus;
 }
 

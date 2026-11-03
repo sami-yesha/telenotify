@@ -7,8 +7,8 @@ import { api, ApiError } from '@/lib/api';
 import { useOrg } from '@/lib/hooks';
 import type { Org } from '@/lib/types';
 
-// New organizations can send a few live messages a day; this asks the operators
-// to lift the cap. Hidden once approved.
+// New organizations can't send live until an operator approves them; this asks for
+// that approval. Hidden once approved.
 export function LiveReviewCard() {
   const { data: org, mutate } = useOrg();
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +19,7 @@ export function LiveReviewCard() {
     return (
       <Card icon={Clock} title="Live review requested" description={`Sent ${timeAgo(org.liveReviewRequestedAt)}. We usually review within a day.`}>
         <p className="text-sm text-muted">
-          Until then you can send up to <b className="text-ink">{org.unapprovedDailyLimit}</b> live messages a day, so you can keep testing with real customers. We&apos;ll email you when it&apos;s approved.
+          Live sending starts once it&apos;s approved, and your sandbox keeps working until then. We&apos;ll email you when it&apos;s approved.
         </p>
       </Card>
     );
@@ -43,8 +43,8 @@ export function LiveReviewCard() {
   return (
     <Card
       icon={ShieldCheck}
-      title="Get approved for full live sending"
-      description={`New organizations can send ${org.unapprovedDailyLimit} live messages a day. Tell us a little about what you send and we'll lift the limit, usually within a day.`}
+      title="Get approved to go live"
+      description="New organizations need approval before sending live messages or verifications. Tell us a little about what you send and we'll review it, usually within a day."
     >
       <form onSubmit={submit} className="space-y-4">
         <label className="block">

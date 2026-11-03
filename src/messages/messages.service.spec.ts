@@ -28,7 +28,7 @@ describe('MessagesService.send', () => {
     const { service, queue, environment } = setup(linked);
     const result = await service.send(environment, { to: 'u1', text: 'hi' });
     expect(result).toMatchObject({ status: 'QUEUED', reason: null, priority: 'normal' });
-    expect(queue.add).toHaveBeenCalledWith('deliver', { messageId: 'msg-1', botKey: 'env-1' }, { jobId: 'msg-1', priority: 10 });
+    expect(queue.add).toHaveBeenCalledWith('deliver', { messageId: 'msg-1', botKey: 'env-1', chatKey: 'c1' }, { jobId: 'msg-1', priority: 10 });
   });
 
   it('queues high-priority messages ahead of normal ones', async () => {

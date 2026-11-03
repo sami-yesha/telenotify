@@ -13,6 +13,8 @@ export interface RequestRecord {
   durationMs: number;
   error?: string | null;
   ip?: string | null;
+  client?: string | null;
+  clientDetail?: string | null;
 }
 
 @Injectable()

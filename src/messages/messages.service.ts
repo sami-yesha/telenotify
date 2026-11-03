@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Customer, Environment, Message, MessageStatus, Prisma } from '@prisma/client';
 import { Queue } from 'bullmq';
 import { BillingService } from '../billing/billing.service';
+import { isTestCustomer } from '../common/sandbox';
 import { CustomersService } from '../customers/customers.service';
 import { SmsFallbackService } from '../sms-fallback/sms-fallback.service';
 import { TemplatesService } from '../templates/templates.service';
@@ -92,7 +93,11 @@ export class MessagesService {
     if (status === 'QUEUED') {
       await this.queue.add(
         'deliver',
-        { messageId: message.id, botKey: environment.type === 'SANDBOX' ? 'sandbox' : environment.id },
+        {
+          messageId: message.id,
+          botKey: environment.type === 'SANDBOX' ? 'sandbox' : environment.id,
+          ...(environment.type === 'SANDBOX' && isTestCustomer(customer.externalId) ? {} : { chatKey: customer.id }),
+        },
         { jobId: message.id, priority: JOB_PRIORITY[message.priority] },
       );
     } else {

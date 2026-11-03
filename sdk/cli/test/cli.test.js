@@ -66,6 +66,7 @@ test('listen forwards each event with the exact body and signature, then keeps t
   assert.strictEqual(delivery.headers['x-telenotify-signature'], 't=1,v1=abc');
   assert.strictEqual(delivery.headers['x-telenotify-event-id'], 'evt-1');
   assert.strictEqual(api.seen[0].headers['x-api-key'], 'tn_test_key');
+  assert.match(api.seen[0].headers['user-agent'], /^telenotify-cli\/\d+\.\d+\.\d+$/);
   assert.deepStrictEqual(cursors.slice(0, 2), ['c0', 'c1']);
   assert.ok(lines.some((l) => l.includes('message.sent') && l.includes('200')));
   await Promise.all([api.close(), local.close()]);

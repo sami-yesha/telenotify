@@ -52,7 +52,8 @@ function curl(call: ApiCall, ctx: { baseUrl: string; apiKey: string }) {
     lines.push('  -H "content-type: application/json"');
     lines.push(`  -d '${json(call.body).replace(/\n/g, '\n  ')}'`);
   }
-  return lines.join(' \\\n') + tail(call, '#');
+  // No response comment here: zsh, the macOS default, rejects a pasted # line.
+  return lines.join(' \\\n');
 }
 
 function node(call: ApiCall, ctx: { baseUrl: string; apiKey: string }) {

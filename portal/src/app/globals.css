@@ -14,6 +14,13 @@
   --brand-soft: #e2f1fb;
   --accent: #2aabee;
   --shadow: 15 23 42;
+  /* Categorical chart colors, in fixed order (validated for color blindness and
+     contrast on --surface; the dark steps below are validated on the dark surface). */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
   color-scheme: light;
 }
 
@@ -34,6 +41,11 @@
   --brand-soft: #0b2c4a;
   --accent: #5fc4f5;
   --shadow: 0 0 0;
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
   color-scheme: dark;
 }
 
@@ -51,6 +63,11 @@
     --brand-soft: #0b2c4a;
     --accent: #5fc4f5;
     --shadow: 0 0 0;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #c98500;
+    --series-5: #d55181;
     color-scheme: dark;
   }
 }

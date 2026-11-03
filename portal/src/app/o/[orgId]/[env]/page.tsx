@@ -42,10 +42,11 @@ export default function GetStartedPage() {
           { done: environment.usage.linkedCustomers > 0, title: 'Connect your own Telegram', body: 'Link yourself to the sandbox bot and receive a real message.', href: `${base}/playground`, cta: 'Open playground' },
           { done: false, title: 'Test your fallback', body: 'Send to the built-in test customers to see every outcome your code must handle.', href: `${base}/docs#test-customers`, cta: 'Test customers' },
           { done: Boolean(environment.eventWebhookUrl), title: 'Receive webhook events', body: 'Get delivery results and replies pushed to your server.', href: `${base}/webhooks`, cta: 'Set webhook' },
-          { done: org.liveBotConnected, title: 'Go live', body: 'Connect your own bot so customers see your brand, then use a live key.', href: `/o/${orgId}/live/bot`, cta: 'Switch to live' },
+          { done: org.liveBotConnected && org.liveApproved, title: 'Go live', body: 'Connect your own bot so customers see your brand, get approved, then use a live key.', href: `/o/${orgId}/live/bot`, cta: 'Switch to live' },
         ]
       : [
           { done: environment.botConnected, title: 'Connect your Telegram bot', body: 'Create a bot with @BotFather and paste its token.', href: `${base}/bot`, cta: 'Connect bot' },
+          { done: org.liveApproved, title: 'Get approved', body: 'Tell us what you send. Live messages and verifications start once we approve it.', href: `${base}/bot`, cta: 'Request review' },
           { done: hasKey, title: 'Create a live API key', body: 'Keep it on your server only.', href: `${base}/keys`, cta: 'API keys' },
           { done: Boolean(environment.eventWebhookUrl), title: 'Set your webhook URL', body: 'HTTPS endpoint for delivery results.', href: `${base}/webhooks`, cta: 'Set webhook' },
           { done: environment.usage.linkedCustomers > 0, title: 'Link your first customer', body: 'Show the t.me link from POST /v1/customers/link in your app or receipt.', href: `${base}/docs`, cta: 'Read the guide' },
@@ -67,7 +68,7 @@ export default function GetStartedPage() {
               {env === 'sandbox' ? 'Sandbox' : 'Live'}
             </Badge>
             <h1 className="mt-3 font-display text-[1.9rem] font-normal leading-[1.05] text-ink sm:text-[2.6rem]">
-              {env === 'sandbox' ? `Welcome to ${org.name}` : `${org.name} is ${environment.botConnected ? 'ready for' : 'almost ready for'} production`}
+              {env === 'sandbox' ? `Welcome to ${org.name}` : `${org.name} is ${environment.botConnected && org.liveApproved ? 'ready for' : 'almost ready for'} production`}
             </h1>
             <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-muted">
               {env === 'sandbox'

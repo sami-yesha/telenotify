@@ -40,10 +40,12 @@ Agreed order (2026-10-22). Tick items as they ship; keep this file current.
 
 ## Operations
 - [x] Nightly encrypted database backups with a Telegram copy (docs/BACKUPS.md); needs a one-time setup on the server
-- [x] Automatic deploys: every push to main is tested and deployed by GitHub Actions (docs/AUTO-DEPLOY.md); needs a one-time key setup
+- [ ] Automatic deploys: removed for now, deploys are by hand and pushes to main only run the tests (docs/AUTO-DEPLOY.md explains how to bring them back)
+- [x] Operator analytics (/admin/analytics): growth funnel, delivery, verifications, webhooks, SMS fallback, and API usage by SDK/CLI/tool and version, endpoints, errors, busiest organizations
 
 ## Proposed: payment-gateway readiness (from the 2026-10-22 scenario, not yet agreed)
 - [x] Per-bot send rate limits and a priority lane so OTP/transaction messages jump ahead of bulk sends
+- [x] Per-chat send limit (1 a second), and a whole-bot pause that honors Telegram's `retry_after` on a 429
 - [x] Message templates with Amharic/English variants
 - [x] Optional "bring your own SMS provider" fallback (e.g. AfroMessage credentials), so Telenotify sends the SMS itself when Telegram can't
 - [ ] Data-residency and compliance notes for regulated customers (hosting location, DPA)
@@ -53,6 +55,7 @@ Decided 2026-10-24: Telenotify is **free and open source** (AGPL-3.0) for now. C
 - [x] Make the hosted service free: 10,000 live messages and verifications per org per month, fair use; raised limits on request
 - [x] Open source: AGPL-3.0 license, contributing guide, security policy, self-host instructions
 - [x] Lower the free limit to 1,000 a month for new organizations (existing ones keep 10,000 until changed); owners request more on Plan & usage, an operator approves or declines in /admin
+- [x] New organizations can't send live until an operator approves them in /admin (organizations that already had a live bot stay approved)
 - [ ] Online plan payment, once registered (Chapa)
 
 ## Batch 6: Why use the official service, and less stress for developers (agreed 2026-10-27)

@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft, Building2, Gauge, LogOut, Menu, Server, ShieldAlert, Users, X } from 'lucide-react';
+import { ArrowLeft, BarChart3, Building2, Gauge, LogOut, Menu, Server, ShieldAlert, Users, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -15,6 +15,7 @@ import { useRequireUser } from '@/lib/hooks';
 
 const NAV = [
   { href: '/admin', label: 'Overview', icon: Gauge },
+  { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/admin/orgs', label: 'Organizations', icon: Building2 },
   { href: '/admin/users', label: 'Users', icon: Users },
   { href: '/admin/system', label: 'System', icon: Server },

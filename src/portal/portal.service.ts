@@ -78,7 +78,6 @@ export class PortalService {
       liveApproved: Boolean(org.liveApprovedAt),
       businessStatus: org.businessStatus.toLowerCase(),
       liveReviewRequestedAt: org.liveReviewRequestedAt,
-      unapprovedDailyLimit: this.admin.unapprovedDailyLimit(),
     };
   }
 

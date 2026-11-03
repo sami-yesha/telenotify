@@ -3,6 +3,7 @@ import { Global, Module } from '@nestjs/common';
 import { MESSAGES_QUEUE } from '../messages/messages.constants';
 import { SMS_FALLBACK_QUEUE } from '../sms-fallback/sms-fallback.constants';
 import { WEBHOOKS_QUEUE } from '../webhooks/webhooks.constants';
+import { AdminAnalyticsService } from './admin-analytics.service';
 import { AdminInsightsController } from './admin-insights.controller';
 import { AdminInsightsService } from './admin-insights.service';
 import { TelegramModule } from '../telegram/telegram.module';
@@ -14,7 +15,7 @@ import { OperatorNotifier } from './operator-notifier.service';
 @Module({
   imports: [TelegramModule, BullModule.registerQueue({ name: MESSAGES_QUEUE }, { name: WEBHOOKS_QUEUE }, { name: SMS_FALLBACK_QUEUE })],
   controllers: [AdminController, AdminInsightsController],
-  providers: [AdminService, AdminInsightsService, OperatorNotifier],
+  providers: [AdminService, AdminInsightsService, AdminAnalyticsService, OperatorNotifier],
   exports: [AdminService, OperatorNotifier],
 })
 export class AdminModule {}

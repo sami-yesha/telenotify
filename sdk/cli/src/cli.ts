@@ -4,8 +4,7 @@ import { Api, ApiError } from './api';
 import { clearSettings, readSettings, resolve, saveSettings } from './config';
 import { listen } from './listen';
 import { color } from './output';
-
-const VERSION = '0.1.0';
+import { VERSION } from './version';
 
 const EVENTS = [
   'message.sent',

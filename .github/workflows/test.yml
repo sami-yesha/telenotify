@@ -1,0 +1,35 @@
+name: Tests
+
+# Every push to main runs the API tests and type-checks the portal. Deploys are done
+# by hand for now: see "Deploy" in the README.
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', 'docs/**', 'sdk/**', 'CLA.md', 'LICENSE']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            portal/package-lock.json
+      - name: API tests
+        run: |
+          npm ci
+          npx prisma generate
+          npx tsc --noEmit -p tsconfig.json
+          npx jest --ci
+      - name: Portal type check
+        run: |
+          npm ci --prefix portal
+          npx --prefix portal tsc --noEmit -p portal
