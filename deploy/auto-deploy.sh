@@ -39,25 +39,21 @@ deploy_demo() {
   fi
 }
 
-# First run only, and only when someone is at the terminal: ask for the demo's
-# live API key and signing secret (from the "Telenotify Demo" organization).
+# First run only, and only when someone is at the terminal: ask for the demo bot's
+# token, then let the API set up the "Telenotify Demo" organization (owned by the
+# first OPERATOR_EMAILS account) and hand back the demo's API key and signing secret.
 ask_demo_settings() {
   [ -t 0 ] || return 1
   echo
   echo "Set up the live demo at https://$DEMO_DOMAIN?"
-  read -r -p "  Its live API key (tn_live_...), or press Enter to skip: " key
-  [ -n "$key" ] || { echo "Live demo: skipped. You'll be asked again next deploy."; return 1; }
-  read -r -s -p "  Its webhook signing secret (input hidden): " secret
+  read -r -s -p "  Paste the demo bot's token from @BotFather (hidden), or press Enter to skip: " token
   echo
-  [ -n "$secret" ] || { echo "Live demo: skipped, no signing secret given."; return 1; }
+  [ -n "$token" ] || { echo "Live demo: skipped. You'll be asked again next deploy."; return 1; }
+  docker compose -f docker-compose.vps.yml config --services | grep -qx api || { echo "Live demo: no 'api' service in docker-compose.vps.yml." >&2; return 1; }
+  local settings
+  settings=$(printf '%s' "$token" | docker compose -f docker-compose.vps.yml exec -T -e DEMO_PUBLIC_URL="https://$DEMO_DOMAIN" api node dist/ops/setup-live-demo.js) || return 1
   # Readable only by root.
-  (umask 077 && cat > "$DEMO_DIR/.env" <<EOF
-TELENOTIFY_API_KEY=$key
-TELENOTIFY_SIGNING_SECRET=$secret
-TELENOTIFY_API_URL=https://telenotify-api.duckdns.org
-DEMO_PUBLIC_URL=https://$DEMO_DOMAIN
-EOF
-  ) || return 1
+  (umask 077 && printf '%s\nTELENOTIFY_API_URL=https://telenotify-api.duckdns.org\nDEMO_PUBLIC_URL=https://%s\n' "$settings" "$DEMO_DOMAIN" > "$DEMO_DIR/.env") || return 1
   echo "Live demo: settings saved in examples/live-demo/.env"
 }
 
