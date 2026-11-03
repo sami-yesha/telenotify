@@ -1,0 +1,13 @@
+# The live demo on its own: one container, reachable only from this machine.
+# Put Nginx (or another proxy with HTTPS) in front of 127.0.0.1:3110.
+# On the hosted service, deploy/auto-deploy.sh rebuilds it whenever .env exists here.
+name: telenotify-live-demo
+
+services:
+  live-demo:
+    build: .
+    image: telenotify-live-demo
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - '127.0.0.1:3110:3020'

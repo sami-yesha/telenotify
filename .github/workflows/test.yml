@@ -5,7 +5,7 @@ name: Tests
 on:
   push:
     branches: [main]
-    paths-ignore: ['**.md', 'docs/**', 'sdk/**', 'CLA.md', 'LICENSE']
+    paths-ignore: ['**.md', 'docs/**', 'sdk/**', 'examples/**', 'CLA.md', 'LICENSE']
   workflow_dispatch:
 
 permissions:

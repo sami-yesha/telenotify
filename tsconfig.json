@@ -17,5 +17,5 @@
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["node_modules", "dist", "portal", "sdk"]
+  "exclude": ["node_modules", "dist", "portal", "sdk", "examples"]
 }
