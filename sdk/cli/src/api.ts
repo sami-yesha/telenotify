@@ -1,4 +1,5 @@
 // The few Telenotify API calls the CLI makes. Uses the built-in fetch (Node 18+).
+import { VERSION } from './version';
 
 export class ApiError extends Error {
   constructor(
@@ -55,7 +56,7 @@ export class Api {
     try {
       response = await fetch(`${this.baseUrl}${path}`, {
         method,
-        headers: { 'x-api-key': this.apiKey, 'content-type': 'application/json', 'user-agent': 'telenotify-cli' },
+        headers: { 'x-api-key': this.apiKey, 'content-type': 'application/json', 'user-agent': `telenotify-cli/${VERSION}` },
         body: body === undefined ? undefined : JSON.stringify(body),
         signal: AbortSignal.timeout(this.timeoutMs),
       });

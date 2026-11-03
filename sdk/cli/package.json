@@ -1,6 +1,6 @@
 {
   "name": "telenotify",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Telenotify CLI: receive webhook events on localhost (no public URL, no tunnel), trigger sample events and send test messages.",
   "license": "MIT",
   "author": "sami-yesha",

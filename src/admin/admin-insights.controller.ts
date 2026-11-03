@@ -3,6 +3,7 @@ import { ApiExcludeController } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { CurrentUser } from '../common/request-context';
 import { SessionGuard } from '../common/session.guard';
+import { AdminAnalyticsService } from './admin-analytics.service';
 import { AdminInsightsService } from './admin-insights.service';
 import { OperatorGuard } from './operator.guard';
 
@@ -10,11 +11,20 @@ import { OperatorGuard } from './operator.guard';
 @UseGuards(SessionGuard, OperatorGuard)
 @Controller('admin')
 export class AdminInsightsController {
-  constructor(private readonly insights: AdminInsightsService) {}
+  constructor(
+    private readonly insights: AdminInsightsService,
+    private readonly analyticsService: AdminAnalyticsService,
+  ) {}
 
   @Get('overview')
   overview() {
     return this.insights.overview();
+  }
+
+  // ?days=7|30|90 (default 30).
+  @Get('analytics')
+  analytics(@Query('days') days?: string) {
+    return this.analyticsService.analytics(Number(days) || 30);
   }
 
   @Get('system')

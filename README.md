@@ -142,6 +142,7 @@ The portal includes:
 Put your email in `OPERATOR_EMAILS` and open **/admin** in the portal (also in the account menu). From there you approve live sending, suspend or unsuspend organizations and raise limits; every action goes into the organization's audit log.
 
 - **New organizations** can't send live messages or verifications until approved; the sandbox works from the start. They request a review on the Live → Telegram bot page, operators get an email (and a Telegram message when `OPERATOR_TELEGRAM_CHAT_ID` is set), and the owners get an email once approved. On your own server, approve your organization the same way.
+- **Analytics** (/admin/analytics, 7, 30 or 90 days): sign-up-to-live funnel, live delivery per day, verifications, webhooks and SMS fallback, and API calls by tool (Node and Python SDKs, CLI, curl/Postman, other) with versions in use, error rates, response times, the busiest endpoints, the most common errors and the most active organizations. The tool comes from each call's User-Agent; API calls are kept for 30 days.
 - **Suspended organizations** get `403 org_suspended` on every API call and see the reason in their dashboard.
 - **Spam detection:** when at least `AUTO_SUSPEND_MIN_BLOCKS` (10) recipients, and `AUTO_SUSPEND_BLOCK_RATIO` (30%) of those messaged, block a live bot within 24 hours, the organization is suspended automatically and operators are alerted.
 

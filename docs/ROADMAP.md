@@ -41,6 +41,7 @@ Agreed order (2026-10-22). Tick items as they ship; keep this file current.
 ## Operations
 - [x] Nightly encrypted database backups with a Telegram copy (docs/BACKUPS.md); needs a one-time setup on the server
 - [ ] Automatic deploys: removed for now, deploys are by hand and pushes to main only run the tests (docs/AUTO-DEPLOY.md explains how to bring them back)
+- [x] Operator analytics (/admin/analytics): growth funnel, delivery, verifications, webhooks, SMS fallback, and API usage by SDK/CLI/tool and version, endpoints, errors, busiest organizations
 
 ## Proposed: payment-gateway readiness (from the 2026-10-22 scenario, not yet agreed)
 - [x] Per-bot send rate limits and a priority lane so OTP/transaction messages jump ahead of bulk sends

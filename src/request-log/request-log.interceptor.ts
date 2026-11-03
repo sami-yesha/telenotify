@@ -1,6 +1,7 @@
 import { CallHandler, ExecutionContext, HttpException, Injectable, NestInterceptor } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { Observable, catchError, tap, throwError } from 'rxjs';
+import { parseClient } from './client';
 import { RequestLogService } from './request-log.service';
 
 type ApiRequest = Request & { apiKeyId?: string; environment?: { id: string } };
@@ -27,6 +28,7 @@ export class RequestLogInterceptor implements NestInterceptor {
         durationMs: Date.now() - started,
         error: error ?? null,
         ip: request.ip ?? null,
+        ...parseClient(request.headers['user-agent']),
       });
     };
 
