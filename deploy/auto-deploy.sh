@@ -13,6 +13,10 @@ main() {
   COMPOSE_PARALLEL_LIMIT=1 docker compose -f docker-compose.vps.yml build
   docker compose -f docker-compose.vps.yml up -d
   docker compose -f docker-compose.vps.yml ps
+  # The public live demo (examples/live-demo), on servers where it's set up.
+  if [ -f ../examples/live-demo/.env ]; then
+    (cd ../examples/live-demo && docker compose up -d --build && docker compose ps)
+  fi
   # Old image layers pile up with every build; keep the disk from filling.
   docker image prune -f >/dev/null
 }

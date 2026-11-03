@@ -185,6 +185,7 @@ docker compose --env-file .env.production up -d --build
 - **Node SDK** (`sdk/node`, `@telenotify/node`): typed client for messages, customers and verifications; safe retries; `webhooks.constructEvent()`. Build and test with `npm test` in that folder.
 - **Python SDK** (`sdk/python`, `telenotify`): typed, zero-dependency client with webhook verification and auto-retries for Django, FastAPI, and Flask. Test with `python3 -m unittest discover tests`.
 - **CLI** (`sdk/cli`, `telenotify`): forward webhook events to `localhost` with valid HMAC signatures (`npx telenotify listen --forward …`), trigger sample events (`npx telenotify trigger …`), and send test messages without setting up public tunnels.
+- **Live demo** (`examples/live-demo`): a small public Next.js app built on the Node SDK, the way a customer would build it: Verify with Telegram, notifications in four languages, the SMS fallback, and a live log of every API call and signed webhook. See its README to run or deploy it.
 - **API reference** in the portal: every endpoint from the live OpenAPI spec, with "Send request" using your key, curl, and a Postman collection download.
 - **Request log** (API keys page): each `/v1` call with status, timing, key and error message, kept 30 days.
 - **Webhook delivery log** and **message detail** pages for debugging delivery.
