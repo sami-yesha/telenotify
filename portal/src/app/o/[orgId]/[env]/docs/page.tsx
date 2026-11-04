@@ -318,7 +318,7 @@ export default function DocsPage() {
 
         <Section n={8} title="Going live">
           <ol className="list-decimal space-y-1 pl-5">
-            <li>Connect your own @BotFather bot in Live → Telegram bot.</li>
+            <li>Create your bot in Live → Telegram bot (one tap in Telegram), or connect one you made in @BotFather.</li>
             <li>Create a live key (tn_live_…) and set an HTTPS webhook URL.</li>
             <li>Swap the key in your server config. The API is the same.</li>
           </ol>

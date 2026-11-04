@@ -24,7 +24,7 @@ const faqs = [
   },
   {
     q: 'Will messages show my business name?',
-    a: 'Yes. In live mode you connect your own @BotFather bot, so customers see your name, logo and description. Only the sandbox uses our shared test bot.',
+    a: 'Yes. In live mode you get your own bot, created for you with one tap from the portal, so customers see your name, logo and description. Only the sandbox uses our shared test bot.',
   },
   {
     q: 'Can I try it without affecting real customers?',

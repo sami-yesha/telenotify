@@ -96,6 +96,17 @@ export class PortalService {
       keyPrefix: KEY_PREFIX[environment.type],
       botConnected: this.telegram.hasBot(environment),
       botUsername: this.telegram.botUsernameFor(environment) ?? null,
+      // Guided setup (live only): whether this server offers it, and how far it got.
+      botSetup: isSandbox
+        ? null
+        : {
+            available: Boolean(this.config.get<string>('SETUP_BOT_TOKEN')),
+            pending: Boolean(environment.botSetupExpiresAt && environment.botSetupExpiresAt > new Date() && !environment.botTokenEncrypted),
+            opened: Boolean(environment.botSetupTelegramId),
+            expiresAt: environment.botSetupExpiresAt,
+            error: environment.botSetupError,
+            managed: environment.botManaged,
+          },
       eventWebhookUrl: environment.eventWebhookUrl,
       eventSigningSecret: environment.eventSigningSecret,
       publishableKey: environment.publishableKey,
@@ -320,7 +331,7 @@ export class PortalService {
     if (environment.type !== 'LIVE') throw new BadRequestException('The sandbox uses the shared Telenotify bot');
     const updated = await this.prisma.environment.update({
       where: { id: environment.id },
-      data: { botTokenEncrypted: null, botUsername: null },
+      data: { botTokenEncrypted: null, botUsername: null, botManaged: false },
     });
     return this.environmentView(updated);
   }

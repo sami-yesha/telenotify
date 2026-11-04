@@ -36,6 +36,34 @@ export class ConnectBotDto {
   botToken!: string;
 }
 
+// Telegram's limits for each field.
+export class BotProfileDto {
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(64)
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(512)
+  description?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  shortDescription?: string;
+}
+
+export class BotPhotoDto {
+  // A JPEG, base64-encoded (the portal crops and converts it). ~700 KB at most.
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(1_000_000)
+  @Matches(/^[A-Za-z0-9+/]+=*$/, { message: 'jpegBase64 must be base64' })
+  jpegBase64!: string;
+}
+
 export class UpdateSmsFallbackDto {
   @IsOptional()
   @IsBoolean()

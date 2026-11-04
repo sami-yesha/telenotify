@@ -199,6 +199,19 @@ model Environment {
   // Set while `telenotify listen` runs (renewed every 30s): events are recorded for
   // the CLI even without a webhook URL.
   cliListenUntil     DateTime?
+  // Guided bot setup (live only): our setup bot creates the business's bot through
+  // Telegram's Managed Bots, so nobody has to use @BotFather or copy a token. The
+  // code is single-use; only its hash is stored.
+  botSetupCodeHash   String?         @unique
+  botSetupExpiresAt  DateTime?
+  // Portal user who started it (for the audit log) and the Telegram account that
+  // opened the setup link (only that account's new bot is accepted).
+  botSetupUserId     String?
+  botSetupTelegramId String?
+  botSetupError      String?
+  // The connected bot was created through the setup bot, so we can fetch its token
+  // again when Telegram tells us it changed.
+  botManaged         Boolean         @default(false)
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
 

@@ -26,4 +26,10 @@ export interface TelegramUpdate {
     from: TelegramUser;
     new_chat_member: { status: string };
   };
+  // Setup bot only (Managed Bots): a bot was created for us to manage, or its token
+  // or owner changed. `user` is the person who created it.
+  managed_bot?: {
+    user: TelegramUser;
+    bot: TelegramUser;
+  };
 }

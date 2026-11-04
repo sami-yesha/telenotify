@@ -63,7 +63,7 @@ npm install && npm run dev            # portal on http://localhost:3001
 | | Sandbox | Live |
 |---|---|---|
 | API key | `tn_test_…` | `tn_live_…` |
-| Bot | Shared Telenotify sandbox bot; messages are labelled `[SANDBOX · Org]` | The organization's own @BotFather bot |
+| Bot | Shared Telenotify sandbox bot; messages are labelled `[SANDBOX · Org]` | The organization's own bot, created for them from the portal (or one they made in @BotFather) |
 | Limits | 100 messages/day, 10 linked Telegram users | none yet |
 | Test customers | `test_linked`, `test_not_linked`, `test_blocked`, `test_chat_gone`, `test_telegram_down` | — |
 | Webhook URL | http or https | https only |
@@ -115,7 +115,7 @@ The portal includes:
 - **Playground:** connect your own Telegram and send to any customer, including the test customers.
 - **API keys:** create and revoke.
 - **Webhooks:** set the URL, send a test event, rotate the signing secret.
-- **Live bot:** connect your own bot.
+- **Live bot:** "Create my bot" makes the organization's bot in Telegram with one tap: no @BotFather, no token. Our setup bot (`SETUP_BOT_TOKEN`) uses Telegram's Managed Bots, and the business owns the bot. Pasting a token still works. Then set the bot's name, description and logo from the portal.
 - **Logs:** messages and customers.
 - **Integration guide.**
 - **Telenotify Pass:** an optional network of people who verified their phone once. When a business passes `phone` to a verification, a member gets a Yes/No in our Pass bot (`PASS_BOT_TOKEN`) and confirms with one tap (`method: "pass"`). Opt-in, `/stop` deletes them, membership is never revealed to businesses, and requests are rate-limited.

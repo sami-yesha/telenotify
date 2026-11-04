@@ -9,6 +9,8 @@ export type AuditAction =
   | 'api_key.revoked'
   | 'bot.connected'
   | 'bot.disconnected'
+  | 'bot.setup_started'
+  | 'bot.profile_updated'
   | 'webhook.updated'
   | 'signing_secret.rotated'
   | 'member.invited'

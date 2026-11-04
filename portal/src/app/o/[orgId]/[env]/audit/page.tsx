@@ -23,6 +23,8 @@ const labels: Record<string, string> = {
   'api_key.revoked': 'Revoked an API key',
   'bot.connected': 'Connected the live bot',
   'bot.disconnected': 'Disconnected the live bot',
+  'bot.setup_started': 'Started creating a bot in Telegram',
+  'bot.profile_updated': 'Changed the bot profile',
   'webhook.updated': 'Changed the webhook URL',
   'signing_secret.rotated': 'Rotated the signing secret',
   'member.invited': 'Invited a teammate',

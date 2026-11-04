@@ -45,7 +45,7 @@ export default function GetStartedPage() {
           { done: org.liveBotConnected && org.liveApproved, title: 'Go live', body: 'Connect your own bot so customers see your brand, get approved, then use a live key.', href: `/o/${orgId}/live/bot`, cta: 'Switch to live' },
         ]
       : [
-          { done: environment.botConnected, title: 'Connect your Telegram bot', body: 'Create a bot with @BotFather and paste its token.', href: `${base}/bot`, cta: 'Connect bot' },
+          { done: environment.botConnected, title: 'Connect your Telegram bot', body: 'One tap in Telegram: we create your bot and connect it.', href: `${base}/bot`, cta: 'Connect bot' },
           { done: org.liveApproved, title: 'Get approved', body: 'Tell us what you send. Live messages and verifications start once we approve it.', href: `${base}/bot`, cta: 'Request review' },
           { done: hasKey, title: 'Create a live API key', body: 'Keep it on your server only.', href: `${base}/keys`, cta: 'API keys' },
           { done: Boolean(environment.eventWebhookUrl), title: 'Set your webhook URL', body: 'HTTPS endpoint for delivery results.', href: `${base}/webhooks`, cta: 'Set webhook' },
