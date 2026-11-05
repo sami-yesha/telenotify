@@ -31,6 +31,11 @@ export default function TermsPage() {
         <p>You remain responsible for having a lawful basis to message your customers and for the content you send. We process your customers&apos; data only to provide the service, as described in our <Link href="/privacy" className="text-brand">Privacy Policy</Link>.</p>
       </section>
       <section>
+        <h2>4a. Telegram</h2>
+        <p>Telenotify is an independent service. It is not affiliated with, endorsed by or sponsored by Telegram. Your bot is a Telegram bot, so you must also follow Telegram&apos;s Terms of Service and Bot Developer Terms. Every bot needs a privacy policy: set your bot&apos;s privacy policy in @BotFather to our policy for your customers (the portal shows the link on your Bot page), or to your own policy that covers the same data.</p>
+        <p>When you create a bot with &quot;Create my bot&quot;, it belongs to your Telegram account. Telenotify manages it for you and can fetch its token to deliver your messages; disconnect it in the portal, or remove Telenotify&apos;s access in @BotFather, at any time.</p>
+      </section>
+      <section>
         <h2>5. Price and limits</h2>
         <p>Telenotify is free to use; we don&apos;t take payments. Each organization has a fair-use limit of live messages and verifications per month (currently 1,000 for new organizations); when it&apos;s reached, live messages are rejected until the next month begins. You can request a higher limit in the portal, and we may approve or decline it; and we may change the limit with at least 30 days&apos; notice. The source code is available under the GNU Affero General Public License v3.0, so you can also run Telenotify yourself.</p>
       </section>

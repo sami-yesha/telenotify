@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { AdminService } from '../admin/admin.service';
 import { safeEqual } from '../common/crypto';
+import { privacyText } from '../common/privacy';
 import { ChatScope, CustomersService } from '../customers/customers.service';
 import { MessagesService } from '../messages/messages.service';
 import { VERIFICATION_PREFIX, VerificationsService } from '../verifications/verifications.service';
@@ -144,6 +145,12 @@ export class TelegramWebhookController {
 
     const text = message.text?.trim();
     if (!text) return;
+
+    // Telegram's bot terms require an accessible privacy policy for every bot.
+    if (text === '/privacy' || text.startsWith('/privacy@')) {
+      await bot.sendMessage(chat.chatId, privacyText(ctx.displayName, this.config.get<string>('PORTAL_URL', '')));
+      return;
+    }
 
     if (text === '/start' || text.startsWith('/start ')) {
       const token = text.slice('/start'.length).trim();

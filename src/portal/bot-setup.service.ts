@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Environment, Organization, User } from '@prisma/client';
 import { AuditService } from '../audit/audit.service';
 import { encrypt, randomToken, sha256 } from '../common/crypto';
+import { privacyUrl } from '../common/privacy';
 import { PrismaService } from '../prisma/prisma.service';
 import { TelegramApiClient, TelegramApiError } from '../telegram/telegram-api.client';
 import { TelegramUpdate, TelegramUser } from '../telegram/telegram-update.types';
@@ -206,10 +207,15 @@ export class BotSetupService implements OnApplicationBootstrap, OnModuleDestroy 
   }
 
   // A sensible profile for a brand-new bot; the business can change it in the portal.
+  // The privacy link and /privacy command keep it within Telegram's bot terms.
   private async describe(client: TelegramApiClient, orgName: string) {
+    const privacy = privacyUrl(this.config.get<string>('PORTAL_URL', ''));
     try {
-      await client.setMyDescription(`Official notifications from ${orgName}: receipts, order updates, alerts and login codes.`.slice(0, 512));
+      await client.setMyDescription(
+        `Official notifications from ${orgName.slice(0, 200)}: receipts, order updates, alerts and login codes.\n\nPrivacy policy: ${privacy}`,
+      );
       await client.setMyShortDescription(`Official notifications from ${orgName}.`.slice(0, 120));
+      await client.setMyCommands([{ command: 'privacy', description: 'How your data is handled' }]);
     } catch (error) {
       this.logger.warn(`Could not set the new bot's description: ${(error as Error).message}`);
     }

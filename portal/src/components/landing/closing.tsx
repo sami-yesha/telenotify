@@ -138,7 +138,10 @@ export function Footer() {
           <Link href="/check" className="hover:text-ink">Is this bot real?</Link>
           <a href={`${GITHUB_URL}/blob/main/TRADEMARK.md`} target="_blank" rel="noreferrer" className="hover:text-ink">Trademark</a>
         </div>
-        <p className="text-sm text-muted">© {new Date().getFullYear()} Telenotify</p>
+        <div className="text-sm text-muted sm:text-right">
+          <p>© {new Date().getFullYear()} Telenotify</p>
+          <p className="mt-1 max-w-xs text-xs">Independent service, not affiliated with Telegram.</p>
+        </div>
       </div>
     </footer>
   );

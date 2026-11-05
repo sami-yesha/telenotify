@@ -38,6 +38,7 @@ function setup(opts: { byCode?: object | null; byUsername?: object | null; pendi
     ...(opts.enabled === false ? {} : { SETUP_BOT_TOKEN: 'setup-token' }),
     SETUP_WEBHOOK_SECRET: 's',
     PUBLIC_BASE_URL: 'https://api.example.com',
+    PORTAL_URL: 'https://portal.example.com',
     ENCRYPTION_KEY: Buffer.alloc(32, 7).toString('base64'),
   };
   const config = { get: (k: string) => values[k], getOrThrow: (k: string) => values[k] };
@@ -51,6 +52,7 @@ function setup(opts: { byCode?: object | null; byUsername?: object | null; pendi
     managedToken: jest.spyOn(proto, 'getManagedBotToken').mockResolvedValue('999:new-token'),
     description: jest.spyOn(proto, 'setMyDescription').mockResolvedValue(true),
     shortDescription: jest.spyOn(proto, 'setMyShortDescription').mockResolvedValue(true),
+    commands: jest.spyOn(proto, 'setMyCommands').mockResolvedValue(true),
     setWebhook: jest.spyOn(proto, 'setWebhook').mockResolvedValue(true),
   };
   const service = new BotSetupService(prisma as any, config as any, telegram as any, portal as any, audit as any);
@@ -138,6 +140,8 @@ describe('BotSetupService: the bot is created', () => {
     expect(portal.connectBot).toHaveBeenCalledWith(expect.objectContaining({ id: 'env-1' }), '999:new-token', actor);
     expect(prisma.environment.update.mock.calls[0][0].data).toMatchObject({ botManaged: true, botSetupExpiresAt: null, botSetupError: null });
     expect(spies.description.mock.calls[0][0]).toContain('Official notifications from Abebe Pharmacy');
+    expect(spies.description.mock.calls[0][0]).toContain('Privacy policy: https://portal.example.com/privacy#customers');
+    expect(spies.commands).toHaveBeenCalledWith([{ command: 'privacy', description: 'How your data is handled' }]);
     expect(spies.removeKeyboard.mock.calls[0][1]).toContain('✅ @abebe_pharmacy_bot is connected to Abebe Pharmacy');
   });
 

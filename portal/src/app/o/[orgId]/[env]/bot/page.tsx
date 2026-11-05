@@ -1,10 +1,10 @@
 'use client';
 
-import { Bot, CheckCircle2, ChevronDown, Fingerprint, ImageUp, Plug, Send, Smartphone, Sparkles, Wand2 } from 'lucide-react';
+import { Bot, CheckCircle2, ChevronDown, Fingerprint, ImageUp, Plug, Send, ShieldCheck, Smartphone, Sparkles, Wand2 } from 'lucide-react';
 import QRCode from 'qrcode';
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { Alert, Badge, Button, Card, Input, PageHeader, Skeleton, Spinner } from '@/components/ui';
+import { Alert, Badge, Button, Card, CopyButton, Input, PageHeader, Skeleton, Spinner } from '@/components/ui';
 import { api, ApiError, fetcher } from '@/lib/api';
 import { LiveReviewCard } from '@/components/live-review';
 import { envPath, useEnvironment, useOrg, useOrgParams } from '@/lib/hooks';
@@ -84,6 +84,7 @@ export default function BotPage() {
             </p>
           </Card>
           <BotProfileCard username={environment.botUsername} />
+          <PrivacyPolicyCard username={environment.botUsername} />
           <PassInviteCard environment={environment} onSaved={(next) => mutate(next, false)} />
         </>
       ) : environment.botSetup?.available ? (
@@ -475,6 +476,38 @@ function PhotoUpload() {
         {error && <Alert>{error}</Alert>}
       </div>
     </div>
+  );
+}
+
+// Telegram's bot terms require every bot to have a privacy policy, set in @BotFather.
+// The Bot API can't set it, so this is the one BotFather step left.
+function PrivacyPolicyCard({ username }: { username: string | null }) {
+  const [url, setUrl] = useState('');
+  useEffect(() => setUrl(`${window.location.origin}/privacy#customers`), []);
+
+  return (
+    <Card
+      className="mt-6"
+      icon={ShieldCheck}
+      title="Add the privacy policy (required by Telegram)"
+      description="Telegram requires every bot to have a privacy policy. Ours covers your customers' data; set it once for your bot."
+    >
+      <ol className="mb-4 list-decimal space-y-1.5 pl-5 text-sm text-muted">
+        <li>
+          Open{' '}
+          <a className="font-medium text-brand" href="https://t.me/BotFather" target="_blank" rel="noreferrer">
+            @BotFather
+          </a>{' '}
+          and send <code className="font-mono text-ink">/mybots</code>, then choose {username ? <b className="text-ink">@{username}</b> : 'your bot'}.
+        </li>
+        <li>Open its settings, choose Privacy Policy, and send the link below.</li>
+      </ol>
+      <div className="flex items-center gap-2 rounded-xl border border-line bg-subtle px-3 py-2">
+        <code className="min-w-0 flex-1 truncate font-mono text-xs text-ink">{url}</code>
+        {url && <CopyButton value={url} />}
+      </div>
+      <p className="mt-3 text-xs text-muted">Your bot also answers /privacy with a short summary and this link. Using your own policy instead? It must cover the same data.</p>
+    </Card>
   );
 }
 
