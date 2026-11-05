@@ -3,7 +3,7 @@
 `deploy/backup/backup.sh` runs every night at 02:30 (server time) and:
 
 1. dumps the Postgres database (`pg_dump --format=custom`),
-2. adds `deploy/.env.production` (it holds `ENCRYPTION_KEY`; without it live bot tokens can't be decrypted),
+2. adds `deploy/.env.production` (it holds `ENCRYPTION_KEY`; without it live bot tokens and customers' phone numbers, Telegram IDs and messages can't be decrypted),
 3. encrypts both with `BACKUP_PASSPHRASE` (AES-256, PBKDF2),
 4. keeps the file in `/opt/telenotify/backups` for 14 days,
 5. sends a copy to a private Telegram chat, so it survives the loss of the server,

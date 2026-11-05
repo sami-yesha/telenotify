@@ -158,7 +158,7 @@ cp .env.production.example .env.production   # fill in domains, secrets, bot tok
 docker compose --env-file .env.production up -d --build
 ```
 
-Back up the database and `ENCRYPTION_KEY`: see [docs/BACKUPS.md](docs/BACKUPS.md).
+Back up the database and `ENCRYPTION_KEY`: see [docs/BACKUPS.md](docs/BACKUPS.md). Customers' phone numbers, Telegram IDs and usernames, message texts and webhook events are encrypted in the database with that key (AES-256-GCM; phone numbers and IDs deterministically, so lookups still work), and existing rows are encrypted when the API starts. Without the key, that data is lost.
 
 ## Deploy
 

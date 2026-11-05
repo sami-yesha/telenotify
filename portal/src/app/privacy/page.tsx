@@ -59,7 +59,7 @@ export default function PrivacyPage() {
       </section>
       <section>
         <h2>6. Security</h2>
-        <p>Data is encrypted in transit; bot tokens are encrypted at rest; passwords and API keys are stored as one-way hashes; webhook events are signed. No system is perfectly secure, and we&apos;ll notify affected users of a breach as required by law.</p>
+        <p>Data is encrypted in transit. At rest, customers&apos; phone numbers, Telegram IDs and usernames, message texts and webhook events are encrypted, as are bot tokens, with a key kept outside the database; passwords and API keys are stored as one-way hashes; webhook events are signed. No system is perfectly secure, and we&apos;ll notify affected users of a breach as required by law.</p>
       </section>
       <section>
         <h2>7. Your rights</h2>
