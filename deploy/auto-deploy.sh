@@ -15,6 +15,7 @@ main() {
   flock -n 9 || { echo "Another deploy is already running" >&2; exit 1; }
 
   echo "Deploying $(git rev-parse --short HEAD): $(git log -1 --format=%s)"
+  ask_setup_bot
   COMPOSE_PARALLEL_LIMIT=1 docker compose -f docker-compose.vps.yml build
   docker compose -f docker-compose.vps.yml up -d
   docker compose -f docker-compose.vps.yml ps
@@ -22,6 +23,28 @@ main() {
   deploy_demo || echo "Live demo: not deployed (see the messages above). Telenotify itself is deployed." >&2
   # Old image layers pile up with every build; keep the disk from filling.
   docker image prune -f >/dev/null
+}
+
+# Once, when someone is at the terminal: the setup bot that creates businesses' bots
+# ("Create my bot" on the portal's Bot page). Writes SETUP_BOT_TOKEN and a fresh
+# SETUP_WEBHOOK_SECRET to .env.production. Skipping writes an empty SETUP_BOT_TOKEN, so
+# it isn't asked again; delete that line to be asked on the next deploy.
+ask_setup_bot() {
+  local file=.env.production
+  [ -f "$file" ] && [ -t 0 ] || return 0
+  grep -q '^SETUP_BOT_TOKEN=' "$file" && return 0
+  echo
+  echo "Turn on \"Create my bot\" (businesses get their bot without @BotFather)?"
+  echo "  Needs a bot of ours with Bot Management Mode on in the @BotFather Mini App."
+  read -r -s -p "  Paste the setup bot's token (hidden), or press Enter to skip: " token
+  echo
+  if [ -z "$token" ]; then
+    printf '\nSETUP_BOT_TOKEN=\n' >>"$file"
+    echo "Setup bot: skipped. Pasting a token on the Bot page still works."
+    return 0
+  fi
+  printf '\nSETUP_BOT_TOKEN=%s\nSETUP_WEBHOOK_SECRET=%s\n' "$token" "$(openssl rand -hex 32)" >>"$file"
+  echo "Setup bot: saved in deploy/.env.production"
 }
 
 deploy_demo() {

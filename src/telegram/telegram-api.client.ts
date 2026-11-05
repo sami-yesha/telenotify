@@ -53,6 +53,42 @@ export class TelegramApiClient {
     return this.call('setMyShortDescription', { short_description: shortDescription });
   }
 
+  /** The name at the top of the chat (max 64 characters). */
+  getMyName(): Promise<{ name: string }> {
+    return this.call('getMyName', {});
+  }
+
+  setMyName(name: string): Promise<boolean> {
+    return this.call('setMyName', { name });
+  }
+
+  /** Shown in an empty chat, before the customer presses Start (max 512 characters). */
+  getMyDescription(): Promise<{ description: string }> {
+    return this.call('getMyDescription', {});
+  }
+
+  setMyDescription(description: string): Promise<boolean> {
+    return this.call('setMyDescription', { description });
+  }
+
+  setMyCommands(commands: { command: string; description: string }[]): Promise<boolean> {
+    return this.call('setMyCommands', { commands });
+  }
+
+  /** Telegram only takes a new JPEG upload here (a file can't be reused). */
+  async setMyProfilePhoto(jpeg: Buffer): Promise<boolean> {
+    const form = new FormData();
+    // attach://<name> points at the form field that holds the file.
+    form.append('photo', JSON.stringify({ type: 'static', photo: 'attach://photo_file' }));
+    form.append('photo_file', new Blob([new Uint8Array(jpeg)], { type: 'image/jpeg' }), 'photo.jpg');
+    return this.send<boolean>('setMyProfilePhoto', form);
+  }
+
+  /** Managed Bots: the token of a bot this (manager) bot manages. */
+  getManagedBotToken(botId: number): Promise<string> {
+    return this.call('getManagedBotToken', { user_id: botId });
+  }
+
   setWebhook(url: string, secretToken: string, allowedUpdates: string[] = ['message', 'my_chat_member']): Promise<boolean> {
     return this.call('setWebhook', {
       url,
@@ -83,6 +119,23 @@ export class TelegramApiClient {
     return this.call('sendMessage', { chat_id: chatId, text, reply_markup: replyMarkup, ...(options.html ? { parse_mode: 'HTML' } : {}) });
   }
 
+  /**
+   * Managed Bots: a keyboard button that opens Telegram's "create a bot" window, with
+   * the name and username filled in (the person can change both). Needs Bot
+   * Management Mode on for this bot in the @BotFather Mini App.
+   */
+  sendCreateBotButton(chatId: string, text: string, button: { label: string; suggestedName: string; suggestedUsername: string }): Promise<{ message_id: number }> {
+    return this.call('sendMessage', {
+      chat_id: chatId,
+      text,
+      reply_markup: {
+        keyboard: [[{ text: button.label, request_managed_bot: { request_id: 1, suggested_name: button.suggestedName, suggested_username: button.suggestedUsername } }]],
+        resize_keyboard: true,
+        one_time_keyboard: true,
+      },
+    });
+  }
+
   removeKeyboardMessage(chatId: string, text: string): Promise<{ message_id: number }> {
     return this.call('sendMessage', { chat_id: chatId, text, reply_markup: { remove_keyboard: true } });
   }
@@ -97,11 +150,16 @@ export class TelegramApiClient {
     return this.call('answerCallbackQuery', { callback_query_id: callbackQueryId, ...(text ? { text } : {}) });
   }
 
-  private async call<T>(method: string, body: Record<string, unknown>): Promise<T> {
+  private call<T>(method: string, body: Record<string, unknown>): Promise<T> {
+    return this.send(method, JSON.stringify(body));
+  }
+
+  // A JSON string, or a multipart form for file uploads (fetch sets its content type).
+  private async send<T>(method: string, body: string | FormData): Promise<T> {
     const response = await fetch(`${TelegramApiClient.BASE_URL}/bot${this.botToken}/${method}`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(body),
+      ...(typeof body === 'string' ? { headers: { 'content-type': 'application/json' } } : {}),
+      body,
       signal: AbortSignal.timeout(this.timeoutMs),
     });
     const payload = (await response.json()) as {

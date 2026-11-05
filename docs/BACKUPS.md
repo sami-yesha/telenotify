@@ -3,7 +3,7 @@
 `deploy/backup/backup.sh` runs every night at 02:30 (server time) and:
 
 1. dumps the Postgres database (`pg_dump --format=custom`),
-2. adds `deploy/.env.production` (it holds `ENCRYPTION_KEY`; without it live bot tokens can't be decrypted),
+2. adds `deploy/.env.production` (it holds `ENCRYPTION_KEY`; without it live bot tokens and customers' phone numbers, Telegram IDs and messages can't be decrypted),
 3. encrypts both with `BACKUP_PASSPHRASE` (AES-256, PBKDF2),
 4. keeps the file in `/opt/telenotify/backups` for 14 days,
 5. sends a copy to a private Telegram chat, so it survives the loss of the server,
@@ -39,3 +39,16 @@ docker compose -f docker-compose.vps.yml start api
 A backup from Telegram works the same way: copy the file to the server (`scp`) and pass its path.
 To look inside a backup without touching live data, restore into a scratch database:
 `RESTORE_DB=restore_check ./backup/restore.sh <file>` (create it first with `createdb`).
+
+## Rolling back field encryption
+
+Customers' phone numbers, Telegram IDs and usernames, message texts and webhook events are encrypted in the database (see the README). Versions from before that can't read them. To go back to such a version, decrypt first, with the current version still checked out:
+
+```bash
+cd /opt/telenotify/deploy
+./backup/backup.sh                                                   # a fresh backup first
+docker compose -f docker-compose.vps.yml stop api                    # it encrypts again whenever it starts
+docker compose -f docker-compose.vps.yml run --rm --no-deps api node dist/ops/decrypt-personal-data.js --yes
+```
+
+Then check out the older version and deploy it. Don't start the current version in between: it would encrypt everything again on startup.

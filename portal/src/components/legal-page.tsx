@@ -7,7 +7,7 @@ import { ThemeToggle } from './theme-toggle';
 export const LEGAL = {
   company: process.env.NEXT_PUBLIC_LEGAL_ENTITY || 'Telenotify',
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || process.env.NEXT_PUBLIC_SALES_EMAIL || 'support@telenotify.example',
-  updated: 'October 24, 2026',
+  updated: 'November 5, 2026',
 };
 
 export function LegalPage({ title, intro, children }: { title: string; intro: string; children: ReactNode }) {
@@ -36,6 +36,7 @@ export function LegalPage({ title, intro, children }: { title: string; intro: st
         <p className="mt-14 border-t border-line pt-6 text-sm text-muted">
           Questions? Email <a className="font-medium text-brand" href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a>.
         </p>
+        <p className="mt-2 text-xs text-muted">Telenotify is an independent service. It is not affiliated with, endorsed by or sponsored by Telegram.</p>
       </main>
     </div>
   );

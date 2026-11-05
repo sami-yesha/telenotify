@@ -91,6 +91,8 @@ export interface EnvironmentInfo {
   keyPrefix: string;
   botConnected: boolean;
   botUsername: string | null;
+  /** Live only: creating the bot through our setup bot instead of @BotFather. */
+  botSetup: BotSetupInfo | null;
   eventWebhookUrl: string | null;
   eventSigningSecret: string;
   publishableKey: string | null;
@@ -99,6 +101,26 @@ export interface EnvironmentInfo {
   passInvite: boolean;
   usage: { messagesToday: number; linkedCustomers: number; dailyMessageLimit?: number; linkedCustomerLimit?: number };
   testCustomers: string[];
+}
+
+export interface BotSetupInfo {
+  /** This server has a setup bot. */
+  available: boolean;
+  /** A setup link is out and nothing is connected yet. */
+  pending: boolean;
+  /** Someone opened the link in Telegram. */
+  opened: boolean;
+  expiresAt: string | null;
+  /** Why the last attempt failed. */
+  error: string | null;
+  /** The connected bot was created through the setup bot. */
+  managed: boolean;
+}
+
+export interface BotProfile {
+  name: string;
+  description: string;
+  shortDescription: string;
 }
 
 export interface ApiKey {

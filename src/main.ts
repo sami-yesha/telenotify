@@ -12,6 +12,8 @@ async function bootstrap() {
   app.set('trust proxy', parseTrustProxy(process.env.TRUST_PROXY ?? 'loopback'));
   // The portal reaches this API through its own /api proxy, so no CORS is needed.
   app.use(cookieParser());
+  // Room for a bot profile photo (a base64 JPEG) on top of the usual small bodies.
+  app.useBodyParser('json', { limit: '1mb' });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
   app.enableShutdownHooks();
 

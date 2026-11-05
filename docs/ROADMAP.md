@@ -63,7 +63,7 @@ Goal: things a copy of the open-source code can't bring with it, plus removing d
 - [x] Trademark policy (TRADEMARK.md) and the "Verified business" badge: request in Organization settings, operator review in /admin, shown on the verify page, the public /check page and optionally the bot profile
 - [x] Verify-once network (Telenotify Pass): opt-in members confirm any business's verification with one tap in our Pass bot. The public "is this number on Telegram?" lookup was dropped on purpose: it would let anyone probe whose number is in the network
 - [x] CLI: `npx telenotify listen --forward …` (webhooks to localhost, signed) and `trigger <event>`
-- [ ] Guided live-bot setup wizard (BotFather steps, token check, sets the bot's name and description)
+- [x] Guided live-bot setup: "Create my bot" makes the bot in Telegram for the business (Managed Bots, no @BotFather or token), and the portal edits its name, description and logo
 - [ ] Alerts to developers: failing webhooks, many blocked customers, near message or SMS limits
 - [x] Python SDK (sdk/python: zero-dependency, Django/FastAPI/Flask-ready)
 - [ ] Laravel/PHP SDK

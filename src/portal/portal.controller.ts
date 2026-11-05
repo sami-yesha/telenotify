@@ -14,7 +14,8 @@ import { BillingService } from '../billing/billing.service';
 import { MessagesService } from '../messages/messages.service';
 import { WebhooksService } from '../webhooks/webhooks.service';
 import { VerificationsService } from '../verifications/verifications.service';
-import { ConnectBotDto, CreateApiKeyDto, CreateOrgDto, CustomerMessageDto, PlaygroundLinkDto, PlaygroundSendDto, PlaygroundVerifyDto, TestSmsDto, AllowedOriginsDto, PassInviteDto, UpdateEnvironmentDto, UpdateSmsFallbackDto } from './portal.dto';
+import { BotPhotoDto, BotProfileDto, ConnectBotDto, CreateApiKeyDto, CreateOrgDto, CustomerMessageDto, PlaygroundLinkDto, PlaygroundSendDto, PlaygroundVerifyDto, TestSmsDto, AllowedOriginsDto, PassInviteDto, UpdateEnvironmentDto, UpdateSmsFallbackDto } from './portal.dto';
+import { BotSetupService } from './bot-setup.service';
 import { PortalService } from './portal.service';
 import { AdminService } from '../admin/admin.service';
 import { LiveReviewDto } from '../admin/admin.dto';
@@ -35,6 +36,7 @@ export class PortalController {
     private readonly requestLog: RequestLogService,
     private readonly smsFallback: SmsFallbackService,
     private readonly admin: AdminService,
+    private readonly botSetup: BotSetupService,
   ) {}
 
   @Post()
@@ -106,6 +108,33 @@ export class PortalController {
   @Delete(':orgId/envs/:env/bot')
   disconnectBot(@CurrentEnvironment() environment: EnvironmentWithOrg, @CurrentUser() user: User) {
     return this.portal.disconnectBot(environment, user);
+  }
+
+  // Guided setup: a single-use link to our setup bot, which creates the bot in Telegram.
+  @Post(':orgId/envs/:env/bot/setup')
+  @HttpCode(200)
+  startBotSetup(@CurrentEnvironment() environment: EnvironmentWithOrg, @CurrentUser() user: User) {
+    return this.botSetup.start(environment, user);
+  }
+
+  @Delete(':orgId/envs/:env/bot/setup')
+  cancelBotSetup(@CurrentEnvironment() environment: EnvironmentWithOrg) {
+    return this.botSetup.cancel(environment);
+  }
+
+  @Get(':orgId/envs/:env/bot/profile')
+  botProfile(@CurrentEnvironment() environment: EnvironmentWithOrg) {
+    return this.botSetup.profile(environment);
+  }
+
+  @Put(':orgId/envs/:env/bot/profile')
+  updateBotProfile(@CurrentEnvironment() environment: EnvironmentWithOrg, @CurrentUser() user: User, @Body() dto: BotProfileDto) {
+    return this.botSetup.updateProfile(environment, dto, user);
+  }
+
+  @Put(':orgId/envs/:env/bot/photo')
+  setBotPhoto(@CurrentEnvironment() environment: EnvironmentWithOrg, @CurrentUser() user: User, @Body() dto: BotPhotoDto) {
+    return this.botSetup.setPhoto(environment, dto.jpegBase64, user);
   }
 
   @Put(':orgId/envs/:env/verify-widget/origins')

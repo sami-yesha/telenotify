@@ -15,7 +15,7 @@ export default function PrivacyPage() {
           <li><b>Technical data:</b> IP addresses and request logs, used for security, rate limiting and debugging.</li>
         </ul>
       </section>
-      <section>
+      <section id="customers" className="scroll-mt-8">
         <h2>2. If a business messages you through Telenotify</h2>
         <p>We process this data on behalf of the business you dealt with, only to deliver their messages:</p>
         <ul>
@@ -24,7 +24,8 @@ export default function PrivacyPage() {
           <li>the messages sent to you and any replies you send to the bot, and whether delivery succeeded;</li>
           <li>for phone verification, the number you choose to share with the bot.</li>
         </ul>
-        <p>You can stop receiving messages at any time by blocking the bot in Telegram. For other requests about this data, contact the business, or us at {LEGAL.email}.</p>
+        <p>This section is the privacy policy of every bot that runs on Telenotify; send <b>/privacy</b> to the bot for a short summary. You can stop receiving messages at any time by blocking the bot in Telegram. For other requests about this data, contact the business, or us at {LEGAL.email}.</p>
+        <p>Telenotify is an independent service. It is not affiliated with, endorsed by or sponsored by Telegram. Telegram processes your messages under its own privacy policy.</p>
       </section>
       <section>
         <h2>2a. Telenotify Pass (only if you join)</h2>
@@ -58,7 +59,7 @@ export default function PrivacyPage() {
       </section>
       <section>
         <h2>6. Security</h2>
-        <p>Data is encrypted in transit; bot tokens are encrypted at rest; passwords and API keys are stored as one-way hashes; webhook events are signed. No system is perfectly secure, and we&apos;ll notify affected users of a breach as required by law.</p>
+        <p>Data is encrypted in transit. At rest, customers&apos; phone numbers, Telegram IDs and usernames, message texts and webhook events are encrypted, as are bot tokens, with a key kept outside the database; passwords and API keys are stored as one-way hashes; webhook events are signed. No system is perfectly secure, and we&apos;ll notify affected users of a breach as required by law.</p>
       </section>
       <section>
         <h2>7. Your rights</h2>

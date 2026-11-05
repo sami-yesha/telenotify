@@ -24,7 +24,7 @@ const faqs = [
   },
   {
     q: 'Will messages show my business name?',
-    a: 'Yes. In live mode you connect your own @BotFather bot, so customers see your name, logo and description. Only the sandbox uses our shared test bot.',
+    a: 'Yes. In live mode you get your own bot, created for you with one tap from the portal, so customers see your name, logo and description. Only the sandbox uses our shared test bot.',
   },
   {
     q: 'Can I try it without affecting real customers?',
@@ -138,7 +138,10 @@ export function Footer() {
           <Link href="/check" className="hover:text-ink">Is this bot real?</Link>
           <a href={`${GITHUB_URL}/blob/main/TRADEMARK.md`} target="_blank" rel="noreferrer" className="hover:text-ink">Trademark</a>
         </div>
-        <p className="text-sm text-muted">© {new Date().getFullYear()} Telenotify</p>
+        <div className="text-sm text-muted sm:text-right">
+          <p>© {new Date().getFullYear()} Telenotify</p>
+          <p className="mt-1 max-w-xs text-xs">Independent service, not affiliated with Telegram.</p>
+        </div>
       </div>
     </footer>
   );
